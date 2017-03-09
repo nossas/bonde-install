@@ -5,8 +5,7 @@ gray='\033[1;30m'
 
 
 echo "${green}# [1/9] Creating root directory...${nc}"
-mkdir ~/code && cd ~/code
-echo "${gray}$(pwd) created.${nc}"
+mkdir ~/code && cd ~/code && echo "${gray}Folder [$(pwd)] was created.${nc}"
 
 
 echo "${green}# [2/9] Cloning repositories...${nc}"
@@ -21,10 +20,11 @@ cd ~/code/bonde-client && git fetch origin && \
 
 
 echo "${green}# [4/9] Creating .env files...${nc}"
-cd ~/code/bonde-server && cp '.env.example' '.env' && vi '.env'
-echo "${gray}$(pwd)/.env created.${nc}"
-cd ~/code/bonde-client && cp '.env.example' '.env' && vi '.env'
-echo "${gray}$(pwd)/.env created.${nc}"
+cd ~/code/bonde-server && cp '.env.example' '.env' && vi '.env' && \
+  echo "${gray}File [$(pwd)/.env] was created.${nc}"
+
+cd ~/code/bonde-client && cp '.env.example' '.env' && vi '.env' && \
+  echo "${gray}File [$(pwd)/.env] was created.${nc}"
 
 
 echo "${green}# [5/9] Running docker-compose...${nc}"
@@ -32,10 +32,12 @@ docker-compose up -d --build
 
 
 echo "${green}# [6/9] Creating databases...${nc}"
-docker-compose exec postgres psql -Upostgres -c 'create database reboo;'
-echo "${gray}database [reboo] was created successfully.${nc}"
-docker-compose exec postgres psql -Upostgres -c 'create database reboo_test;'
-echo "${gray}database [reboo_test] was created successfully.${nc}"
+docker-compose exec postgres psql -Upostgres -c 'create database reboo;' && \
+  echo "${gray}Database [reboo] was created.${nc}"
+
+docker-compose exec postgres psql -Upostgres -c 'create database reboo_test;' && \
+  echo "${gray}Database [reboo_test] was created.${nc}"
+
 docker-compose up -d --build
 
 
@@ -51,13 +53,17 @@ docker-compose ps
 echo "${green}# [8/9] Setting hosts up...${nc}"
 app_domain=$(cat '.env' | grep APP_DOMAIN | awk -F '=' '{print $2}' | awk -F ':' '{print $1}')
 has_app_domain=$(awk '{print $2}' /etc/hosts | grep -v '^$' | grep "^$app_domain$")
-if ! [ $has_app_domain ]; then sudo -- sh -c -e "echo '127.0.0.1\t$app_domain' >> /etc/hosts"; fi
-echo "${gray}host [$app_domain] successfully added.${nc}"
+if ! [ $has_app_domain ]; then
+  sudo -- sh -c -e "echo '127.0.0.1\t$app_domain' >> /etc/hosts" && \
+    echo "${gray}Host [$app_domain] successfully added.${nc}"
+fi
 
 api_domain=$(cat '.env' | grep API_URL | { read x; echo "${x/API_URL=http:\/\//}"; } | awk -F ':' '{print $1}')
 has_api_domain=$(awk '{print $2}' /etc/hosts | grep -v '^$' | grep "^$api_domain$")
-if ! [ $has_api_domain ]; then sudo -- sh -c -e "echo '127.0.0.1\t$api_domain' >> /etc/hosts"; fi
-echo "${gray}host [$api_domain] successfully added.${nc}"
+if ! [ $has_api_domain ]; then
+  sudo -- sh -c -e "echo '127.0.0.1\t$api_domain' >> /etc/hosts" && \
+    echo "${gray}Host [$api_domain] successfully added.${nc}"
+fi
 
 
 echo "\nEnjoy, it's all ready to start develop (;"

@@ -3,8 +3,8 @@
   alt="Nossas logo"
   title="Nossas"
   align="right"
-  height="90"
-  width="90"
+  height="75"
+  width="75"
 />
 
 # Bonde Install

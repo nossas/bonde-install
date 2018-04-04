@@ -15,7 +15,8 @@ COMPOSER_FILE="docker-compose-`uname -s`-`uname -m`"
 wget https://github.com/docker/compose/releases/download/1.21.0-rc1/${COMPOSER_FILE}
 sudo mv ${COMPOSER_FILE} /usr/bin/docker-compose
 sudo chmod +x /usr/bin/docker-compose
-docker-compose -f /opt/rancher/docker-compose.yml up -d
+cd /opt/rancher/
+make start
 SCRIPT
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
@@ -36,14 +37,14 @@ Vagrant.configure(2) do |config|
         node.vm.provider "virtualbox" do |vb|
             vb.memory = $vm_mem
             vb.gui = $vb_gui
-            v.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+            vb.customize ["modifyvm", :id, "--cpuexecutioncap", "75"]
         end
         node.vm.provision "shell", inline: $script
         ip = "172.19.8.#{i+100}"
         node.vm.network "private_network", ip: ip
         node.vm.hostname = hostname
 
-        node.hostmanager.aliases = %w( consul.bonde.devel smtp.bonde.devel traefik.bonde.devel s3.bonde.devel grafana.bonde.devel prometheus.bonde.devel api-v1.bonde.devel api-v2.bonde.devel kibana.bonde.devel fn-ui.bonde.devel app.bonde.devel )
+        node.hostmanager.aliases = %w( consul.bonde.devel smtp.bonde.devel traefik.bonde.devel s3.bonde.devel grafana.bonde.devel prometheus.bonde.devel api-v1.bonde.devel api-v2.bonde.devel kibana.bonde.devel fn-ui.bonde.devel app.bonde.devel weave.bonde.devel )
 
         # Disabling compression because OS X has an ancient version of rsync installed.
         # Add -z or remove rsync__args below if you have a newer version of rsync on your machine.

@@ -1,4 +1,4 @@
-version: '3'
+version: '3.1'
 
 volumes:
   pgmaster-data:
@@ -122,8 +122,8 @@ services:
     networks:
       cluster:
         ipv4_address: 10.0.1.46
-    depends_on:
-      - pgmaster
+    # depends_on:
+    #   - pgmaster
     links:
       - pgmaster
     environment:
@@ -148,8 +148,8 @@ services:
                 # in format variable1:value1[,variable2:value2[,...]] if CONFIGS_DELIMITER_SYMBOL=, and CONFIGS_ASSIGNMENT_SYMBOL=:
                 # used for pgpool.conf file
     ports:
-      - "5432:5432"
-      - "9898" # PCP
+      - 5432:5432
+      - 9898 # PCP
 
   pgmaster:
     image: postdock/postgres
@@ -181,7 +181,7 @@ services:
       cluster:
         ipv4_address: 10.0.1.45
     ports:
-      - "5430:5432"
+      - 5430:5432
     volumes:
       - pgmaster-data:/var/lib/postgresql/data
 
@@ -258,14 +258,13 @@ services:
 
   migrations:
     image: nossas/bonde-server:develop
-    command: bundle exec puma -C config/puma.rb
     depends_on:
-      - pgpool
+      # - pgpool
       - redis
     links:
       - pgpool
       - redis:keyval.devel
-    command: bundle exec rake db:migrate && bundle exec rake db:seed
+    command: ["bundle", "exec", "rake", "db:migrate", "&&", "bundle", "exec", "rake", "db:seed"]
     environment:
       PORT: 3001
       DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/monkey_db
@@ -282,10 +281,9 @@ services:
 
   api-v1:
     image: nossas/bonde-server:develop
-    command: bundle exec puma -C config/puma.rb
+    command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
     depends_on:
       - migrations
-      - pgpool
       - redis
     links:
       - pgpool
@@ -314,11 +312,10 @@ services:
   api-v2:
     image: nossas/bonde-graphql:develop
     depends_on:
-      - api-v1
-      - pgpool
-    command: npm run dev
+      - migrations
+    command: ["npm", "run", "dev"]
     links:
-      - pgpool
+      - pgpool:localhostpgpool
     networks:
       cluster:
         ipv4_address: 10.0.1.52
@@ -330,7 +327,7 @@ services:
     environment:
       PORT: 3002
       SCHEMA_NAME: postgraphql
-      DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/monkey_db
+      DATABASE_URL: postgres://monkey_user:monkey_pass@localhostpgpool:5432/monkey_db
       JWT_TYPE: postgraphql.jwt_token
       JWT_SECRET: d41d8cd98f00b204e9800998ecf8427e
       PG_DEFAULT_ROLE: anonymous
@@ -388,6 +385,7 @@ services:
     image: nossas/bonde-admin:develop
     command: yarn start
     depends_on:
+      - storeconfig
       - api-v1
       - api-v2
     links:
@@ -455,8 +453,8 @@ services:
       - s3
     image: fnproject/fnserver
     # build: .
-    ports:
-      - "8088:8088"
+    # ports:
+    #   - "8088:8080"
     links:
       - "pgpool"
       - "redis"
@@ -465,13 +463,11 @@ services:
       cluster:
         ipv4_address: 10.0.1.53
     environment:
-      FN_DB_URL: "postgres://monkey_user:monkey_pass@pgpool:5432/monkey_db?sslmode=disable"
+      FN_DB_URL: "postgres://monkey_user:monkey_pass@pgpool:5432/fnserver?sslmode=disable"
       FN_MQ_URL: "redis://redis:6379/"
       FN_LOGSTORE_URL: "s3://admin:password@s3:9000/us-east-1/fnlogs"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-
-
 
   fnserver-ui:
     depends_on:
@@ -481,9 +477,9 @@ services:
     ports:
       - "4000:4000"
     links:
-      - "fnserver:"
+      - "fnserver"
     environment:
-      - FN_API_URL=http://fnserver:8088
+      - FN_API_URL=http://fnserver:8080
     labels:
       - "traefik.port=4000"
       # - "traefik.backend=fn-ui"
@@ -492,10 +488,6 @@ services:
     networks:
       cluster:
         ipv4_address: 10.0.1.54
-
-
-
-
 
   elasticsearch:
     build:
@@ -506,7 +498,7 @@ services:
       - "9200:9200"
       - "9300:9300"
     environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ES_JAVA_OPTS: "-Xmx512m -Xms512m"
     networks:
       cluster:
         ipv4_address: 10.0.1.55
@@ -520,7 +512,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+      LS_JAVA_OPTS: "-Xmx512m -Xms512m"
     networks:
       cluster:
         ipv4_address: 10.0.1.56
@@ -560,3 +552,14 @@ services:
       - elasticsearch
     restart: on-failure
 
+  scope:
+    image: weaveworks/scope:1.8.0
+    network_mode: "host"
+    pid: "host"
+    privileged: true
+    labels:
+      - "works.weave.role=system"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+    command:
+      - "--probe.docker=true"

@@ -12,17 +12,27 @@ This repository provides scripts to ease the docker development enviroment insta
 
 ### Requirements
 
-* Git
-* Docker [with Debian](https://docs.docker.com/engine/installation/linux/debian/) and [Mac OSX](https://www.docker.com/products/docker#/mac)
-* [Docker Compose](https://docs.docker.com/compose/install/)
+* VirtualBox ( 5.2.8 r121009 (Qt5.6.3) ) - https://www.virtualbox.org/wiki/Downloads
+* Vagrant ( 2.0.3 ) - https://www.vagrantup.com/downloads.html
+* Make (optional) - https://www.gnu.org/software/make/
+* Docker Compose ( optional - docker-compose version 1.20.1 ) - https://docs.docker.com/compose/install/
 
 ```
-$ git --version
-git version 2.7.4
-$ docker -v
-Docker version 1.12.5, build 7392c3b
-$ docker-compose -v
-docker-compose version 1.10.0-rc1, build ecff6f1
+sudo vagrant plugin install vagrant-hostmanager
+vagrant up
+vagrant ssh
+```
+
+Ou:
+
+```
+docker-compose up -d
+```
+
+Ou
+
+```
+make install
 ```
 
 # Install

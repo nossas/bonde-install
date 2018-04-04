@@ -12,30 +12,37 @@ This repository provides scripts to ease the docker development enviroment insta
 
 ### Requirements
 
-* VirtualBox ( 5.2.8 r121009 (Qt5.6.3) ) - https://www.virtualbox.org/wiki/Downloads
-* Vagrant ( 2.0.3 ) - https://www.vagrantup.com/downloads.html
-* Make (optional) - https://www.gnu.org/software/make/
-* Docker Compose ( optional - docker-compose version 1.20.1 ) - https://docs.docker.com/compose/install/
+Our development setup could be started by two ways, using vagrant or with local docker.
 
+To provision services using VirtualBox and Vagrant, we recomend the following versions:
+* VirtualBox ( required: 5.2.8 r121009 ) - https://www.virtualbox.org/wiki/Downloads
+* Vagrant ( required: 2.0.3 ) - https://www.vagrantup.com/downloads.html
+
+If you want to start locally:
+* Docker Compose ( required: 1.20.1 ) - https://docs.docker.com/compose/install/
+* Make ( optional: 3.81 ) - https://www.gnu.org/software/make/
+
+# Install
+In the first scenario:
 ```
 sudo vagrant plugin install vagrant-hostmanager
 vagrant up
-vagrant ssh
 ```
 
-Ou:
+Or to the second:
 
 ```
-docker-compose up -d
+make start
 ```
 
-Ou
+We have some extra services used in production to monitor, log and analyze containers. To enable, just type:
 
 ```
-make install
+make extras
 ```
 
-# Install
+
+# Easy Install
 ```sh
 sh <(curl -s https://raw.githubusercontent.com/nossas/bonde-install/master/install.sh)
 ```

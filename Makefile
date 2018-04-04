@@ -18,10 +18,10 @@ help:
 	@echo ""
 	@echo "See contents of Makefile for more targets."
 
-begin: migrate fixtures start
+begin: migrate start
 
 start:
-	@docker-compose up -d
+	@docker-compose up -d admin traefik01
 
 stop:
 	@docker-compose stop
@@ -33,27 +33,23 @@ restart: stop start
 
 clean: stop
 	@docker-compose rm --force
-	@find . -name \*.pyc -delete
-
-build:
-	@docker-compose build api
-
-test:
-	@docker-compose run --rm api python ./manage.py test ${TESTSCOPE} ${TESTFLAGS}
-
-testwarn:
-	@docker-compose run --rm api python -Wall manage.py test ${TESTSCOPE} ${TESTFLAGS}
+	@docker-compose down -v --remove-orphans
 
 migrate:
-	@docker-compose run --rm api python ./manage.py migrate
+	@docker-compose exec  -T pgmaster gosu postgres psql -c "CREATE DATABASE fnserver;"
 
-fixtures:
-	@docker-compose run --rm api python ./manage.py runscript load_all_fixtures
+extras: log monitor serverless
 
-cli:
-	@docker-compose run --rm api bash
+log:
+	@docker-compose up -d logspout kibana
+
+monitor:
+	@docker-compose up -d scope
+
+serverless:
+	@docker-compose up -d fnserver-ui
 
 tail:
 	@docker-compose logs -f
 
-.PHONY: start stop status restart clean build test testwarn migrate fixtures cli tail
+.PHONY: start stop status restart clean serverless log monitor tail

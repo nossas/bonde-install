@@ -148,7 +148,7 @@ services:
                 # in format variable1:value1[,variable2:value2[,...]] if CONFIGS_DELIMITER_SYMBOL=, and CONFIGS_ASSIGNMENT_SYMBOL=:
                 # used for pgpool.conf file
     ports:
-      - 5432:5432
+      - "5432:5432"
       - 9898 # PCP
 
   pgmaster:
@@ -181,7 +181,7 @@ services:
       cluster:
         ipv4_address: 10.0.1.45
     ports:
-      - 5430:5432
+      - "5432"
     volumes:
       - pgmaster-data:/var/lib/postgresql/data
 
@@ -259,7 +259,7 @@ services:
   migrations:
     image: nossas/bonde-server:develop
     depends_on:
-      # - pgpool
+      - pgpool
       - redis
     links:
       - pgpool
@@ -267,7 +267,7 @@ services:
     command: ["bundle", "exec", "rake", "db:migrate", "&&", "bundle", "exec", "rake", "db:seed"]
     environment:
       PORT: 3001
-      DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/monkey_db
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/bonde
       QUEUE: "*"
       REDIS_URL: redis://keyval.devel:6379
       RACK_ENV: development
@@ -283,14 +283,14 @@ services:
     image: nossas/bonde-server:develop
     command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
     depends_on:
-      - migrations
+      - pgpool
       - redis
     links:
       - pgpool
       - redis:keyval.devel
     environment:
       PORT: 3001
-      DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/monkey_db
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/bonde
       QUEUE: "*"
       REDIS_URL: redis://keyval.devel:6379
       RACK_ENV: development
@@ -312,7 +312,7 @@ services:
   api-v2:
     image: nossas/bonde-graphql:develop
     depends_on:
-      - migrations
+      - pgpool
     command: ["npm", "run", "dev"]
     links:
       - pgpool:localhostpgpool
@@ -327,7 +327,7 @@ services:
     environment:
       PORT: 3002
       SCHEMA_NAME: postgraphql
-      DATABASE_URL: postgres://monkey_user:monkey_pass@localhostpgpool:5432/monkey_db
+      DATABASE_URL: postgres://monkey_user:monkey_pass@localhostpgpool:5432/bonde
       JWT_TYPE: postgraphql.jwt_token
       JWT_SECRET: d41d8cd98f00b204e9800998ecf8427e
       PG_DEFAULT_ROLE: anonymous
@@ -389,17 +389,17 @@ services:
       - api-v1
       - api-v2
     links:
-      - api-v1:api.bonde.devel
-      - api-v2:data.bonde.devel
+      - api-v1
+      - api-v2
       - redis
     environment:
-      API_URL: https://api.bonde.devel:3001
+      API_URL: https://api-v1.bonde.devel
       APP_DOMAIN: bonde.devel
-      AWS_ACCESS_KEY_ID: xxxx
+      AWS_ACCESS_KEY_ID: admin
       AWS_BUCKET: bonde-assets-staging
-      AWS_SECRET_ACCESS_KEY: xxxx/xxxxx
+      AWS_SECRET_ACCESS_KEY: password
       GOOGLE_FONTS_API_KEY: xxxx
-      GRAPHQL_URL: https://data.bonde.devel:3002/graphql
+      GRAPHQL_URL: https://api-v2.bonde.devel/graphql
       # NEW_RELIC_HOME: ./src
       # NEW_RELIC_LICENSE_KEY: ca5a3fbf581b4cad5cae8242e5493ebaf69bd3a7
       NODE_ENV: production
@@ -546,7 +546,8 @@ services:
       ROUTE_URIS: logstash://logstash:5000
       LOGSTASH_TAGS: docker-elk
     networks:
-      - cluster
+      cluster:
+        ipv4_address: 10.0.1.59
     depends_on:
       - logstash
       - elasticsearch
@@ -563,3 +564,75 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
     command:
       - "--probe.docker=true"
+
+
+  metabase:
+    image: metabase/metabase:latest
+    links:
+        - pgpool
+    environment:
+        - MB_DB_TYPE=postgres
+        - MB_DB_DBNAME=metabase
+        - MB_DB_PORT=5432
+        - MB_DB_USER=monkey_user
+        - MB_DB_PASS=monkey_pass
+        - MB_DB_HOST=pgpool
+    labels:
+      - "traefik.port=3000"
+      # - "traefik.backend=s3"
+      - "traefik.frontend.rule=Host:metabase.bonde.devel"
+      - "traefik.enable=true"
+    networks:
+      cluster:
+        ipv4_address: 10.0.1.60
+
+  redash:
+    image: redash/redash:latest
+    command: server
+    depends_on:
+      - pgpool
+      - redis
+      - redash-worker
+    links:
+      - redis
+      - pgpool
+    environment:
+      PYTHONUNBUFFERED: 0
+      REDASH_LOG_LEVEL: "INFO"
+      REDASH_REDIS_URL: "redis://redis:6379/0"
+      REDASH_DATABASE_URL: "postgresql://monkey_user:monkey_pass@pgpool:5432/redash"
+      REDASH_COOKIE_SECRET: bonde
+      REDASH_WEB_WORKERS: 4
+    restart: always
+    labels:
+      - "traefik.port=5000"
+      # - "traefik.backend=s3"
+      - "traefik.frontend.rule=Host:redash.bonde.devel"
+      - "traefik.enable=true"
+    networks:
+      cluster:
+        ipv4_address: 10.0.1.61
+
+
+  redash-worker:
+    image: redash/redash:latest
+    command: scheduler
+    depends_on:
+      - pgpool
+      - redis
+    links:
+      - redis
+      - pgpool
+
+    environment:
+      PYTHONUNBUFFERED: 0
+      REDASH_LOG_LEVEL: "INFO"
+      REDASH_REDIS_URL: "redis://redis:6379/0"
+      REDASH_DATABASE_URL: "postgresql://monkey_user:monkey_pass@pgpool:5432/redash"
+      QUEUES: "queries,scheduled_queries,celery"
+      WORKERS_COUNT: 2
+    restart: always
+    networks:
+      cluster:
+        ipv4_address: 10.0.1.62
+

@@ -44,7 +44,7 @@ services:
       - "8025:8025"
     image: mailhog/mailhog
     environment:
-      MH_HOSTNAME: bonde.devel
+      MH_HOSTNAME: smtp.bonde.devel
     labels:
       - "traefik.port=8025"
       # - "traefik.backend=smtp"
@@ -347,6 +347,9 @@ services:
   #   command: npm run dev
   #   links:
   #     - api-v2:data.bonde.devel
+      # networks:
+      # cluster:
+      #   ipv4_address: 10.0.1.53
   #   environment:
   #     PORT: 3002
   #     GRAPHQL_URL: http://data.bonde.devel:3001/graphql
@@ -371,6 +374,9 @@ services:
   #   command: npm run dev
   #   links:
   #     - postgres:db.devel
+    # networks:
+    #   cluster:
+    #     ipv4_address: 10.0.1.54
   #   environment:
   #     PORT: 3003
   #     APP_DOMAIN: 'https://_______.ngrok.io'
@@ -385,9 +391,10 @@ services:
     image: nossas/bonde-admin:develop
     command: yarn start
     depends_on:
-      - storeconfig
+      - traefik01
       - api-v1
       - api-v2
+      - public
     links:
       - api-v1
       - api-v2
@@ -417,7 +424,47 @@ services:
       - "traefik.enable=true"
     networks:
       cluster:
+        ipv4_address: 10.0.1.55
+
+  public:
+    image: nossas/bonde-public:develop
+    command: yarn start
+    depends_on:
+      - traefik01
+      - api-v1
+      - api-v2
+    links:
+      - api-v1
+      - api-v2
+      - redis
+    environment:
+      API_URL: http://api-v1:3001
+      APP_DOMAIN: bonde.devel
+      AWS_ACCESS_KEY_ID: admin
+      AWS_BUCKET: bonde-assets-staging
+      AWS_SECRET_ACCESS_KEY: password
+      GOOGLE_FONTS_API_KEY: xxxx
+      GRAPHQL_URL: http://api-v2:3002
+      # NEW_RELIC_HOME: ./src
+      # NEW_RELIC_LICENSE_KEY: ca5a3fbf581b4cad5cae8242e5493ebaf69bd3a7
+      NODE_ENV: production
+      PAGARME_KEY: xxxxx
+      PORT: 5001
+      REDIS_URL: redis://redis:6379
+      SENTRY_DSN: ''
+      VALIDATE_REGION: sa-east-1
+      WEB_CONCURRENCY: '1'
+      WEB_MEMORY: '256'
+    labels:
+      - "traefik.port=5001"
+      # - "traefik.backend=fn-ui"
+      - "traefik.frontend.rule=HostRegexp:{catchall:.*}"
+      - "traefik.frontend.priority=1"
+      - "traefik.enable=true"
+    networks:
+      cluster:
         ipv4_address: 10.0.1.58
+
 
   #   env_file:
   #     - .env

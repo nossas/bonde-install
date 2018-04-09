@@ -18,7 +18,7 @@ help:
 	@echo ""
 	@echo "See contents of Makefile for more targets."
 
-begin: migrate start
+begin: start migrate
 
 start:
 	@docker-compose up -d admin traefik01
@@ -36,9 +36,23 @@ clean: stop
 	@docker-compose down -v --remove-orphans
 
 migrate:
-	@docker-compose exec  -T pgmaster gosu postgres psql -c "CREATE DATABASE fnserver;"
+	@sudo sysctl -w vm.max_map_count=262144
+	@docker-compose exec -T pgmaster gosu postgres psql -c "drop database bonde"
+	@docker-compose exec -T pgmaster gosu postgres psql -c "drop database fnserver"
+	@docker-compose exec -T pgmaster gosu postgres psql -c "drop database redash"
+	@docker-compose exec -T pgmaster gosu postgres psql -c "drop database metabase"
+	@docker-compose exec -T pgmaster gosu postgres psql -c "drop role microservices"
+	@docker-compose exec -T pgmaster gosu postgres psql -c "create database bonde"
+	@docker-compose exec -T pgmaster gosu postgres psql -c "create database fnserver"
+	@docker-compose exec -T pgmaster gosu postgres psql -c "create database redash"
+	@docker-compose exec -T pgmaster gosu postgres psql -c "create database metabase"
+	docker-compose restart migrations
+
 
 extras: log monitor serverless
+
+data:
+	@docker-compose up -d metabase redash
 
 log:
 	@docker-compose up -d logspout kibana

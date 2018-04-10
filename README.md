@@ -41,7 +41,6 @@ We have some extra services used in production to monitor, log and analyze conta
 make extras
 ```
 
-
 # Easy Install
 ```sh
 sh <(curl -s https://raw.githubusercontent.com/nossas/bonde-install/master/install.sh)
@@ -52,3 +51,9 @@ sh <(curl -s https://raw.githubusercontent.com/nossas/bonde-install/master/insta
 ```sh
 sh <(curl -s https://raw.githubusercontent.com/nossas/bonde-install/master/uninstall.sh)
 ```
+
+Additional Resources:
+
+* Rancher CLI - https://rancher.com/docs/rancher/latest/en/cli/
+* Drone CLI - http://docs.drone.io/cli-installation/
+* Fly CLI - https://concourse-ci.org/fly.html

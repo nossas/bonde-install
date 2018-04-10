@@ -717,7 +717,9 @@ services:
     - CONCOURSE_EXTERNAL_URL=https://concourse.bonde.devel
     - CONCOURSE_BASIC_AUTH_USERNAME=admin
     - CONCOURSE_BASIC_AUTH_PASSWORD=admin
-    # - CONCOURSE_NO_REALLY_I_DONT_WANT_ANY_AUTH
+    # - CONCOURSE_GITHUB_AUTH_CLIENT_ID=$CLIENT_ID
+    # - CONCOURSE_GITHUB_AUTH_CLIENT_SECRET=$CLIENT_SECRET
+    # - CONCOURSE_GITHUB_AUTH_ORGANIZATION=nossas
     labels:
       - "traefik.port=8080"
       - "traefik.frontend.rule=Host:concourse.bonde.devel"

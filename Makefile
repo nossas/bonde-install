@@ -41,11 +41,13 @@ migrate:
 	@docker-compose exec -T pgmaster gosu postgres psql -c "drop database fnserver"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "drop database redash"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "drop database metabase"
+	@docker-compose exec -T pgmaster gosu postgres psql -c "drop database concourse"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "drop role microservices"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database bonde"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database fnserver"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database redash"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database metabase"
+	@docker-compose exec -T pgmaster gosu postgres psql -c "create database concourse"
 	docker-compose restart migrations
 
 

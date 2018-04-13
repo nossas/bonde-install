@@ -34,14 +34,14 @@ services:
       AWS_SECRET: xxxxxx
       AWS_SECRET_ACCESS_KEY: password
       CLIENT_APP_NAME: hub-client
-      CLIENT_HOST: staging.bonde.org
+      CLIENT_HOST: bonde.devel
       DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/bonde
-      JWT_SECRET: d41d8cd98f00b204e9800998ecf8427e
+      JWT_SECRET: xxxxxxxxx
       JWT_TYPE: postgraphql.jwt_token
       MAILCHIMP_API_KEY: xxxxxx-us6
       MAILCHIMP_GROUP_ID: '11'
       MAILCHIMP_LIST_ID: 123456
-      ORG_RECIPIENT_ID: re_cinenhdff000qlq6deskiweb7
+      ORG_RECIPIENT_ID: re_xxxx
       PAGARME_API_KEY: ak_test_xxxxxxx
       PORT: 3001
       RACK_ENV: development
@@ -181,10 +181,9 @@ services:
     image: nossas/bonde-admin:develop
     command: yarn start
     depends_on:
-      - traefik01
       - api-v1
       - api-v2
-      - public
+      - redis
     links:
       - api-v1
       - api-v2
@@ -221,9 +220,9 @@ services:
     image: nossas/bonde-public:develop
     command: yarn start
     depends_on:
-      - traefik01
       - api-v1
       - api-v2
+      - redis
     links:
       - api-v1
       - api-v2
@@ -286,6 +285,30 @@ services:
 ###########################
 ######## DISPATCHER #######
 ###########################
+  dispatcher-domain:
+    image: nossas/fn-dispatcher
+    depends_on:
+      - fnserver
+      - redis
+      - pgpool
+    links:
+      - fnserver
+      - redis
+      - pgpool
+    environment:
+      - FN_API_URL=fnserver:8080
+      - FN_PORT=8080
+      - API_KEY=jwt_token_hs512
+      - DISPATCHER_FN_APP=domain-service
+      - DISPATCHER_FN_ROUTE=/domain-service
+      - DATABASE_URL=database_connection_string
+      - REDIS_URL=redis://redis:6379
+      - DB_CHANNEL=dns_channel
+      - WORKERS=5
+      - DATABASE_URL=postgres://monkey_user:monkey_pass@pgpool:5432/bonde
+    networks:
+      cluster:
+        ipv4_address: 10.0.1.20
 
 ###########################
 ########## COMMON #########
@@ -355,7 +378,6 @@ services:
       - "5002:80" # Needed for HTTP challenge
     depends_on:
       - consul
-      - storeconfig
     labels:
       - "traefik.port=8080"
       - "traefik.frontend.rule=Host:traefik.bonde.devel"
@@ -365,7 +387,7 @@ services:
         ipv4_address: 10.0.1.42
 
   pgpool:
-    image: postdock/pgpool
+    image: postdock/pgpool:latest-pgpool37-postgres96
     networks:
       cluster:
         ipv4_address: 10.0.1.43
@@ -399,7 +421,7 @@ services:
       - 9898 # PCP
 
   pgmaster:
-    image: postdock/postgres
+    image: postdock/postgres:latest-postgres96-repmgr32
     environment:
       NODE_ID: 1 # Integer number of node (not required if can be extracted from NODE_NAME var, e.g. node-45 => 1045)
       NODE_NAME: node1 # Node name

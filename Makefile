@@ -18,10 +18,10 @@ help:
 	@echo ""
 	@echo "See contents of Makefile for more targets."
 
-begin: start migrate
-
 start:
-	@docker-compose up -d admin traefik01
+	@docker-compose up -d storeconfig traefik01 admin public
+	@docker-compose exec -T admin npm run build
+	@docker-compose restart traefik01
 
 stop:
 	@docker-compose stop
@@ -36,34 +36,42 @@ clean: stop
 	@docker-compose down -v --remove-orphans
 
 migrate:
-	@sudo sysctl -w vm.max_map_count=262144
-	@docker-compose exec -T pgmaster gosu postgres psql -c "drop database bonde"
-	@docker-compose exec -T pgmaster gosu postgres psql -c "drop database fnserver"
-	@docker-compose exec -T pgmaster gosu postgres psql -c "drop database redash"
-	@docker-compose exec -T pgmaster gosu postgres psql -c "drop database metabase"
-	@docker-compose exec -T pgmaster gosu postgres psql -c "drop database concourse"
-	@docker-compose exec -T pgmaster gosu postgres psql -c "drop role microservices"
+	@docker-compose up -d pgpool
+	@sleep 5;
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database bonde"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database fnserver"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database redash"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database metabase"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database concourse"
-	docker-compose restart migrations
+	@docker-compose up -d migrations
+	@sleep 20;
+	@docker-compose up -d seeds
 
+dispatchers:
+	@docker-compose up -d dispatcher-domains
+	@git clone git@github.com:nossas/domain-service.git
+	@cd domain-service
+	@FN_API_URL=fnserver:8080 fn apps config s YOUR_APP DATABASE_URL postgres://connection_string
+	@FN_API_URL=fnserver:8080 fn apps config s YOUR_APP AWS_REGION aws_region
+	@FN_API_URL=fnserver:8080 fn apps config s YOUR_APP AWS_ACCESS_KEY_ID aws_access_key_id
+	@FN_API_URL=fnserver:8080 fn apps config s YOUR_APP AWS_SECRET_ACCESS_KEY aws_secret_access_key
+	@FN_API_URL=fnserver:8080 fn apps config s YOUR_APP AWS_ROUTE_IP aws_route_ip
+	@FN_API_URL=fnserver:8080 fn apps config s YOUR_APP JWT_SECRET jwt_secret_key
+	@FN_API_URL=fnserver:8080 fn deploy --app YOUR_APP --local
 
-extras: log monitor serverless
+extras: manage-logs monitor serverless
+
+logs:
+	@docker-compose logs -f
 
 data:
 	@docker-compose up -d metabase redash
 
-log:
+manage-logs:
 	@docker-compose up -d logspout kibana
 
 monitor:
 	@docker-compose up -d scope
-
-serverless:
-	@docker-compose up -d fnserver-ui
 
 tail:
 	@docker-compose logs -f

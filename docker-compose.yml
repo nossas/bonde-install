@@ -534,8 +534,7 @@ services:
 ###########################
 
   elasticsearch:
-    build:
-      context: elasticsearch/
+    image: nossas/elasticsearch
     volumes:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
     ports:
@@ -548,8 +547,7 @@ services:
         ipv4_address: 10.0.1.49
 
   logstash:
-    build:
-      context: logstash/
+    image: nossas/logstash
     volumes:
       - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
@@ -564,8 +562,7 @@ services:
       - elasticsearch
 
   kibana:
-    build:
-      context: kibana/
+    image: nossas/kibana
     volumes:
       - ./kibana/config/:/usr/share/kibana/config:ro
     ports:
@@ -581,8 +578,7 @@ services:
       - elasticsearch
 
   logspout:
-    build:
-      context: extensions/logspout
+    image: nossas/logspout
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:

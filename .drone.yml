@@ -51,6 +51,32 @@ pipeline:
       status: success
       branch: [hotfix/*, release/*, feature/*, develop]
 
+  lb-staging:
+    image: plugins/docker
+    repo: nossas/lb
+    group: publishing
+    secrets: [ docker_username, docker_password ]
+    dockerfile:  lb/Dockerfile
+    context:  lb/
+    tags:
+      - ${DRONE_BRANCH/\//-}
+    when:
+      status: success
+      branch: [hotfix/*, release/*, feature/*, develop]
+
+  lb-production:
+    image: plugins/docker
+    repo: nossas/lb
+    group: publishing
+    secrets: [ docker_username, docker_password ]
+    dockerfile:  lb/Dockerfile
+    context:  lb/
+    tags:
+      - ${DRONE_TAG##v}
+    when:
+      status: success
+      event: tag
+
   # infrastructure:
   #   image: rancher/os:v1.3.0
   #   commands:

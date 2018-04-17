@@ -7,7 +7,8 @@ volumes:
     driver: local
   s3-data:
     driver: local
-
+  consul-data:
+    driver: local
 networks:
   cluster:
     driver: bridge
@@ -331,6 +332,8 @@ services:
       - "traefik.port=8500"
       - "traefik.frontend.rule=Host:consul.bonde.devel"
       - "traefik.enable=true"
+    volumes:
+      - consul-data:/consul/data
     networks:
       cluster:
         ipv4_address: 10.0.1.39
@@ -351,9 +354,7 @@ services:
         ipv4_address: 10.0.1.40
 
   storeconfig:
-    image: containous/traefik
-    volumes:
-      - "./traefik.toml:/traefik.toml:ro"
+    image: nossas/lb:develop
     command: storeconfig --debug --consul --consul.endpoint=10.0.1.39:8500
     depends_on:
       - consul
@@ -535,8 +536,8 @@ services:
 
   elasticsearch:
     image: nossas/elasticsearch
-    volumes:
-      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    # volumes:
+    #   - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -548,9 +549,9 @@ services:
 
   logstash:
     image: nossas/logstash
-    volumes:
-      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
-      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    # volumes:
+    #   - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+    #   - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
     ports:
       - "5000:5000"
     environment:
@@ -563,8 +564,8 @@ services:
 
   kibana:
     image: nossas/kibana
-    volumes:
-      - ./kibana/config/:/usr/share/kibana/config:ro
+    # volumes:
+    #   - ./kibana/config/:/usr/share/kibana/config:ro
     ports:
       - "5601:5601"
     networks:
@@ -636,8 +637,8 @@ services:
       - "9090:9090"
     links:
       - fnserver
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    # volumes:
+    #   - ./prometheus.yml:/etc/prometheus/prometheus.yml
     labels:
       - "traefik.port=9090"
       - "traefik.frontend.rule=Host:prometheus.bonde.devel"

@@ -718,45 +718,21 @@ services:
         ipv4_address: 10.0.1.57
 
 ###########################
-########### CI/CD ##########
+######### Scheduler #######
 ###########################
 
-  concourse-web:
-    image: concourse/concourse
-    command: web
-    links: [pgpool]
-    depends_on: [pgpool]
-    ports: ["8080"]
-    volumes: ["./concourse/keys/web:/concourse-keys"]
-    environment:
-    - CONCOURSE_POSTGRES_HOST=pgpool
-    - CONCOURSE_POSTGRES_USER=monkey_user
-    - CONCOURSE_POSTGRES_PASSWORD=monkey_pass
-    - CONCOURSE_POSTGRES_DATABASE=concourse
-    - CONCOURSE_EXTERNAL_URL=https://concourse.bonde.devel
-    - CONCOURSE_BASIC_AUTH_USERNAME=admin
-    - CONCOURSE_BASIC_AUTH_PASSWORD=admin
-    # - CONCOURSE_GITHUB_AUTH_CLIENT_ID=$CLIENT_ID
-    # - CONCOURSE_GITHUB_AUTH_CLIENT_SECRET=$CLIENT_SECRET
-    # - CONCOURSE_GITHUB_AUTH_ORGANIZATION=nossas
+  scheduler:
+    image: nossas/scheduler:develop
+    depends_on:
+      - consul
+    ports:
+      - "8080"
+      - "8946"
+    command: agent -server -backend=consul -backend-machine=consul:8500 -join=dkron:8946 -log-level=debug
     labels:
       - "traefik.port=8080"
-      - "traefik.frontend.rule=Host:concourse.bonde.devel"
+      - "traefik.frontend.rule=Host:scheduler.bonde.devel"
       - "traefik.enable=true"
     networks:
       cluster:
         ipv4_address: 10.0.1.58
-
-  concourse-worker:
-    image: concourse/concourse
-    command: worker
-    privileged: true
-    links: [concourse-web]
-    depends_on: [concourse-web]
-    volumes: ["./concourse/keys/worker:/concourse-keys"]
-    environment:
-    - CONCOURSE_TSA_HOST=concourse-web:2222
-    - CONCOURSE_GARDEN_NETWORK
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.59

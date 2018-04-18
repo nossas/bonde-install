@@ -51,6 +51,19 @@ pipeline:
       status: success
       branch: [hotfix/*, release/*, feature/*, develop]
 
+  scheduler:
+    image: plugins/docker
+    repo: nossas/scheduler
+    group: publishing
+    secrets: [ docker_username, docker_password ]
+    dockerfile:  scheduler/Dockerfile
+    context:  scheduler/
+    tags:
+      - ${DRONE_BRANCH/\//-}
+    when:
+      status: success
+      branch: [hotfix/*, release/*, feature/*, develop]
+
   lb-staging:
     image: plugins/docker
     repo: nossas/lb
@@ -77,10 +90,21 @@ pipeline:
       status: success
       event: tag
 
-  # infrastructure:
+  deploy-stack:
+    image: rancher/os:v1.3.0
+    commands:
+      - echo 'docker run --rm radial/busyboxplus:curl curl $@' > /usr/bin/curl && chmod +x /usr/bin/curl
+      - curl -L https://github.com/docker/compose/releases/download/1.21.0-rc1/docker-compose-`uname -s`-`uname -m` >> /usr/bin/docker-compose && chmod +x /usr/bin/docker-compose
+      - curl -L https://github.com/concourse/concourse/releases/download/v3.10.0/fly_linux_amd64 >> /usr/bin/fly && chmod +x /usr/bin/fly
+      - curl -L https://github.com/rancher/rancher-compose/releases/download/v0.12.5/rancher-compose-linux-amd64-v0.12.5.tar.gz >> rancher-compose-linux-amd64-v0.12.5.tar.gz
+      - tar xvzf rancher-compose-linux-amd64-v0.12.5.tar.gz && mv rancher-compose-v0.12.5/rancher-compose /usr/bin/rancher-compose && chmod +x /usr/bin/rancher-compose
+
+
+  # infrastructure-service:
   #   image: rancher/os:v1.3.0
   #   commands:
   #     - echo 'docker run --rm radial/busyboxplus:curl curl $@' > /usr/bin/curl && chmod +x /usr/bin/curl
   #     - curl -L https://github.com/docker/compose/releases/download/1.21.0-rc1/docker-compose-`uname -s`-`uname -m` >> /usr/bin/docker-compose && chmod +x /usr/bin/docker-compose
   #     - curl -L https://github.com/concourse/concourse/releases/download/v3.10.0/fly_linux_amd64 >> /usr/bin/fly && chmod +x /usr/bin/fly
-
+  #     - curl -L https://github.com/rancher/rancher-compose/releases/download/v0.12.5/rancher-compose-linux-amd64-v0.12.5.tar.gz >> rancher-compose-linux-amd64-v0.12.5.tar.gz
+  #     - tar xvzf rancher-compose-linux-amd64-v0.12.5.tar.gz && mv rancher-compose-v0.12.5/rancher-compose /usr/bin/rancher-compose && chmod +x /usr/bin/rancher-compose

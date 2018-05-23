@@ -1,76 +1,10 @@
 logLevel = "DEBUG"
-defaultEntryPoints = ["http", "https"]
+defaultEntryPoints = ["http"]
 sendAnonymousUsage = true
 
 [entryPoints]
-  [entryPoints.http]
-  address = ":80"
-    [entryPoints.http.redirect]
-    entryPoint = "https"
-  [entryPoints.https]
-  address = ":443"
-    [entryPoints.https.tls]
-      [[entryPoints.https.tls.certificates]]
-      certFile = """-----BEGIN CERTIFICATE-----
-MIIDzjCCAbagAwIBAgIJAM6oJ6b4fqpEMA0GCSqGSIb3DQEBBQUAMBMxETAPBgNV
-BAMMCExvY2FsIENBMB4XDTE4MDQxMzE2MDIwNFoXDTE5MDQxMzE2MDIwNFowGDEW
-MBQGA1UEAwwNKi5ib25kZS5kZXZlbDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC
-AQoCggEBANnFUhk9Brm89vSQ5V7uljFEAyaXBV+EON+5zit39L5PLYdNgGEQjA0X
-G8O9qa5G+bJRHdIJylYWsZDxkkMHvvQJBZ1wrHUn8+wDVs2b3/yL1s65JDHiOg1W
-GjRd8xC6Mrnv7K/5xtW0zwyDFKztPWZ4BqmLAqugmkSddZrDQF2QP+bUcimgSoqA
-UqFEgPHkCXwQsCMJ4+QDZbtaHVStXT0CyTrBGZKD5y6LZaqTrqo9GSbamxgML0xC
-ZfsQGcq17TLEwJzOIGsfAL8ley3tCPLkXZnuxKd9664CQ5IQk3KY6lau4TD2ucsd
-ieaokhHgKDCwtdihxeBn6ytBVg32ElsCAwEAAaMgMB4wHAYDVR0RBBUwE4cErBMI
-ZYILYm9uZGUuZGV2ZWwwDQYJKoZIhvcNAQEFBQADggIBALu863Zrki8D9YaLrI4K
-+6xWmNdFcetWANwFm4bQ7q1zJWabZYQJVpi+g6IJjN50DMo5GZ9GAawJKGSU+O3M
-cmS677CZpfbNzBPFAq4Kq3TjLP1qZcJ0uIzRpimYJPPp7FKxdbZZZmzhPooakKfH
-FbjBvYPElf52Ryp9ezQr9Qho2eTcIyQ9uAek4H8rHGLQBlqwEXwqjzZTVDz62Th1
-aexlYAlojiucJnFLya1U0cCGqDCpt8LdtXLNwmNKG80/ceKbF/0cBBuzIH0Jcak+
-aDw2+Y7q9Q4zSaJGvfODqvO0R3ZJIz09nTXamhxpePkZAzOi/PjChWD5YDTbHsYp
-k9gYR/xm99Tp58dkgxDwQRGkRwNs6uRtSUH0dyyFXyih00rVGwYftsXSNEYaabGP
-gvVmgv0a+Q/GSPl6rklEcxQzt9E0QdwePE6BX/bk+2fjlfQYwCcu2UxX/pZyU2Ma
-k2I/Vi7YhMD7eheSmVbFPcJ9jJr7XQ0rH3pQL30fpo6ggSQSYzLFOjaSVsVvJNCQ
-NWIwnv6DeIwjgtWRZM573tWRn0Bpd34yNEXv3AsUE/EQri5bV1aPmrcVw7MnalUl
-hSZpXyo+FKRlzzg3d6fpIdJVPBPhC67reqkaqB1eiDx3aCThoDcdLvFWoVUCj27/
-Nmr+OSxEZLK2qJ5pYzBrEEs1
------END CERTIFICATE-----"""
-      keyFile = """-----BEGIN RSA PRIVATE KEY-----
-MIIEowIBAAKCAQEA2cVSGT0Gubz29JDlXu6WMUQDJpcFX4Q437nOK3f0vk8th02A
-YRCMDRcbw72prkb5slEd0gnKVhaxkPGSQwe+9AkFnXCsdSfz7ANWzZvf/IvWzrkk
-MeI6DVYaNF3zELoyue/sr/nG1bTPDIMUrO09ZngGqYsCq6CaRJ11msNAXZA/5tRy
-KaBKioBSoUSA8eQJfBCwIwnj5ANlu1odVK1dPQLJOsEZkoPnLotlqpOuqj0ZJtqb
-GAwvTEJl+xAZyrXtMsTAnM4gax8AvyV7Le0I8uRdme7Ep33rrgJDkhCTcpjqVq7h
-MPa5yx2J5qiSEeAoMLC12KHF4GfrK0FWDfYSWwIDAQABAoIBAGZe8/EZVwgJZK4j
-TzAJSGFwb2q8o7H7HiFN3zVf9pVf8y8fp7H5bVzZ+BtUFWfvxYGl0Dbkk1FU6bQR
-W4hXI9TkSNdyGCAa3/eaujt9gxXdRuV28yTgDBoo17i2UYUTgrUVrFYtPONJU+u1
-0wpXm/2HftpElsTHgr2up5JRJvjT8FcQZnhHNGseaksQnBb0ErNTcfCnwVZQ42o1
-nhl9mXkQPXmyE6rRbVGLgq1zdhuuol23BYjJFnWVb3YutrMMYws1qYnAjJsHP037
-eVsIt1hQHDdzs2/f5pcJPetGXa+NAWSw53+E4oggl1n2f/n1xO2AR6562gJUaJkV
-B40+4oECgYEA+l9Lr9WKwL+WB38trZ3nzzt9akZXX6FNoZlwUQ20FARGaHWYX50Q
-t3cFQICnayzifW/G0JfUgJKFsTCSoyl0zoT+RjztAMhBBmHDNCDuyczV7hgHsfa5
-600/cfWfCMItRtStJ/l0a2Ty+VMo4E2S4DjfkILFiZhcMFLY2WogaTMCgYEA3qpt
-lz8HzhxkO3+65VjFK+X7y9gYrI+rx8NPGu0RMV4l0kuk7QnQ2awESDBR8VUHqYGN
-amC4HvLOz/MfSt+3ZZzAY6T/UUOkH9BdXSIdiYbqs0AXgptVIcIEY8E8Wk/O4UAL
-D9T0bcz6o8Q+ZgvqX6xBtqmqcNIyVAcHGAriwjkCgYEAh410ktxQZQ7VEXX/qxHk
-4UPaIOG4iGPyfd1u+9MpffTakc+pEYsd89aSl1uQSOxiK3uK7oBlYr7xdv9PRNs7
-DFzgtfJidpv06Jmhb+WsosEtydxkvitQeV63TOGomrtWfBTFMvFR4JslGWu2o8oc
-DR19nOXQQTCmKNuR4BQfPBUCgYAQ3Y/XeOq6beQZrZ8WaBbnMFBWLFQSHf/A7cY8
-H+DBgIQU3a3sVmX/VswsO5y5Ttt5t1piyFip33JSxfOE1FUr2SepZIICQcFYt4ua
-1k6ucA2u7hfZyLI2EGAMvkI4BPuCjDtKQ7MP7gq+BMtFJ3nlLUL89vT1/rXZL38W
-Dx0F4QKBgHsr0Igidlu7VmAN2mfSCfoL1z1zuXRWDmvPAmY7VSlP5yth40SgSk8k
-kBAuljZmAtqJS0nsmUn2/kehyQbwVEbCE2B/yI26nZ0RHyCaH+GJZ10hH75AWrma
-P9TNuK3UIwKcZ5tKtHH9rH3ydVpYX6XMgOeMLgiY8HYu9WdojWro
------END RSA PRIVATE KEY-----"""
-
-[acme]
-email = "tech@bonde.devel"
-storage = "traefik/acme/account"
-entryPoint = "https"
-OnHostRule = true
-caServer = "https://acme-staging.api.letsencrypt.org/directory"
-[acme.dnsChallenge]
-provider = "route53"
-delayBeforeCheck = 0
+[entryPoints.http]
+address = ":80"
 
 [api]
 [ping]
@@ -82,6 +16,6 @@ watch = true
 exposedbydefault = false
 
 [consul]
-endpoint = "10.0.1.39:8500"
+endpoint = "consul:8500"
 watch = true
 prefix = "traefik"

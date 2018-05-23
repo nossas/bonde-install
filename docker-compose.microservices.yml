@@ -1,0 +1,88 @@
+version: '2'
+networks:
+  bonde:
+volumes:
+  es_data:
+    driver: local
+  fn_data:
+    driver: local
+services:
+  dispatcher-notification:
+    image: nossas/fn-dispatcher
+    environment:
+      API_KEY: jwt_token_hs512
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/bonde
+      DB_CHANNEL: notifications_channel
+      DISPATCHER_FN_APP: notification-service
+      DISPATCHER_FN_ROUTE: /notification-service
+      FN_API_URL: fnserver:8080
+      FN_PORT: '8080'
+      REDIS_URL: redis://redis:6379
+      WORKERS: '5'
+    external_links:
+    - common/pgpool:pgpool
+    - common/redis:redis
+    links:
+    - fnserver:fnserver
+    networks:
+      - bonde
+  fnserver:
+    image: fnproject/fnserver
+    environment:
+      FN_DB_URL: postgres://monkey_user:monkey_pass@pgpool:5432/fnserver?sslmode=disable
+      FN_LOGSTORE_URL: s3://admin:password@s3:9000/us-east-1/fnlogs
+      FN_MQ_URL: redis://redis:6379/
+    external_links:
+    - common/pgpool:pgpool
+    - common/s3:s3
+    - common/redis:redis
+    volumes:
+    - fn_data:/app/data
+    - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+    - 54513:8080/tcp
+    labels:
+      traefik.frontend.rule: Host:fn.staging.bonde.org
+      traefik.port: '8080'
+      traefik.enable: 'true'
+      traefik.domain: staging.bonde.org
+      traefik.acme: 'true'
+    networks:
+      - bonde
+  fnserver-ui:
+    image: fnproject/ui
+    environment:
+      FN_API_URL: http://fnserver:8080
+    links:
+    - fnserver:fnserver
+    - fnserver:fnserver
+    ports:
+    - 4000:4000/tcp
+    networks:
+      - bonde
+    labels:
+      traefik.frontend.rule: Host:fn-ui.staging.bonde.org
+      traefik.port: '4000'
+      traefik.enable: 'true'
+      traefik.domain: staging.bonde.org
+      traefik.acme: enable
+  dispatcher-domain:
+    image: nossas/fn-dispatcher
+    environment:
+      API_KEY: jwt_token_hs512
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/bonde
+      DB_CHANNEL: dns_channel
+      DISPATCHER_FN_APP: domain-service
+      DISPATCHER_FN_ROUTE: /domain-service
+      FN_API_URL: fnserver:8080
+      FN_PORT: '8080'
+      REDIS_URL: redis://redis:6379
+      WORKERS: '5'
+    external_links:
+    - common/pgpool:pgpool
+    - common/redis:redis
+    links:
+    - fnserver:fnserver
+    - fnserver:fnserver
+    networks:
+      - bonde

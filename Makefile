@@ -19,9 +19,10 @@ help:
 	@echo "See contents of Makefile for more targets."
 
 start:
-	@docker-compose up -d storeconfig traefik01 admin public
-	@docker-compose exec -T admin npm run build
-	@docker-compose restart traefik01
+	@docker-compose up -d storeconfig consul traefik admin public
+	@docker-compose exec -T admin npm run buildx
+	@docker-compose exec -T public npm run build
+	@docker-compose restart traefik
 
 stop:
 	@docker-compose stop
@@ -43,37 +44,34 @@ migrate:
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database redash"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database metabase"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database concourse"
-	@docker-compose up -d migrations
+	@docker-compose -f docker-compose.workers.yml up -d migrations
 	@sleep 20;
-	@docker-compose up -d seeds
+	@docker-compose -f docker-compose. up -d seeds
 
 dispatchers:
-	@docker-compose up -d dispatcher-domains
-	@git clone git@github.com:nossas/domain-service.git
-	@cd domain-service
-	@FN_API_URL=fnserver:8080 fn apps config s YOUR_APP DATABASE_URL postgres://connection_string
-	@FN_API_URL=fnserver:8080 fn apps config s YOUR_APP AWS_REGION aws_region
-	@FN_API_URL=fnserver:8080 fn apps config s YOUR_APP AWS_ACCESS_KEY_ID aws_access_key_id
-	@FN_API_URL=fnserver:8080 fn apps config s YOUR_APP AWS_SECRET_ACCESS_KEY aws_secret_access_key
-	@FN_API_URL=fnserver:8080 fn apps config s YOUR_APP AWS_ROUTE_IP aws_route_ip
-	@FN_API_URL=fnserver:8080 fn apps config s YOUR_APP JWT_SECRET jwt_secret_key
-	@FN_API_URL=fnserver:8080 fn deploy --app YOUR_APP --local
+	@export FN_REGISTRY=nossas
+	@export FN_API_URL=fn.bonde.devel
+	@fn apps config s YOUR_APP DATABASE_URL postgres://monkey_user:monkey_pass@pgpool:5432/bonde
+	@fn apps config s YOUR_APP AWS_REGION aws_region
+	@fn apps config s YOUR_APP AWS_ACCESS_KEY_ID aws_access_key_id
+	@fn apps config s YOUR_APP AWS_SECRET_ACCESS_KEY aws_secret_access_key
+	@fn apps config s YOUR_APP AWS_ROUTE_IP aws_route_ip
+	@fn apps config s YOUR_APP JWT_SECRET jwt_secret_key
+	@fn deploy --app YOUR_APP --local
 
-extras: manage-logs monitor serverless
+serverless:
+	@docker-compose -f docker-compose.dispatchers.yml up -d
 
 logs:
 	@docker-compose logs -f
 
-data:
-	@docker-compose up -d metabase redash
+start-logger:
+	@docker-compose -f docker-compose.monitor.yml up -d logspout kibana
 
-manage-logs:
-	@docker-compose up -d logspout kibana
-
-monitor:
-	@docker-compose up -d scope
+start-monitor:
+	@docker-compose -f docker-compose.monitor.yml up -d scope
 
 tail:
 	@docker-compose logs -f
 
-.PHONY: start stop status restart clean serverless log monitor tail
+.PHONY: start stop status restart clean migrate dispatchers serverless logs start-logger start-monitor tail

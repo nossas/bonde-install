@@ -1,762 +1,243 @@
-version: '2.3'
-
-volumes:
-  pgmaster-data:
-    driver: local
-  redis-data:
-    driver: local
-  s3-data:
-    driver: local
-  consul-data:
-    driver: local
+version: '2'
 networks:
-  cluster:
-    driver: bridge
-    ipam:
-     config:
-       - subnet: 10.0.1.0/26
-
+  bonde:
+volumes:
+  redis_data:
+    driver: local
+  s3_data:
+    driver: local
+  consul_data2:
+    driver: local
+  pgmaster_data:
+    driver: local
 services:
-
-###########################
-########## BONDE ##########
-###########################
-
-  migrations:
-    image: nossas/bonde-server:develop
-    command: ["bundle", "exec", "rake", "db:migrate"]
+  s3:
+    extends:
+      file: docker-compose.common.yml
+      service: s3
+    networks:
+      - bonde
+  smtp:
+    extends:
+      file: docker-compose.common.yml
+      service: smtp
+    networks:
+      - bonde
+  consul:
+    extends:
+      file: docker-compose.common.yml
+      service: consul
+    networks:
+      bonde:
+        aliases:
+          - consul
+  storeconfig:
+    extends:
+      file: docker-compose.common.yml
+      service: storeconfig
+    networks:
+      - bonde
+  traefik:
+    extends:
+      file: docker-compose.common.yml
+      service: traefik
+    networks:
+      - bonde
+  pgmaster:
+    extends:
+      file: docker-compose.common.yml
+      service: pgmaster
+    networks:
+      - bonde
+  pgpool:
+    extends:
+      file: docker-compose.common.yml
+      service: pgpool
+    depends_on:
+      - pgmaster
+    networks:
+      bonde:
+        aliases:
+          - pgpool
+  assets-images:
+    extends:
+      file: docker-compose.common.yml
+      service: assets-images
+    networks:
+      - bonde
+  public:
+    image: nossas/bonde-public:develop
+    environment:
+      API_URL: http://api-v1.bonde.devel
+      APP_DOMAIN: bonde.devel
+      AWS_ACCESS_KEY_ID: admin
+      AWS_BUCKET: bonde
+      AWS_SECRET_ACCESS_KEY: password
+      GOOGLE_FONTS_API_KEY: xxxxxx
+      GRAPHQL_URL: http://api-v2.bonde.devel/graphql
+      NEW_RELIC_HOME: ./src
+      NEW_RELIC_LICENSE_KEY: xxxxxx
+      NODE_ENV: PRODUCTION
+      NODE_MODULES_CACHE: 'false'
+      NPM_CONFIG_PRODUCTION: 'false'
+      PAGARME_KEY: xxxxxxxx
+      PORT: '5001'
+      REDIS_URL: redis://redis:6379
+      SENTRY_DSN: https://xxxxxx:xxxxx@sentry.io/121380
+      VALIDATE_REGION: sa-east-1
+      WEB_CONCURRENCY: '1'
+      WEB_MEMORY: '256'
+    links:
+    - api-v1:api-v1.bonde.devel
+    - api-v2:api-v2.bonde.devel
+    command:
+    - yarn
+    - start
+    labels:
+      traefik.frontend.rule: HostRegexp:{catchall:.*}
+      traefik.enable: 'true'
+      traefik.port: '5001'
+      io.rancher.container.pull_image: always
+      traefik.frontend.priority: '1'
+    networks:
+      - bonde
+  admin-canary:
+    image: nossas/bonde-admin-canary:develop
+    ports:
+    - 80
+    environment:
+      REACT_APP_GRAPH_URL: http://api-v2.bonde.devel/graphql
+    labels:
+      traefik.frontend.rule: Host:admin-canary.bonde.devel
+      traefik.enable: 'true'
+      traefik.alias: admin-canary
+      traefik.port: '80'
+      io.rancher.container.pull_image: always
+    links:
+    - api-v1:api-v1.bonde.devel
+    - api-v2:api-v2.bonde.devel
+    networks:
+      - bonde
+  admin:
+    image: nossas/bonde-admin:develop
+    environment:
+      API_URL: http://api-v1.bonde.devel
+      APP_DOMAIN: bonde.devel
+      AWS_ACCESS_KEY_ID: admin
+      AWS_BUCKET: bonde
+      AWS_SECRET_ACCESS_KEY: password
+      GOOGLE_FONTS_API_KEY: xxxxxx
+      GRAPHQL_URL: http://api-v2.bonde.devel/graphql
+      NEW_RELIC_HOME: ./src
+      NEW_RELIC_LICENSE_KEY: xxxx
+      NODE_ENV: production
+      NODE_MODULES_CACHE: 'false'
+      NPM_CONFIG_PRODUCTION: 'false'
+      PAGARME_KEY: xxxxxxx
+      PORT: '5001'
+      SENTRY_DSN: https://xxxxx:xxxxx@sentry.io/121380
+      VALIDATE_REGION: sa-east-1
+      WEB_CONCURRENCY: '1'
+      WEB_MEMORY: '256'
+    ports:
+    - 5001
+    links:
+    - api-v1:api-v1.bonde.devel
+    - api-v2:api-v2.bonde.devel
+    command:
+    - yarn
+    - start
+    labels:
+      traefik.frontend.rule: Host:app.bonde.devel
+      traefik.enable: 'true'
+      traefik.alias: app
+      traefik.port: '5001'
+      io.rancher.container.pull_image: always
+    networks:
+      - bonde
+  api-v1:
+    image: nossas/bonde-server:feature-implements-tags-to-v2
     environment:
       AWS_ACCESS_KEY_ID: admin
-      AWS_BUCKET: hub-central-dev
-      AWS_ID: xxxxx
+      AWS_BUCKET: bonde
+      AWS_ID: admin
       AWS_ROUTE53_REGION: sa-east-1
       AWS_ROUTE53_SYNC: force
-      AWS_ROUTE_IP: 1.1.1.1
-      AWS_SECRET: xxxxxx
+      AWS_ROUTE_IP: 127.0.0.1
+      AWS_SECRET: password
       AWS_SECRET_ACCESS_KEY: password
       CLIENT_APP_NAME: hub-client
       CLIENT_HOST: bonde.devel
       DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/bonde
-      JWT_SECRET: xxxxxxxxx
+      JWT_SECRET: segredo123
       JWT_TYPE: postgraphql.jwt_token
-      MAILCHIMP_API_KEY: xxxxxx-us6
+      MAILCHIMP_API_KEY: 111111-us6
       MAILCHIMP_GROUP_ID: '11'
-      MAILCHIMP_LIST_ID: 123456
-      ORG_RECIPIENT_ID: re_xxxx
-      PAGARME_API_KEY: ak_test_xxxxxxx
-      PORT: 3001
-      RACK_ENV: development
-      RAILS_ENV: development
-      REDIS_URL: redis://keyval.devel:6379
-      SECRET_KEY_BASE: xxxxxxx
-      SENDGRID_PASSWORD: xxxxxx
-      SENDGRID_USERNAME: xxxxxx
-      SENTRY_DSN: xxxxxx
+      MAILCHIMP_LIST_ID: 111111ac
+      NEW_RELIC_LICENSE_KEY: 1111111
+      NEW_RELIC_LOG: stdout
+      NO_VHOST: '0'
+      ORG_RECIPIENT_ID: xxxxxx
+      PAGARME_API_KEY: xxxxx
+      PORT: '3000'
+      RAILS_ENV: staging
+      RAILS_SERVE_STATIC_FILES: enabled
+      REDIS_URL: redis://redis:6379
+      SECRET_KEY_BASE: xxxxxx
+      SENTRY_DSN: https://xxxxx:xxxxx@sentry.io/121379
+      SMTP_HOST: smtp
+      SMTP_PASSWORD: xxxxxxxx
+      SMTP_PORT: '1025'
+      SMTP_USERNAME: xxxxxx
       WEB_CONCURRENCY: '1'
       WEB_MEMORY: '256'
-    networks:
-      - cluster
-
-  seeds:
-    depends_on:
-      - pgpool
-      - redis
+    # external_links:
+    # - common/pgpool:pgpool
+    # - common/redis:redis
+    # - common/smtp:smtp
     links:
-      - pgpool
-      - redis:keyval.devel
-    extends:
-      # file: common.yml
-      service: migrations
-    command: ["bundle", "exec", "rake", "db:seed"]
-
-###########################
-######## WEB SERVER #######
-###########################
-
-  api-v1:
-    image: nossas/bonde-server:develop
-    command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
-    depends_on:
-      - pgpool
-      - redis
-    links:
-      - pgpool
-      - redis:keyval.devel
-    environment:
-      PORT: 3001
-      DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/bonde
-      QUEUE: "*"
-      REDIS_URL: redis://keyval.devel:6379
-      RACK_ENV: development
-      RAILS_ENV: development
-      JWT_SECRET: d41d8cd98f00b204e9800998ecf8427e
-      WEB_CONCURRENCY: 1
-      WEB_MEMORY: 256
-      APP_DOMAIN: http://app.bonde.devel:3005
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.10
+    - pgpool
+    command:
+    - bundle
+    - exec
+    - puma
+    - -C
+    - config/puma.rb
     labels:
-      - "traefik.port=3001"
-      - "traefik.frontend.rule=Host:api-v1.bonde.devel"
-      - "traefik.enable=true"
-
+      traefik.frontend.rule: Host:api-v1.bonde.devel
+      traefik.port: '3000'
+      traefik.enable: 'true'
+      traefik.alias: api-v1
+    networks:
+      bonde:
+        aliases:
+          - api-v1
   api-v2:
     image: nossas/bonde-graphql:develop
-    depends_on:
-      - pgpool
-    command: ["npm", "run", "dev"]
-    links:
-      - pgpool:localhostpgpool
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.11
-    labels:
-      - "traefik.port=3002"
-      - "traefik.frontend.rule=Host:api-v2.bonde.devel"
-      - "traefik.enable=true"
     environment:
-      PORT: 3002
-      SCHEMA_NAME: postgraphql
-      DATABASE_URL: postgres://monkey_user:monkey_pass@localhostpgpool:5432/bonde
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/bonde
+      JWT_SECRET: segredo123
       JWT_TYPE: postgraphql.jwt_token
-      JWT_SECRET: d41d8cd98f00b204e9800998ecf8427e
+      NEW_RELIC_ENABLED: 'false'
       PG_DEFAULT_ROLE: anonymous
-      WEB_CONCURRENCY: 1
-      WEB_MEMORY: 256
-
-  # bot:
-  #   image: nossas/bonde-bot:develop
-  #   # build:
-  #   #   context: ./../bonde-bot/
-  #   #   dockerfile: Dockerfile
-
-  #   depends_on:
-  #     - postgres
-  #   ports:
-  #     - "3002:3002"
-  #   command: npm run dev
-  #   links:
-  #     - api-v2:data.bonde.devel
-      # networks:
-      # cluster:
-      #   ipv4_address: 10.0.1.53
-  #   environment:
-  #     PORT: 3002
-  #     GRAPHQL_URL: http://data.bonde.devel:3001/graphql
-  #     MESSENGER_APP_SECRET: 96dc8d
-  #     MESSENGER_PAGE_ACCESS_TOKEN: EAAajJa
-  #     MESSENGER_VALIDATION_TOKEN: bonde-client
-  #     SERVER_AUTH_EMAIL: foo@bar.com
-  #     SERVER_AUTH_PASSWORD: 123
-  #     WEB_CONCURRENCY: 1
-  #     WEB_MEMORY: 256
-
-  # phone:
-  #   image: nossas/bonde-phone:develop
-  #   # build:
-  #   #   context: ./../bonde-phone/
-  #   #   dockerfile: Dockerfile
-
-  #   depends_on:
-  #     - postgres
-  #   ports:
-  #     - "3003:3003"
-  #   command: npm run dev
-  #   links:
-  #     - postgres:db.devel
-    # networks:
-    #   cluster:
-    #     ipv4_address: 10.0.1.54
-  #   environment:
-  #     PORT: 3003
-  #     APP_DOMAIN: 'https://_______.ngrok.io'
-  #     TWILIO_ACCOUNT_SID: '____________'
-  #     TWILIO_AUTH_TOKEN: '____________'
-  #     TWILIO_NUMBER: '+____________'
-  #     DATABASE_URL: postgres://postgraphql:3x4mpl3@db.devel:5432/bonde
-  #     WEB_CONCURRENCY: 1
-  #     WEB_MEMORY: 256
-
-  admin:
-    image: nossas/bonde-admin:develop
-    command: yarn start
-    depends_on:
-      - api-v1
-      - api-v2
-      - redis
-    links:
-      - api-v1
-      - api-v2
-      - redis
-      - s3
-      - smtp
-    environment:
-      API_URL: https://api-v1.bonde.devel
-      APP_DOMAIN: bonde.devel
-      AWS_ACCESS_KEY_ID: admin
-      AWS_BUCKET: bonde-assets-staging
-      AWS_SECRET_ACCESS_KEY: password
-      GOOGLE_FONTS_API_KEY: xxxx
-      GRAPHQL_URL: https://api-v2.bonde.devel/graphql
-      # NEW_RELIC_HOME: ./src
-      # NEW_RELIC_LICENSE_KEY: ca5a3fbf581b4cad5cae8242e5493ebaf69bd3a7
-      NODE_ENV: production
-      PAGARME_KEY: xxxxx
-      PORT: 5001
-      REDIS_URL: redis://redis:6379
-      SENTRY_DSN: ''
-      VALIDATE_REGION: sa-east-1
+      PORT: '3002'
+      SCHEMA_NAME: postgraphql
+      SENTRY_DSN: https://xxxxx:xxxxx@sentry.io/142717
       WEB_CONCURRENCY: '1'
       WEB_MEMORY: '256'
-    labels:
-      - "traefik.port=5001"
-      - "traefik.frontend.rule=Host:app.bonde.devel"
-      - "traefik.enable=true"
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.12
-
-  public:
-    image: nossas/bonde-public:develop
-    command: yarn start
-    depends_on:
-      - api-v1
-      - api-v2
-      - redis
     links:
-      - api-v1
-      - api-v2
-      - redis
-    environment:
-      API_URL: http://api-v1:3001
-      APP_DOMAIN: bonde.devel
-      AWS_ACCESS_KEY_ID: admin
-      AWS_BUCKET: bonde-assets-staging
-      AWS_SECRET_ACCESS_KEY: password
-      GOOGLE_FONTS_API_KEY: xxxx
-      GRAPHQL_URL: http://api-v2:3002
-      # NEW_RELIC_HOME: ./src
-      # NEW_RELIC_LICENSE_KEY: ca5a3fbf581b4cad5cae8242e5493ebaf69bd3a7
-      NODE_ENV: production
-      PAGARME_KEY: xxxxx
-      PORT: 5001
-      REDIS_URL: redis://redis:6379
-      SENTRY_DSN: ''
-      VALIDATE_REGION: sa-east-1
-      WEB_CONCURRENCY: '1'
-      WEB_MEMORY: '256'
-    labels:
-      - "traefik.port=5001"
-      - "traefik.frontend.rule=HostRegexp:{catchall:.*}"
-      - "traefik.frontend.priority=1"
-      - "traefik.enable=true"
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.13
-
-  #   env_file:
-  #     - .env
-
-  # redirect:
-  #   image: nossas/bonde-redirect:develop
-  #   command: go run rebu-redirect
-  #   depends_on:
-  #     - api-v1
-  #   volumes:
-  #     - ../bonde-redirect:/go/src/app:Z
-  #   ports:
-  #     - "3007:3007"
-  #   # build:
-  #   #   context: .
-  #   #   dockerfile: Dockerfile
-  #   links:
-  #     - api-v1:api.bonde.devel
-  #   environment:
-  #     PORT: 3007
-
-###########################
-######### WORKERS #########
-###########################
-
-###########################
-######### CRONJOB #########
-###########################
-
-###########################
-######## DISPATCHER #######
-###########################
-  dispatcher-domain:
-    image: nossas/fn-dispatcher
-    depends_on:
-      - fnserver
-      - redis
-      - pgpool
-    links:
-      - fnserver
-      - redis
-      - pgpool
-    environment:
-      - FN_API_URL=fnserver:8080
-      - FN_PORT=8080
-      - API_KEY=jwt_token_hs512
-      - DISPATCHER_FN_APP=domain-service
-      - DISPATCHER_FN_ROUTE=/domain-service
-      - DATABASE_URL=database_connection_string
-      - REDIS_URL=redis://redis:6379
-      - DB_CHANNEL=dns_channel
-      - WORKERS=5
-      - DATABASE_URL=postgres://monkey_user:monkey_pass@pgpool:5432/bonde
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.20
-
-###########################
-########## COMMON #########
-###########################
-
-  consul:
-    image: progrium/consul
-    command: -server -bootstrap -log-level debug -ui-dir /ui
-    ports:
-      - "8400:8400"
-      - "8500:8500"
-      - "8600:53/udp"
-    expose:
-      - "8300"
-      - "8301"
-      - "8301/udp"
-      - "8302"
-      - "8302/udp"
-    labels:
-      - "traefik.port=8500"
-      - "traefik.frontend.rule=Host:consul.bonde.devel"
-      - "traefik.enable=true"
-    volumes:
-      - consul-data:/consul/data
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.39
-
-  smtp:
-    ports:
-      - "1025:1025"
-      - "8025:8025"
-    image: mailhog/mailhog
-    environment:
-      MH_HOSTNAME: smtp.bonde.devel
-    labels:
-      - "traefik.port=8025"
-      - "traefik.frontend.rule=Host:smtp.bonde.devel"
-      - "traefik.enable=true"
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.40
-
-  storeconfig:
-    image: nossas/lb:develop
-    command: storeconfig --debug --consul --consul.endpoint=10.0.1.39:8500
-    depends_on:
-      - consul
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.41
-
-  traefik01:
-    image: containous/traefik
-    command: --consul --consul.endpoint=10.0.1.39:8500
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    expose:
-      - "443"
-      - "5001"
-      - "5002"
-    ports:
-      - "80:80"
-      - "8080:8080"
-      - "443:443"
-      - "5001:443" # Needed for SNI challenge
-      - "5002:80" # Needed for HTTP challenge
-    depends_on:
-      - consul
-    labels:
-      - "traefik.port=8080"
-      - "traefik.frontend.rule=Host:traefik.bonde.devel"
-      - "traefik.enable=true"
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.42
-
-  pgpool:
-    image: postdock/pgpool:latest-pgpool37-postgres96
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.43
-    # depends_on:
-    #   - pgmaster
-    links:
-      - pgmaster
-    environment:
-      PCP_USER: pcp_user
-      PCP_PASSWORD: pcp_pass
-      WAIT_BACKEND_TIMEOUT: 60
-
-      CHECK_USER: monkey_user
-      CHECK_PASSWORD: monkey_pass
-      CHECK_PGCONNECT_TIMEOUT: 3 #timout for checking if primary node is healthy
-      SSH_ENABLE: 1
-      DB_USERS: monkey_user:monkey_pass # in format user:password[,user:password[...]]
-      BACKENDS: "0:pgmaster:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER" #,4:pgslaveDOES_NOT_EXIST::::
-                # in format num:host:port:weight:data_directory:flag[,...]
-                # defaults:
-                #   port: 5432
-                #   weight: 1
-                #   data_directory: /var/lib/postgresql/data
-                #   flag: ALLOW_TO_FAILOVER
-      REQUIRE_MIN_BACKENDS: 1 # minimal number of backends to start pgpool (some might be unreachable)
-      CONFIGS: "num_init_children:250,max_pool:4"
-                # in format variable1:value1[,variable2:value2[,...]] if CONFIGS_DELIMITER_SYMBOL=, and CONFIGS_ASSIGNMENT_SYMBOL=:
-                # used for pgpool.conf file
-    ports:
-      - "5432:5432"
-      - 9898 # PCP
-
-  pgmaster:
-    image: postdock/postgres:latest-postgres96-repmgr32
-    environment:
-      NODE_ID: 1 # Integer number of node (not required if can be extracted from NODE_NAME var, e.g. node-45 => 1045)
-      NODE_NAME: node1 # Node name
-      CLUSTER_NODE_NETWORK_NAME: pgmaster # (default: hostname of the node)
-
-      # PARTNER_NODES: "pgmaster,pgslave1,pgslave3"
-      REPLICATION_PRIMARY_HOST: pgmaster # That should be ignored on the same node
-
-      NODE_PRIORITY: 100  # (default: 100)
-      SSH_ENABLE: 1
-      #database we want to use for application
-      POSTGRES_PASSWORD: monkey_pass
-      POSTGRES_USER: monkey_user
-      POSTGRES_DB: monkey_db
-      CLEAN_OVER_REWIND: 0
-      CONFIGS_DELIMITER_SYMBOL: ;
-      CONFIGS: "listen_addresses:'*';max_replication_slots:5"
-                            # in format variable1:value1[,variable2:value2[,...]] if CONFIGS_DELIMITER_SYMBOL=, and CONFIGS_ASSIGNMENT_SYMBOL=:
-                            # used for pgpool.conf file
-      #defaults:
-      CLUSTER_NAME: pg_cluster # default is pg_cluster
-      REPLICATION_DB: replication_db # default is replication_db
-      REPLICATION_USER: replication_user # default is replication_user
-      REPLICATION_PASSWORD: replication_pass # default is replication_pass
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.44
-    ports:
-      - "5432"
-    volumes:
-      - pgmaster-data:/var/lib/postgresql/data
-
-  redis:
-    image: redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/var/lib/redis
-    command: redis-server --appendonly yes
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.45
-
-  s3:
-    image: minio/minio
-    ports:
-      - "9000:9000"
-    environment:
-      - MINIO_ACCESS_KEY=admin
-      - MINIO_SECRET_KEY=password
-    volumes:
-      - s3-data:/data
-    command: server /data
-    labels:
-      - "traefik.port=9000"
-      - "traefik.frontend.rule=Host:s3.bonde.devel"
-      - "traefik.enable=true"
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.46
-
-###########################
-######## SERVERLESS #######
-###########################
-
-  fnserver:
-    # restart: always
-    depends_on:
-      - redis
-      - pgpool
-      - s3
-    image: fnproject/fnserver
-    ports:
-      - "8080"
-    links:
-      - "pgpool"
-      - "redis"
-      - "s3"
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.47
-    environment:
-      FN_DB_URL: "postgres://monkey_user:monkey_pass@pgpool:5432/fnserver?sslmode=disable"
-      FN_MQ_URL: "redis://redis:6379/"
-      FN_LOGSTORE_URL: "s3://admin:password@s3:9000/us-east-1/fnlogs"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-
-  fnserver-ui:
-    depends_on:
-      - fnserver
-    image: fnproject/ui
-    restart: always
-    ports:
-      - "4000:4000"
-    links:
-      - "fnserver"
-    environment:
-      - FN_API_URL=http://fnserver:8080
-    labels:
-      - "traefik.port=4000"
-      - "traefik.frontend.rule=Host:fn-ui.bonde.devel"
-      - "traefik.enable=true"
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.48
-
-###########################
-########### LOGS ##########
-###########################
-
-  elasticsearch:
-    image: nossas/elasticsearch
-    # volumes:
-    #   - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    environment:
-      ES_JAVA_OPTS: "-Xmx512m -Xms512m"
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.49
-
-  logstash:
-    image: nossas/logstash
-    # volumes:
-    #   - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
-    #   - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
-    ports:
-      - "5000:5000"
-    environment:
-      LS_JAVA_OPTS: "-Xmx512m -Xms512m"
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.50
-    depends_on:
-      - elasticsearch
-
-  kibana:
-    image: nossas/kibana
-    # volumes:
-    #   - ./kibana/config/:/usr/share/kibana/config:ro
-    ports:
-      - "5601:5601"
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.51
-    labels:
-      - "traefik.port=5601"
-      - "traefik.frontend.rule=Host:kibana.bonde.devel"
-      - "traefik.enable=true"
-    depends_on:
-      - elasticsearch
-
-  logspout:
-    image: nossas/logspout
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      ROUTE_URIS: logstash://logstash:5000
-      LOGSTASH_TAGS: docker-elk
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.52
-    depends_on:
-      - logstash
-      - elasticsearch
-    restart: on-failure
-
-###########################
-######### MONITOR #########
-###########################
-
-  scope:
-    image: weaveworks/scope:1.8.0
-    network_mode: "host"
-    pid: "host"
-    privileged: true
-    labels:
-      - "works.weave.role=system"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+    - pgpool
     command:
-      - "--probe.docker=true"
-
-  grafana:
-    image: grafana/grafana
-    restart: always
-    ports:
-      - "3000:3000"
-    links:
-      - fnserver
-      - prometheus
-    depends_on:
-      - fnserver
-      - prometheus
+    - npm
+    - run
+    - dev
     labels:
-      - "traefik.port=3000"
-      - "traefik.frontend.rule=Host:grafana.bonde.devel"
-      - "traefik.enable=true"
+      traefik.frontend.rule: Host:api-v2.bonde.devel
+      traefik.enable: 'true'
+      traefik.alias: api-v2
+      traefik.port: '3002'
+      traefik.domain: staging.bonde.org
     networks:
-      cluster:
-        ipv4_address: 10.0.1.53
-
-  prometheus:
-    image: prom/prometheus
-    restart: always
-    depends_on:
-      - fnserver
-    ports:
-      - "9090:9090"
-    links:
-      - fnserver
-    # volumes:
-    #   - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    labels:
-      - "traefik.port=9090"
-      - "traefik.frontend.rule=Host:prometheus.bonde.devel"
-      - "traefik.enable=true"
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.54
-
-###########################
-########### DATA ##########
-###########################
-
-  metabase:
-    image: metabase/metabase:latest
-    links:
-        - pgpool
-    environment:
-        - MB_DB_TYPE=postgres
-        - MB_DB_DBNAME=metabase
-        - MB_DB_PORT=5432
-        - MB_DB_USER=monkey_user
-        - MB_DB_PASS=monkey_pass
-        - MB_DB_HOST=pgpool
-    labels:
-      - "traefik.port=3000"
-      - "traefik.frontend.rule=Host:metabase.bonde.devel"
-      - "traefik.enable=true"
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.55
-
-  redash:
-    image: redash/redash:latest
-    command: server
-    depends_on:
-      - pgpool
-      - redis
-      - redash-worker
-    links:
-      - redis
-      - pgpool
-    environment:
-      PYTHONUNBUFFERED: 0
-      REDASH_LOG_LEVEL: "INFO"
-      REDASH_REDIS_URL: "redis://redis:6379/0"
-      REDASH_DATABASE_URL: "postgresql://monkey_user:monkey_pass@pgpool:5432/redash"
-      REDASH_COOKIE_SECRET: bonde
-      REDASH_WEB_WORKERS: 4
-    restart: always
-    labels:
-      - "traefik.port=5000"
-      - "traefik.frontend.rule=Host:redash.bonde.devel"
-      - "traefik.enable=true"
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.56
-
-  redash-worker:
-    image: redash/redash:latest
-    command: scheduler
-    depends_on:
-      - pgpool
-      - redis
-    links:
-      - redis
-      - pgpool
-    environment:
-      PYTHONUNBUFFERED: 0
-      REDASH_LOG_LEVEL: "INFO"
-      REDASH_REDIS_URL: "redis://redis:6379/0"
-      REDASH_DATABASE_URL: "postgresql://monkey_user:monkey_pass@pgpool:5432/redash"
-      QUEUES: "queries,scheduled_queries,celery"
-      WORKERS_COUNT: 2
-    restart: always
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.57
-
-###########################
-########### CI/CD ##########
-###########################
-
-  concourse-web:
-    image: concourse/concourse
-    command: web
-    links: [pgpool]
-    depends_on: [pgpool]
-    ports: ["8080"]
-    volumes: ["./concourse/keys/web:/concourse-keys"]
-    environment:
-    - CONCOURSE_POSTGRES_HOST=pgpool
-    - CONCOURSE_POSTGRES_USER=monkey_user
-    - CONCOURSE_POSTGRES_PASSWORD=monkey_pass
-    - CONCOURSE_POSTGRES_DATABASE=concourse
-    - CONCOURSE_EXTERNAL_URL=https://concourse.bonde.devel
-    - CONCOURSE_BASIC_AUTH_USERNAME=admin
-    - CONCOURSE_BASIC_AUTH_PASSWORD=admin
-    # - CONCOURSE_GITHUB_AUTH_CLIENT_ID=$CLIENT_ID
-    # - CONCOURSE_GITHUB_AUTH_CLIENT_SECRET=$CLIENT_SECRET
-    # - CONCOURSE_GITHUB_AUTH_ORGANIZATION=nossas
-    labels:
-      - "traefik.port=8080"
-      - "traefik.frontend.rule=Host:concourse.bonde.devel"
-      - "traefik.enable=true"
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.58
-
-  concourse-worker:
-    image: concourse/concourse
-    command: worker
-    privileged: true
-    links: [concourse-web]
-    depends_on: [concourse-web]
-    volumes: ["./concourse/keys/worker:/concourse-keys"]
-    environment:
-    - CONCOURSE_TSA_HOST=concourse-web:2222
-    - CONCOURSE_GARDEN_NETWORK
-    networks:
-      cluster:
-        ipv4_address: 10.0.1.59
+      bonde:
+        aliases:
+          - api-v2

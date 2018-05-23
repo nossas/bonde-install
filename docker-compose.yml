@@ -1,0 +1,243 @@
+version: '2'
+networks:
+  bonde:
+volumes:
+  redis_data:
+    driver: local
+  s3_data:
+    driver: local
+  consul_data2:
+    driver: local
+  pgmaster_data:
+    driver: local
+services:
+  s3:
+    extends:
+      file: docker-compose.common.yml
+      service: s3
+    networks:
+      - bonde
+  smtp:
+    extends:
+      file: docker-compose.common.yml
+      service: smtp
+    networks:
+      - bonde
+  consul:
+    extends:
+      file: docker-compose.common.yml
+      service: consul
+    networks:
+      bonde:
+        aliases:
+          - consul
+  storeconfig:
+    extends:
+      file: docker-compose.common.yml
+      service: storeconfig
+    networks:
+      - bonde
+  traefik:
+    extends:
+      file: docker-compose.common.yml
+      service: traefik
+    networks:
+      - bonde
+  pgmaster:
+    extends:
+      file: docker-compose.common.yml
+      service: pgmaster
+    networks:
+      - bonde
+  pgpool:
+    extends:
+      file: docker-compose.common.yml
+      service: pgpool
+    depends_on:
+      - pgmaster
+    networks:
+      bonde:
+        aliases:
+          - pgpool
+  assets-images:
+    extends:
+      file: docker-compose.common.yml
+      service: assets-images
+    networks:
+      - bonde
+  public:
+    image: nossas/bonde-public:develop
+    environment:
+      API_URL: http://api-v1.bonde.devel
+      APP_DOMAIN: bonde.devel
+      AWS_ACCESS_KEY_ID: admin
+      AWS_BUCKET: bonde
+      AWS_SECRET_ACCESS_KEY: password
+      GOOGLE_FONTS_API_KEY: xxxxxx
+      GRAPHQL_URL: http://api-v2.bonde.devel/graphql
+      NEW_RELIC_HOME: ./src
+      NEW_RELIC_LICENSE_KEY: xxxxxx
+      NODE_ENV: PRODUCTION
+      NODE_MODULES_CACHE: 'false'
+      NPM_CONFIG_PRODUCTION: 'false'
+      PAGARME_KEY: xxxxxxxx
+      PORT: '5001'
+      REDIS_URL: redis://redis:6379
+      SENTRY_DSN: https://xxxxxx:xxxxx@sentry.io/121380
+      VALIDATE_REGION: sa-east-1
+      WEB_CONCURRENCY: '1'
+      WEB_MEMORY: '256'
+    links:
+    - api-v1:api-v1.bonde.devel
+    - api-v2:api-v2.bonde.devel
+    command:
+    - yarn
+    - start
+    labels:
+      traefik.frontend.rule: HostRegexp:{catchall:.*}
+      traefik.enable: 'true'
+      traefik.port: '5001'
+      io.rancher.container.pull_image: always
+      traefik.frontend.priority: '1'
+    networks:
+      - bonde
+  admin-canary:
+    image: nossas/bonde-admin-canary:develop
+    ports:
+    - 80
+    environment:
+      REACT_APP_GRAPH_URL: http://api-v2.bonde.devel/graphql
+    labels:
+      traefik.frontend.rule: Host:admin-canary.bonde.devel
+      traefik.enable: 'true'
+      traefik.alias: admin-canary
+      traefik.port: '80'
+      io.rancher.container.pull_image: always
+    links:
+    - api-v1:api-v1.bonde.devel
+    - api-v2:api-v2.bonde.devel
+    networks:
+      - bonde
+  admin:
+    image: nossas/bonde-admin:develop
+    environment:
+      API_URL: http://api-v1.bonde.devel
+      APP_DOMAIN: bonde.devel
+      AWS_ACCESS_KEY_ID: admin
+      AWS_BUCKET: bonde
+      AWS_SECRET_ACCESS_KEY: password
+      GOOGLE_FONTS_API_KEY: xxxxxx
+      GRAPHQL_URL: http://api-v2.bonde.devel/graphql
+      NEW_RELIC_HOME: ./src
+      NEW_RELIC_LICENSE_KEY: xxxx
+      NODE_ENV: production
+      NODE_MODULES_CACHE: 'false'
+      NPM_CONFIG_PRODUCTION: 'false'
+      PAGARME_KEY: xxxxxxx
+      PORT: '5001'
+      SENTRY_DSN: https://xxxxx:xxxxx@sentry.io/121380
+      VALIDATE_REGION: sa-east-1
+      WEB_CONCURRENCY: '1'
+      WEB_MEMORY: '256'
+    ports:
+    - 5001
+    links:
+    - api-v1:api-v1.bonde.devel
+    - api-v2:api-v2.bonde.devel
+    command:
+    - yarn
+    - start
+    labels:
+      traefik.frontend.rule: Host:app.bonde.devel
+      traefik.enable: 'true'
+      traefik.alias: app
+      traefik.port: '5001'
+      io.rancher.container.pull_image: always
+    networks:
+      - bonde
+  api-v1:
+    image: nossas/bonde-server:feature-implements-tags-to-v2
+    environment:
+      AWS_ACCESS_KEY_ID: admin
+      AWS_BUCKET: bonde
+      AWS_ID: admin
+      AWS_ROUTE53_REGION: sa-east-1
+      AWS_ROUTE53_SYNC: force
+      AWS_ROUTE_IP: 127.0.0.1
+      AWS_SECRET: password
+      AWS_SECRET_ACCESS_KEY: password
+      CLIENT_APP_NAME: hub-client
+      CLIENT_HOST: bonde.devel
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/bonde
+      JWT_SECRET: segredo123
+      JWT_TYPE: postgraphql.jwt_token
+      MAILCHIMP_API_KEY: 111111-us6
+      MAILCHIMP_GROUP_ID: '11'
+      MAILCHIMP_LIST_ID: 111111ac
+      NEW_RELIC_LICENSE_KEY: 1111111
+      NEW_RELIC_LOG: stdout
+      NO_VHOST: '0'
+      ORG_RECIPIENT_ID: xxxxxx
+      PAGARME_API_KEY: xxxxx
+      PORT: '3000'
+      RAILS_ENV: staging
+      RAILS_SERVE_STATIC_FILES: enabled
+      REDIS_URL: redis://redis:6379
+      SECRET_KEY_BASE: xxxxxx
+      SENTRY_DSN: https://xxxxx:xxxxx@sentry.io/121379
+      SMTP_HOST: smtp
+      SMTP_PASSWORD: xxxxxxxx
+      SMTP_PORT: '1025'
+      SMTP_USERNAME: xxxxxx
+      WEB_CONCURRENCY: '1'
+      WEB_MEMORY: '256'
+    # external_links:
+    # - common/pgpool:pgpool
+    # - common/redis:redis
+    # - common/smtp:smtp
+    links:
+    - pgpool
+    command:
+    - bundle
+    - exec
+    - puma
+    - -C
+    - config/puma.rb
+    labels:
+      traefik.frontend.rule: Host:api-v1.bonde.devel
+      traefik.port: '3000'
+      traefik.enable: 'true'
+      traefik.alias: api-v1
+    networks:
+      bonde:
+        aliases:
+          - api-v1
+  api-v2:
+    image: nossas/bonde-graphql:develop
+    environment:
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/bonde
+      JWT_SECRET: segredo123
+      JWT_TYPE: postgraphql.jwt_token
+      NEW_RELIC_ENABLED: 'false'
+      PG_DEFAULT_ROLE: anonymous
+      PORT: '3002'
+      SCHEMA_NAME: postgraphql
+      SENTRY_DSN: https://xxxxx:xxxxx@sentry.io/142717
+      WEB_CONCURRENCY: '1'
+      WEB_MEMORY: '256'
+    links:
+    - pgpool
+    command:
+    - npm
+    - run
+    - dev
+    labels:
+      traefik.frontend.rule: Host:api-v2.bonde.devel
+      traefik.enable: 'true'
+      traefik.alias: api-v2
+      traefik.port: '3002'
+      traefik.domain: staging.bonde.org
+    networks:
+      bonde:
+        aliases:
+          - api-v2

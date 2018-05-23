@@ -1,0 +1,110 @@
+version: 2
+networks:
+  bonde:
+volumes:
+  es_data:
+    driver: local
+services:
+  elasticsearch:
+    image: nossas/elasticsearch
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    #   - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    ports:
+      - 9200
+      - 9300
+    environment:
+      ES_JAVA_OPTS: "-Xmx512m -Xms512m"
+    networks:
+      - bonde
+  logstash:
+    image: nossas/logstash
+    # volumes:
+    #   - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+    #   - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - 5000
+    environment:
+      LS_JAVA_OPTS: "-Xmx512m -Xms512m"
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+    networks:
+      - bonde
+  kibana:
+    image: nossas/kibana
+    # volumes:
+    #   - ./kibana/config/:/usr/share/kibana/config:ro
+    ports:
+      - 5601
+    labels:
+      - "traefik.port=5601"
+      - "traefik.frontend.rule=Host:kibana.staging.bonde.org"
+      - "traefik.enable=true"
+      - "traefik.acme=true"
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+    networks:
+      - bonde
+  logspout:
+    image: nossas/logspout
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      ROUTE_URIS: logstash://logstash:5000
+      LOGSTASH_TAGS: docker-elk
+    links:
+      - logstash
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+      - logstash
+    restart: on-failure
+    networks:
+      - bonde
+  # scope:
+  #   image: weaveworks/scope:1.8.0
+  #   network_mode: "host"
+  #   pid: "host"
+  #   privileged: true
+  #   labels:
+  #     - "works.weave.role=system"
+  #   volumes:
+  #     - "/var/run/docker.sock:/var/run/docker.sock:rw"
+  #   command:
+  #     - "--probe.docker=true"
+    # networks:
+    #   - bonde
+  grafana:
+    image: grafana/grafana
+    restart: always
+    ports:
+      - 3000
+    links:
+      - prometheus
+    depends_on:
+      - prometheus
+    labels:
+      - "traefik.port=3000"
+      - "traefik.frontend.rule=Host:grafana.staging.bonde.org"
+      - "traefik.enable=true"
+      - "traefik.acme=true"
+    networks:
+      - bonde
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    ports:
+      - 9090
+    # volumes:
+    #   - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    labels:
+      - "traefik.port=9090"
+      - "traefik.frontend.rule=Host:prometheus.staging.bonde.org"
+      - "traefik.enable=true"
+      - "traefik.acme=true"
+    networks:
+      - bonde

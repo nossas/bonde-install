@@ -1,0 +1,21 @@
+logLevel = "DEBUG"
+defaultEntryPoints = ["http"]
+sendAnonymousUsage = true
+
+[entryPoints]
+[entryPoints.http]
+address = ":80"
+
+[api]
+[ping]
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "bonde.devel"
+watch = true
+exposedbydefault = false
+
+[consul]
+endpoint = "consul:8500"
+watch = true
+prefix = "traefik"

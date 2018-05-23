@@ -1,0 +1,8 @@
+node_modules
+.DS_Store
+*debug.log
+.env
+.vagrant
+db-dumps
+concourse/keys/*
+!concourse/keys/.gitignore

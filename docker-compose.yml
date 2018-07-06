@@ -2,8 +2,6 @@ version: '2'
 networks:
   bonde:
 volumes:
-  redis_data:
-    driver: local
   s3_data:
     driver: local
   consul_data2:
@@ -68,13 +66,13 @@ services:
   public:
     image: nossas/bonde-public:develop
     environment:
-      API_URL: http://api-v1.bonde.devel
+      API_URL: http://api-v1:3000
       APP_DOMAIN: bonde.devel
       AWS_ACCESS_KEY_ID: admin
       AWS_BUCKET: bonde
       AWS_SECRET_ACCESS_KEY: password
       GOOGLE_FONTS_API_KEY: xxxxxx
-      GRAPHQL_URL: http://api-v2.bonde.devel/graphql
+      GRAPHQL_URL: http://api-v2:3002
       NEW_RELIC_HOME: ./src
       NEW_RELIC_LICENSE_KEY: xxxxxx
       NODE_ENV: PRODUCTION
@@ -88,8 +86,8 @@ services:
       WEB_CONCURRENCY: '1'
       WEB_MEMORY: '256'
     links:
-    - api-v1:api-v1.bonde.devel
-    - api-v2:api-v2.bonde.devel
+    - api-v1
+    - api-v2
     command:
     - yarn
     - start

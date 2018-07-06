@@ -41,8 +41,8 @@ services:
       WEB_CONCURRENCY: '1'
       WEB_MEMORY: '256'
     external_links:
-    - common/pgpool:pgpool
-    - common/redis:redis
+    - pgpool
+    - redis
     command:
     - bundle
     - exec
@@ -68,6 +68,11 @@ services:
       service: migrations
     command: ["bundle", "exec", "sidekiq", "-q", "default", "-q", "mailers", "-c", "5"]
 
+  templates-email:
+    extends:
+      service: migrations
+    command: ["bundle", "exec", "rake", "notifications:update_templates"]
+
   bot-worker:
     image: nossas/bonde-bot:feature-facebook-bot-campaigns
     environment:
@@ -80,9 +85,9 @@ services:
       SPEECH_VERSION: v1
       WIT_SERVER_ACCESS_TOKEN: xxxxxxxxx
     external_links:
-    - common/redis:redis-local
-    - webservers/api-v2:api-v2
-    - webservers/api-v1:api-v1
+    - redis
+    - api-v2
+    - api-v1
     command:
     - npm
     - run

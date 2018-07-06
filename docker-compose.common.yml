@@ -105,7 +105,7 @@ services:
       REPLICATION_PASSWORD: replication_pass
       REPLICATION_PRIMARY_HOST: pgmaster
       REPLICATION_USER: replication_user
-      SSH_ENABLE: '1'
+      SSH_ENABLE: '0'
     volumes:
     - pgmaster_data:/var/lib/postgresql/data
     ports:
@@ -122,7 +122,7 @@ services:
       PCP_PASSWORD: pcp_pass
       PCP_USER: pcp_user
       REQUIRE_MIN_BACKENDS: '1'
-      SSH_ENABLE: '1'
+      SSH_ENABLE: '0'
       WAIT_BACKEND_TIMEOUT: '60'
     # depends_on:
     # - pgmaster:pgmaster

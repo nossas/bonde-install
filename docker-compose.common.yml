@@ -128,16 +128,6 @@ services:
     # - pgmaster:pgmaster
     ports:
     - 5432:5432/tcp
-  redis:
-    image: redis
-    volumes:
-    - redis_data:/var/lib/redis
-    ports:
-    - 6379:6379/tcp
-    command:
-    - redis-server
-    - --appendonly
-    - 'yes'
   assets-images:
     image: h2non/imaginary
     environment:

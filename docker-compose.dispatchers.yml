@@ -1,6 +1,12 @@
 version: '2'
 networks:
   bonde:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet:  10.0.0.0/8
+
 volumes:
   redis_data:
     driver: local
@@ -15,6 +21,8 @@ services:
     - redis_data:/var/lib/redis
     ports:
     - 6379:6379/tcp
+    networks:
+      bonde:
     command:
     - redis-server
     - --appendonly
@@ -39,13 +47,14 @@ services:
     depends_on:
     - redis
     networks:
-      - bonde
+      bonde:
   fnserver:
     image: fnproject/fnserver
     environment:
       FN_DB_URL: postgres://monkey_user:monkey_pass@pgpool:5432/fnserver?sslmode=disable
       FN_LOGSTORE_URL: s3://admin:password@s3:9000/us-east-1/fnlogs
       FN_MQ_URL: redis://redis:6379/
+      FN_DOCKER_NETWORKS: "bonde"
     external_links:
     - pgpool
     - s3
@@ -74,7 +83,7 @@ services:
     ports:
     - 4000:4000/tcp
     networks:
-      - bonde
+      bonde:
     labels:
       traefik.frontend.rule: Host:fn-ui.bonde.devel
       traefik.port: '4000'
@@ -99,4 +108,4 @@ services:
     depends_on:
     - redis
     networks:
-      - bonde
+      bonde:

@@ -1,6 +1,11 @@
 version: '2'
 networks:
   bonde:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet:  10.0.0.0/8
 services:
   donations:
     image: nossas/bonde-server:develop
@@ -36,8 +41,8 @@ services:
       WEB_CONCURRENCY: '1'
       WEB_MEMORY: '256'
     external_links:
-    - common/pgpool:pgpool
-    - common/redis:redis
+    - pgpool
+    - redis
     command:
     - bundle
     - exec
@@ -72,12 +77,12 @@ services:
     command: ["bundle", "exec", "rake", "recipients:sync_balance_operations"]
 
   payments:
-    image: nossas/bonde-payments:feature-update-ci
+    image: nossas/bonde-payments:develop
     environment:
       AMOUNT: '100'
       API_HOST: bonde.devel
       CLIENT_APP_NAME: hub-client
-      DATABASE_URL: postgres://postgres_user:postgres_password@db-local:5432/bonde
+      DATABASE_URL: postgres://postgres_user:postgres_password@pgpool:5432/bonde
       JWT_SECRET: segredo123
       JWT_TYPE: postgraphql.jwt_token
       NEW_RELIC_LICENSE_KEY: xxxxxxxxxx
@@ -94,8 +99,8 @@ services:
       WEB_MEMORY: '256'
     stdin_open: true
     external_links:
-    - common/pgpool:db-local
-    - common/redis:redis-local
+    - pgpool
+    - redis
     tty: true
     command:
     - ruby

@@ -1,6 +1,12 @@
 version: 2
 networks:
-  bonde:
+    bonde:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet:  10.0.0.0/8
+
 volumes:
   es_data:
     driver: local

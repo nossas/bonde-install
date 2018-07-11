@@ -1,6 +1,11 @@
 version: '2'
 networks:
   bonde:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet:  10.0.0.0/8
 
 services:
 
@@ -41,8 +46,8 @@ services:
       WEB_CONCURRENCY: '1'
       WEB_MEMORY: '256'
     external_links:
-    - common/pgpool:pgpool
-    - common/redis:redis
+    - pgpool
+    - redis
     command:
     - bundle
     - exec
@@ -68,21 +73,26 @@ services:
       service: migrations
     command: ["bundle", "exec", "sidekiq", "-q", "default", "-q", "mailers", "-c", "5"]
 
+  templates-email:
+    extends:
+      service: migrations
+    command: ["bundle", "exec", "rake", "notifications:update_templates"]
+
   bot-worker:
-    image: nossas/bonde-bot:feature-facebook-bot-campaigns
+    image: nossas/bonde-bot:develop
     environment:
       API_URL: http://api-v1:3000
       APP_DOMAIN: http://beta.bonde.devel
-      GRAPHQL_URL: http://api-v2:3002
+      GRAPHQL_URL: http://api-v2:3002/graphql
       JWT_TOKEN: xxxxxxxxx
       PORT: '5000'
-      REDIS_URL: redis://redis-local:6379
+      REDIS_URL: redis://redis:6379
       SPEECH_VERSION: v1
       WIT_SERVER_ACCESS_TOKEN: xxxxxxxxx
     external_links:
-    - common/redis:redis-local
-    - webservers/api-v2:api-v2
-    - webservers/api-v1:api-v1
+    - redis
+    - api-v2
+    - api-v1
     command:
     - npm
     - run

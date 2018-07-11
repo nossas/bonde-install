@@ -1,14 +1,34 @@
 version: '2'
 networks:
   bonde:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet:  10.0.0.0/8
+
 volumes:
+  redis_data:
+    driver: local
   es_data:
     driver: local
   fn_data:
     driver: local
 services:
+  redis:
+    image: redis:3
+    volumes:
+    - redis_data:/var/lib/redis
+    ports:
+    - 6379:6379/tcp
+    networks:
+      bonde:
+    command:
+    - redis-server
+    - --appendonly
+    - 'yes'
   dispatcher-notification:
-    image: nossas/fn-dispatcher
+    image: nossas/fn-dispatcher:develop
     environment:
       API_KEY: jwt_token_hs512
       DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/bonde
@@ -20,54 +40,56 @@ services:
       REDIS_URL: redis://redis:6379
       WORKERS: '5'
     external_links:
-    - common/pgpool:pgpool
-    - common/redis:redis
+    - pgpool
     links:
-    - fnserver:fnserver
+    - fnserver
+    - redis
+    depends_on:
+    - redis
     networks:
-      - bonde
+      bonde:
   fnserver:
     image: fnproject/fnserver
     environment:
       FN_DB_URL: postgres://monkey_user:monkey_pass@pgpool:5432/fnserver?sslmode=disable
       FN_LOGSTORE_URL: s3://admin:password@s3:9000/us-east-1/fnlogs
       FN_MQ_URL: redis://redis:6379/
+      FN_DOCKER_NETWORKS: "bonde"
     external_links:
-    - common/pgpool:pgpool
-    - common/s3:s3
-    - common/redis:redis
+    - pgpool
+    - s3
+    links:
+    - redis
     volumes:
     - fn_data:/app/data
     - /var/run/docker.sock:/var/run/docker.sock
+    privileged: true
     ports:
     - 54513:8080/tcp
     labels:
-      traefik.frontend.rule: Host:fn.staging.bonde.org
+      traefik.frontend.rule: Host:fn.bonde.devel
       traefik.port: '8080'
       traefik.enable: 'true'
-      traefik.domain: staging.bonde.org
-      traefik.acme: 'true'
     networks:
-      - bonde
+      bonde:
+        aliases:
+          - fnserver
   fnserver-ui:
     image: fnproject/ui
     environment:
       FN_API_URL: http://fnserver:8080
     links:
-    - fnserver:fnserver
-    - fnserver:fnserver
+    - fnserver
     ports:
     - 4000:4000/tcp
     networks:
-      - bonde
+      bonde:
     labels:
-      traefik.frontend.rule: Host:fn-ui.staging.bonde.org
+      traefik.frontend.rule: Host:fn-ui.bonde.devel
       traefik.port: '4000'
       traefik.enable: 'true'
-      traefik.domain: staging.bonde.org
-      traefik.acme: enable
   dispatcher-domain:
-    image: nossas/fn-dispatcher
+    image: nossas/fn-dispatcher:develop
     environment:
       API_KEY: jwt_token_hs512
       DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/bonde
@@ -79,10 +101,11 @@ services:
       REDIS_URL: redis://redis:6379
       WORKERS: '5'
     external_links:
-    - common/pgpool:pgpool
-    - common/redis:redis
+    - pgpool
     links:
-    - fnserver:fnserver
-    - fnserver:fnserver
+    - redis
+    - fnserver
+    depends_on:
+    - redis
     networks:
-      - bonde
+      bonde:

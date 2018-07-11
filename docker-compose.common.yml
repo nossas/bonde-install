@@ -63,8 +63,6 @@ services:
     command: storeconfig -c /data/traefik.toml --debug --consul --consul.endpoint=consul:8500
     volumes:
       - ./lb:/data
-    # depends_on:
-    #   - consul
   traefik:
     image: containous/traefik
     environment:
@@ -73,8 +71,6 @@ services:
       AWS_REGION: us-east-1
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    # depends_on:
-    # - consul:consul
     ports:
     - 80:80/tcp
     - 8080:8080/tcp
@@ -105,7 +101,7 @@ services:
       REPLICATION_PASSWORD: replication_pass
       REPLICATION_PRIMARY_HOST: pgmaster
       REPLICATION_USER: replication_user
-      SSH_ENABLE: '1'
+      SSH_ENABLE: '0'
     volumes:
     - pgmaster_data:/var/lib/postgresql/data
     ports:
@@ -122,22 +118,10 @@ services:
       PCP_PASSWORD: pcp_pass
       PCP_USER: pcp_user
       REQUIRE_MIN_BACKENDS: '1'
-      SSH_ENABLE: '1'
+      SSH_ENABLE: '0'
       WAIT_BACKEND_TIMEOUT: '60'
-    # depends_on:
-    # - pgmaster:pgmaster
     ports:
     - 5432:5432/tcp
-  redis:
-    image: redis
-    volumes:
-    - redis_data:/var/lib/redis
-    ports:
-    - 6379:6379/tcp
-    command:
-    - redis-server
-    - --appendonly
-    - 'yes'
   assets-images:
     image: h2non/imaginary
     environment:

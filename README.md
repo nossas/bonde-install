@@ -36,6 +36,8 @@ cd bonde-install
 make begin
 ```
 
+**Important**: In case of problems when running make begin run make clean and try again
+
 Add to ```/etc/hosts``` following lines:
 
 ```

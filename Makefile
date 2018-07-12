@@ -18,9 +18,9 @@ help:
 	@echo ""
 	@echo "See contents of Makefile for more targets."
 
-begin: migrate start rebuild
+begin: setup migrate seeds start
 
-migrate:
+setup:
 	@docker-compose up -d pgmaster pgpool
 	@sleep 5;
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database bonde"
@@ -28,8 +28,14 @@ migrate:
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database redash"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database metabase"
 	@docker-compose exec -T pgmaster gosu postgres psql -c "create database concourse"
-	@docker-compose -f docker-compose.workers.yml up -d migrations
+
+migrate:
+	@docker-compose -f docker-compose.workers.yml pull migrations
+	@docker-compose -f docker-compose.workers.yml up -d migrations templates-email
 	@sleep 20;
+
+seeds:
+	@docker-compose -f docker-compose.workers.yml up -d seeds
 
 start:
 	@docker-compose -f docker-compose.workers.yml up -d
@@ -87,4 +93,4 @@ start-monitor:
 tail:
 	@docker-compose logs -f
 
-.PHONY: start stop status restart clean migrate dispatchers serverless logs start-logger start-monitor tail
+.PHONY: start stop status restart clean setup migrate seeds dispatchers serverless logs start-logger start-monitor tail

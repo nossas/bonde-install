@@ -76,7 +76,7 @@ services:
   templates-email:
     extends:
       service: migrations
-    command: ["bundle", "exec", "rake", "notifications:update_templates"]
+    command: ["bundle", "exec", "rake", "notifications:all"]
 
   bot-worker:
     image: nossas/bonde-bot:develop

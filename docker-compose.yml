@@ -113,14 +113,17 @@ services:
   admin-canary:
     image: nossas/bonde-admin-canary:develop
     ports:
-    - 80
+    - 5000
     environment:
       REACT_APP_GRAPH_URL: http://api-v2.bonde.devel/graphql
+    command:
+      - yarn
+      - start
     labels:
       traefik.frontend.rule: Host:admin-canary.bonde.devel
       traefik.enable: 'true'
       traefik.alias: admin-canary
-      traefik.port: '80'
+      traefik.port: '5000'
       io.rancher.container.pull_image: always
     links:
     - api-v1:api-v1.bonde.devel

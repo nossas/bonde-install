@@ -116,6 +116,7 @@ services:
     - 5000
     environment:
       REACT_APP_GRAPH_URL: http://api-v2.bonde.devel/graphql
+      REACT_APP_DOMAIN: http://admin-canary.bonde.devel
     command:
       - yarn
       - start

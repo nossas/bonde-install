@@ -42,6 +42,11 @@ start:
 	@docker-compose up -d storeconfig admin public
 	@docker-compose restart traefik
 
+start-dev:
+	@docker-compose -f docker-compose.workers.yml up -d
+	@docker-compose up -d storeconfig cross-storage api-v1 api-v2
+	@docker-compose restart traefik
+
 stop:
 	@docker-compose stop
 	@docker-compose -f docker-compose.workers.yml stop

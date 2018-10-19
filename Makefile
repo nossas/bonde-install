@@ -39,7 +39,7 @@ seeds:
 
 start:
 	@docker-compose -f docker-compose.workers.yml up -d
-	@docker-compose up -d storeconfig admin public
+	@docker-compose up -d storeconfig admin public cross-storage
 	@docker-compose restart traefik
 
 start-dev:

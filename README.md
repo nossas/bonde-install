@@ -41,32 +41,12 @@ make begin
 Add to ```/etc/hosts``` following lines:
 
 ```
-# Bonde Web Servers
-127.0.0.1 bonde.devel
-127.0.0.1 app.bonde.devel
-127.0.0.1 admin-canary.bonde.devel
-127.0.0.1 2-save-the-whales.bonde.devel www.2-save-the-whales.bonde.devel
-127.0.0.1 3-vamos-limpar-o-tiete.bonde.devel www.3-vamos-limpar-o-tiete.bonde.devel
-127.0.0.1 1-vamos-limpar-o-tiete.bonde.devel www.1-vamos-limpar-o-tiete.bonde.devel
-127.0.0.1 teste.bonde.devel www.teste.bonde.devel
-127.0.0.1 api-v1.bonde.devel
-127.0.0.1 api-v2.bonde.devel
-
-# Bonde Dispatchers
-127.0.0.1 fn.bonde.devel
-127.0.0.1 fn-ui.bonde.devel
-
-# Bonde Commons
-127.0.0.1 consul.bonde.devel
-127.0.0.1 fake-smtp.bonde.devel
-127.0.0.1 traefik.bonde.devel
-127.0.0.1 fake-s3.bonde.devel
-
-# Bonde Log and Monitor
-127.0.0.1 grafana.bonde.devel
-127.0.0.1 prometheus.bonde.devel
-127.0.0.1 kibana.bonde.devel
-127.0.0.1 weave.bonde.devel
+10.0.0.11 bonde.devel app.bonde.devel admin-canary.bonde.devel
+10.0.0.11 2-save-the-whales.bonde.devel www.2-save-the-whales.bonde.devel 3-vamos-limpar-o-tiete.bonde.devel www.3-vamos-limpar-o-tiete.bonde.devel 1-vamos-limpar-o-tiete.bonde.devel www.1-vamos-limpar-o-tiete.bonde.devel teste.bonde.devel www.teste.bonde.devel
+10.0.0.11 api-v1.bonde.devel api-v2.bonde.devel
+10.0.0.11 consul.bonde.devel fake-smtp.bonde.devel traefik.bonde.devel fake-s3.bonde.devel
+10.0.0.13 postgres.bonde.devel
+10.0.0.14 redis.bonde.devel
 ```
 
 These are essentials URLs from BONDE and must be accessible to get local copy fully working:

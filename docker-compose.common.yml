@@ -1,5 +1,7 @@
 version: '2'
 volumes:
+  datascience:
+    driver: local
   redis_data:
     driver: local
   s3_data:
@@ -9,6 +11,18 @@ volumes:
   pgmaster_data:
     driver: local
 services:
+  redis:
+    image: redis:3
+    volumes:
+    - redis_data:/var/lib/redis
+    ports:
+    - 6379:6379/tcp
+    networks:
+      bonde:
+    command:
+    - redis-server
+    - --appendonly
+    - 'yes'
   s3:
     image: minio/minio
     environment:
@@ -142,3 +156,17 @@ services:
       traefik.alias: img
       traefik.port: '9009'
       io.rancher.container.pull_image: always
+ 
+
+
+  datascience:
+    build: datascience
+    image: nossas/bonde-datascience 
+    volumes:
+     - "datascience:/home/jovyan/work"
+    ports:
+     - "8888"
+    labels:
+      traefik.frontend.rule: Host:datascience.bonde.devel
+      traefik.enable: 'true'
+      traefik.port: '888'

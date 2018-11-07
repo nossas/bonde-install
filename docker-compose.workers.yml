@@ -22,7 +22,7 @@ services:
       AWS_SECRET_ACCESS_KEY: password
       CLIENT_APP_NAME: hub-client
       CLIENT_HOST: bonde.devel
-      DATABASE_URL: postgres://monkey_user:monkey_pass@pgpool:5432/bonde
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
       JWT_SECRET: segredo123
       JWT_TYPE: postgraphql.jwt_token
       MAILCHIMP_API_KEY: 1111111-us6
@@ -46,7 +46,7 @@ services:
       WEB_CONCURRENCY: '1'
       WEB_MEMORY: '256'
     external_links:
-    - pgpool
+    - pgmaster
     - redis
     command:
     - bundle

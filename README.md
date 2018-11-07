@@ -69,9 +69,15 @@ If you want to test mail and s3 integrations used by our modules, you should run
 * consul.bonde.devel
 * traefik.bonde.devel
 
-If you want to test modules develop with serverless architecture, you should run:
+### Dispatchers
 
-```make serverless```
+#### Notifications
+
+Check if templates and jwt_secret are added to database after migrations synced.
+
+To Run:
+
+```docker-compose up -d notifications```
 
 ## Check
 
@@ -116,3 +122,5 @@ Go to the local admin v1 url: http://app.bonde.devel.
 When login form finish to load, use "admin_foo@bar.com" as e-mail and "foobar!!" as password. After login, you will must create a community and mobilization.
 
 To more detailed documentation about technical decisions, or how to contribute, access http://docs.bonde.org or run ```make docs```.
+
+

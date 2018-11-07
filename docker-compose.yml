@@ -301,7 +301,7 @@ services:
 
   notifications:
     image: nossas/bonde-notifications:develop
-    build: ../notification-service/
+    # build: ../notification-service/
     environment:
       DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
       SMTP_ADDRESS: 'smtp'

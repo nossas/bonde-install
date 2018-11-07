@@ -18,7 +18,7 @@ help:
 	@echo ""
 	@echo "See contents of Makefile for more targets."
 
-begin: setup migrate seeds start
+begin: setup migrate seeds start-dev
 
 setup:
 	@docker-compose up -d pgmaster pgpool
@@ -35,12 +35,12 @@ seeds:
 
 start:
 	@docker-compose -f docker-compose.workers.yml up -d
-	@docker-compose up -d storeconfig admin public cross-storage
+	@docker-compose up -d storeconfig admin public cross-storage notifications
 	@docker-compose restart traefik
 
 start-dev:
 	@docker-compose -f docker-compose.workers.yml up -d
-	@docker-compose up -d storeconfig cross-storage api-v1 api-v2
+	@docker-compose up -d storeconfig cross-storage api-v1 api-v2 notifications
 	@docker-compose restart traefik
 
 stop:

@@ -1,12 +1,13 @@
 version: '2'
 networks:
   bonde:
-    driver: bridge
     ipam:
       driver: default
       config:
       - subnet:  10.0.0.0/8
 volumes:
+  redis_data:
+    driver: local
   s3_data:
     driver: local
   consul_data2:
@@ -54,6 +55,8 @@ services:
     extends:
       file: docker-compose.common.yml
       service: pgmaster
+    volumes:
+      - ./db-dumps/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       bonde:
         ipv4_address: 10.0.0.12
@@ -68,12 +71,38 @@ services:
         ipv4_address: 10.0.0.13
         aliases:
           - pgpool
+  redis:
+    extends:
+      file: docker-compose.common.yml
+      service: redis
+    networks:
+      bonde:
+        ipv4_address: 10.0.0.14
   assets-images:
     extends:
       file: docker-compose.common.yml
       service: assets-images
     networks:
       bonde:
+
+  bot:
+    image: nossas/bonde-bot:develop
+    environment:
+      API_URL: http://api-v1:3000
+      APP_DOMAIN: http://beta.bonde.devel
+      GRAPHQL_URL: http://api-v2:3002/graphql
+      JWT_TOKEN: xxxxxxxxx
+      PORT: '5000'
+      REDIS_URL: redis://redis:6379
+      SPEECH_VERSION: v1
+      WIT_SERVER_ACCESS_TOKEN: xxxxxxxxx
+    external_links:
+    - redis
+    - api-v2
+    - api-v1
+    networks:
+      - bonde
+
   public:
     image: nossas/bonde-public:develop
     environment:
@@ -133,6 +162,7 @@ services:
       bonde:
   admin:
     image: nossas/bonde-admin:develop
+    build: ../bonde-client/packages/bonde-admin
     environment:
       API_URL: http://api-v1.bonde.devel
       APP_DOMAIN: bonde.devel
@@ -208,8 +238,9 @@ services:
     # - common/pgpool:pgpool
     # - common/redis:redis
     # - common/smtp:smtp
-    links:
+    depends_on:
     - pgpool
+    - redis
     command:
     - bundle
     - exec
@@ -267,3 +298,29 @@ services:
       traefik.port: '80'
     networks:
       - bonde
+
+  notifications:
+    image: nossas/bonde-notifications:develop
+    # build: ../notification-service/
+    environment:
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
+      SMTP_ADDRESS: 'smtp'
+      SMTP_PORT: '1025'
+      SMTP_DOMAIN: 'bonde.devel'
+      SMTP_USER_NAME: ''
+      SMTP_PASSWORD: ''
+      DEFAULT_FROM: 'contato@bonde.devel'
+      DB_CHANNEL: notifications_channel
+      JWT_SECRET: 'segredo123'
+      REDIS_URL: redis://redis:6379
+      WORKERS: '5'
+    links:
+    - pgmaster
+    - smtp
+    - redis
+    depends_on:
+    - pgmaster
+    - smtp
+    - redis
+    networks:
+      bonde:

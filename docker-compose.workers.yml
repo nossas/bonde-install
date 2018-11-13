@@ -11,6 +11,7 @@ services:
 
   migrations:
     image: nossas/bonde-server:develop
+    # build: ./../bonde-server
     environment:
       AWS_ACCESS_KEY_ID: admin
       AWS_BUCKET: bonde
@@ -45,6 +46,8 @@ services:
       SENTRY_DSN: https://xxxxxx:xxxxxx@sentry.io/121379
       WEB_CONCURRENCY: '1'
       WEB_MEMORY: '256'
+    # volumes:
+    # - ./../bonde-server:/usr/app
     external_links:
     - pgmaster
     - redis

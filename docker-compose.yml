@@ -56,21 +56,10 @@ services:
       file: docker-compose.common.yml
       service: pgmaster
     volumes:
-      - ./db-dumps/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./tools/db-dumps/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       bonde:
         ipv4_address: 10.0.0.12
-  pgpool:
-    extends:
-      file: docker-compose.common.yml
-      service: pgpool
-    depends_on:
-      - pgmaster
-    networks:
-      bonde:
-        ipv4_address: 10.0.0.13
-        aliases:
-          - pgpool
   redis:
     extends:
       file: docker-compose.common.yml
@@ -239,7 +228,7 @@ services:
     # - common/redis:redis
     # - common/smtp:smtp
     depends_on:
-    - pgpool
+    - pgmaster
     - redis
     command:
     - bundle
@@ -270,7 +259,7 @@ services:
       WEB_CONCURRENCY: '1'
       WEB_MEMORY: '256'
     depends_on:
-    - pgpool
+    - pgmaster
     command:
     - npm
     - run
@@ -291,7 +280,7 @@ services:
       DATABASE_URL: postgres://monkey_user:monkey_pass@10.0.0.12:5432/bonde
       JWT_SECRET_KEY: segredo123
     depends_on:
-      - pgpool
+      - pgmaster
     labels:
       traefik.frontend.rule: Host:api-graphene.bonde.devel
       traefik.enable: 'true'

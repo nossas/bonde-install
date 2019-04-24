@@ -73,12 +73,12 @@ services:
       traefik.enable: 'true'
       traefik.alias: consul
   storeconfig:
-    image: containous/traefik
+    image: traefik:alpine
     command: storeconfig -c /data/traefik.toml --debug --consul --consul.endpoint=consul:8500
     volumes:
       - ./lb:/data
   traefik:
-    image: containous/traefik
+    image: traefik:alpine
     environment:
       AWS_ACCESS_KEY_ID: xxxxxxx
       AWS_SECRET_ACCESS_KEY: xxxxxx

@@ -71,44 +71,15 @@ services:
       traefik.port: '8080'
       traefik.enable: 'true'
   pgmaster:
-    image: postdock/postgres:latest-postgres96-repmgr32
+    image: postgres:9
     environment:
-      CLEAN_OVER_REWIND: '0'
-      CLUSTER_NAME: pg_cluster
-      CLUSTER_NODE_NETWORK_NAME: pgmaster
-      CONFIGS: listen_addresses:'*';max_replication_slots:5
-      CONFIGS_DELIMITER_SYMBOL: ;
-      NODE_ID: '1'
-      NODE_NAME: node1
-      NODE_PRIORITY: '100'
       POSTGRES_DB: monkey_db
       POSTGRES_PASSWORD: monkey_pass
       POSTGRES_USER: monkey_user
-      REPLICATION_DB: replication_db
-      REPLICATION_PASSWORD: replication_pass
-      REPLICATION_PRIMARY_HOST: pgmaster
-      REPLICATION_USER: replication_user
-      SSH_ENABLE: '0'
     volumes:
     - pgmaster_data:/var/lib/postgresql/data
     ports:
-    - 5444:5432/tcp
-  pgpool:
-    image: postdock/pgpool:latest-pgpool37-postgres96
-    environment:
-      BACKENDS: 0:pgmaster:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER
-      CHECK_PASSWORD: monkey_pass
-      CHECK_PGCONNECT_TIMEOUT: '3'
-      CHECK_USER: monkey_user
-      CONFIGS: num_init_children:250,max_pool:4
-      DB_USERS: monkey_user:monkey_pass
-      PCP_PASSWORD: pcp_pass
-      PCP_USER: pcp_user
-      REQUIRE_MIN_BACKENDS: '1'
-      SSH_ENABLE: '0'
-      WAIT_BACKEND_TIMEOUT: '60'
-    ports:
-    - 5432:5432/tcp
+    - 5432/tcp
   assets-images:
     image: h2non/imaginary
     environment:
@@ -129,12 +100,12 @@ services:
       traefik.alias: img
       traefik.port: '9009'
       io.rancher.container.pull_image: always
- 
+
 
 
   datascience:
     build: datascience
-    image: nossas/bonde-datascience 
+    image: nossas/bonde-datascience
     volumes:
      - "datascience:/home/jovyan/work"
     ports:

@@ -22,10 +22,10 @@ domain = "bonde.devel"
 watch = true
 exposedbydefault = false
 
-[consul]
-endpoint = "consul:8500"
-watch = true
-prefix = "traefik"
+#[consul]
+#endpoint = "consul:8500"
+#watch = true
+#prefix = "traefik"
 
 # https://docs.traefik.io/user-guide/docker-and-lets-encrypt/
 # [acme]

@@ -10,8 +10,6 @@ volumes:
     driver: local
   s3_data:
     driver: local
-  consul_data2:
-    driver: local
   pgmaster_data:
     driver: local
 services:
@@ -27,27 +25,10 @@ services:
       service: smtp
     networks:
       bonde:
-  consul:
-    extends:
-      file: docker-compose.common.yml
-      service: consul
-    networks:
-      bonde:
-        ipv4_address: 10.0.0.10
-  storeconfig:
-    extends:
-      file: docker-compose.common.yml
-      service: storeconfig
-    depends_on:
-      - traefik
-    networks:
-      bonde:
   traefik:
     extends:
       file: docker-compose.common.yml
       service: traefik
-    depends_on:
-      - consul
     networks:
       bonde:
         ipv4_address: 10.0.0.11

@@ -6,8 +6,6 @@ volumes:
     driver: local
   s3_data:
     driver: local
-  consul_data2:
-    driver: local
   pgmaster_data:
     driver: local
 services:
@@ -52,46 +50,21 @@ services:
       traefik.port: '8025'
       traefik.enable: 'true'
       traefik.alias: fake-smtp
-  consul:
-    image: progrium/consul
-    volumes:
-    - consul_data2:/consul/data
-    ports:
-    - 8400:8400/tcp
-    - 8500:8500/tcp
-    - 8600:53/udp
-    command:
-    - -server
-    - -bootstrap
-    - -log-level
-    - info
-    - -ui-dir
-    - /ui
-    labels:
-      traefik.frontend.rule: Host:consul.bonde.devel
-      traefik.port: '8500'
-      traefik.enable: 'true'
-      traefik.alias: consul
-  storeconfig:
-    image: containous/traefik
-    command: storeconfig -c /data/traefik.toml --debug --consul --consul.endpoint=consul:8500
-    volumes:
-      - ./lb:/data
   traefik:
-    image: containous/traefik
+    image: traefik:alpine
     environment:
       AWS_ACCESS_KEY_ID: xxxxxxx
       AWS_SECRET_ACCESS_KEY: xxxxxx
       AWS_REGION: us-east-1
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./lb/traefik.toml:/traefik.toml"
     ports:
     - 80:80/tcp
     - 8080:8080/tcp
-    - 443/tcp
+    - 443:443/tcp
     command:
-    - --consul
-    - --consul.endpoint=consul:8500
+    - --configfile=/traefik.toml
     labels:
       traefik.frontend.rule: Host:traefik.bonde.devel
       traefik.alias: traefik

@@ -32,7 +32,14 @@ seeds:
 	@docker-compose -f docker-compose.workers.yml up -d seeds
 
 start:
-	@docker-compose up -d storeconfig cross-storage api-v1 api-v2 notifications
+	@docker-compose -f docker-compose.workers.yml up -d
+	@docker-compose up -d storeconfig admin public cross-storage notifications
+	@docker-compose restart traefik
+
+start-dev:
+	@docker-compose up -d storeconfig traefik
+	@docker-compose -f docker-compose.workers.yml up -d
+	@docker-compose up -d cross-storage api-v1 api-v2 notifications
 	@docker-compose restart traefik
 
 stop:

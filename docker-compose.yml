@@ -254,7 +254,7 @@ services:
       bonde:
         aliases:
           - api-v2
-  api-graphene:
+  api-v3:
     image: nossas/bonde-graphene
     environment:
       DATABASE_URL: postgres://monkey_user:monkey_pass@10.0.0.12:5432/bonde
@@ -262,14 +262,14 @@ services:
     depends_on:
       - pgmaster
     labels:
-      traefik.frontend.rule: Host:api-graphene.bonde.devel
+      traefik.frontend.rule: Host:api-v3.bonde.devel
       traefik.enable: 'true'
-      traefik.alias: api-graphene
+      traefik.alias: api-v3
       traefik.port: '3003'
     networks:
       bonde:
         aliases:
-          - api-graphene
+          - api-v3
 
   cross-storage:
     image: nossas/bonde-cross-storage

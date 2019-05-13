@@ -18,12 +18,13 @@ help:
 	@echo ""
 	@echo "See contents of Makefile for more targets."
 
-begin: setup migrate seeds start
+begin: setup migrate seeds start-dev
 
 setup:
 	@docker-compose up -d pgmaster
 
 migrate:
+	@docker-compose exec -T pgmaster psql -Umonkey_user monkey_db -c "create database bonde"
 	@docker-compose -f docker-compose.workers.yml pull migrations
 	@docker-compose -f docker-compose.workers.yml up -d migrations templates-email
 
@@ -33,13 +34,13 @@ seeds:
 
 start:
 	@docker-compose -f docker-compose.workers.yml up -d
-	@docker-compose up -d storeconfig admin public cross-storage notifications
+	@docker-compose up -d admin admin-canary public
 	@docker-compose restart traefik
 
 start-dev:
-	@docker-compose up -d storeconfig traefik
+	@docker-compose up -d traefik
 	@docker-compose -f docker-compose.workers.yml up -d
-	@docker-compose up -d cross-storage api-v1 api-v2 notifications
+	@docker-compose up -d cross-storage api-v1 api-v2 api-v3 notifications
 	@docker-compose restart traefik
 
 stop:

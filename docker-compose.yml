@@ -257,7 +257,7 @@ services:
   api-v3:
     image: nossas/bonde-graphene
     environment:
-      DATABASE_URL: postgres://monkey_user:monkey_pass@10.0.0.12:5432/bonde
+      DATABASE_URI: postgres://monkey_user:monkey_pass@10.0.0.12:5432/bonde
       JWT_SECRET_KEY: segredo123
     depends_on:
       - pgmaster
@@ -266,6 +266,8 @@ services:
       traefik.enable: 'true'
       traefik.alias: api-v3
       traefik.port: '3003'
+    ports:
+      - 3003:3003/tcp
     networks:
       bonde:
         aliases:

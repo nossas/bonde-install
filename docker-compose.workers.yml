@@ -1,11 +1,11 @@
 version: '2'
-networks:
-  bonde:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-      - subnet:  10.0.0.1/8
+# networks:
+#   bonde:
+#     driver: bridge
+#     ipam:
+#       driver: default
+#       config:
+#       - subnet:  10.0.0.1/8
 
 services:
 
@@ -58,8 +58,8 @@ services:
     - db:migrate
     labels:
       io.rancher.container.start_once: 'true'
-    networks:
-      bonde:
+    # networks:
+    #   bonde:
 
   seeds:
     extends:
@@ -102,5 +102,5 @@ services:
     - start:worker
     labels:
       io.rancher.container.start_once: 'true'
-    networks:
-      bonde:
+    # networks:
+    #   bonde:

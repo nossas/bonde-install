@@ -250,6 +250,8 @@ services:
       traefik.enable: 'true'
       traefik.alias: api-v2
       traefik.port: '3002'
+    ports:
+      - 3002:3002/tcp
     networks:
       bonde:
         aliases:

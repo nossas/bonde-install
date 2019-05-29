@@ -1,11 +1,4 @@
 version: '2'
-networks:
-  bonde:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-      - subnet:  10.0.0.0/8
 services:
   donations:
     image: nossas/bonde-server:develop
@@ -53,8 +46,6 @@ services:
       io.rancher.container.pull_image: always
       cron.restart_timeout: '86400'
       cron.schedule: 0 0 0 * * *
-    networks:
-      - bonde
 
   donations-recovery-from-metadata:
     extends:
@@ -115,8 +106,6 @@ services:
       io.rancher.container.pull_image: always
       cron.restart_timeout: '86400'
       cron.schedule: 0 0 0 * * *
-    networks:
-      - bonde
 
   payments-waiting-funds:
     extends:

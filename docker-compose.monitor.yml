@@ -1,11 +1,4 @@
 version: 2
-networks:
-    bonde:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-      - subnet:  10.0.0.0/8
 
 volumes:
   es_data:
@@ -21,8 +14,6 @@ services:
       - 9300
     environment:
       ES_JAVA_OPTS: "-Xmx512m -Xms512m"
-    networks:
-      - bonde
   logstash:
     image: nossas/logstash
     # volumes:
@@ -36,8 +27,6 @@ services:
       - elasticsearch
     depends_on:
       - elasticsearch
-    networks:
-      - bonde
   kibana:
     image: nossas/kibana
     # volumes:
@@ -53,8 +42,6 @@ services:
       - elasticsearch
     depends_on:
       - elasticsearch
-    networks:
-      - bonde
   logspout:
     image: nossas/logspout
     volumes:
@@ -69,8 +56,6 @@ services:
       - elasticsearch
       - logstash
     restart: on-failure
-    networks:
-      - bonde
   # scope:
   #   image: weaveworks/scope:1.8.0
   #   network_mode: "host"
@@ -98,8 +83,6 @@ services:
       - "traefik.frontend.rule=Host:grafana.staging.bonde.org"
       - "traefik.enable=true"
       - "traefik.acme=true"
-    networks:
-      - bonde
   prometheus:
     image: prom/prometheus
     restart: always
@@ -112,5 +95,3 @@ services:
       - "traefik.frontend.rule=Host:prometheus.staging.bonde.org"
       - "traefik.enable=true"
       - "traefik.acme=true"
-    networks:
-      - bonde

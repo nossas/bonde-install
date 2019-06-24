@@ -23,8 +23,13 @@ services:
     extends:
       file: docker-compose.common.yml
       service: pgmaster
-    volumes:
-      - ./tools/db-dumps/init.sql:/docker-entrypoint-initdb.d/init.sql
+    labels:
+      traefik.backend.rule: Host:db.bonde.devel
+      traefik.enable: 'true'
+      traefik.alias: db
+      traefik.port: '5432'
+    ports:
+      - 5432:5432/tcp
   redis:
     extends:
       file: docker-compose.common.yml

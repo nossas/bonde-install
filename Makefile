@@ -40,7 +40,7 @@ start:
 start-dev:
 	@docker-compose up -d traefik
 	@docker-compose -f docker-compose.workers.yml up -d
-	@docker-compose up -d cross-storage api-v1 api-v2 api-v3 notifications
+	@docker-compose up -d cross-storage api-v1 api-v2 hasura notifications
 	@docker-compose restart traefik
 
 stop:
@@ -63,7 +63,7 @@ frontend-rebuild:
 	@docker-compose exec -T public npm run build
 
 extras:
-	@docker-compose up -d s3 smtp
+	@docker-compose up -d s3 smtp pgadmin4
 
 logs:
 	@docker-compose -f docker-compose.workers.yml -f docker-compose.yml logs -f

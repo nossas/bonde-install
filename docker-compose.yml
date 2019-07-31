@@ -270,3 +270,31 @@ services:
     - pgmaster
     - smtp
     - redis
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    environment: 
+      PGADMIN_DEFAULT_EMAIL: admin_foo@bar.com
+      PGADMIN_DEFAULT_PASSWORD: foobar!!
+    depends_on:
+      - pgmaster
+    ports: 
+      - 5433:80/tcp
+
+  hasura:
+    image: hasura/graphql-engine:v1.0.0-beta.3
+    ports:
+    - "5007:8080"
+    depends_on:
+    - pgmaster
+    - api-v2
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+    labels:
+      traefik.frontend.rule: Host:hasura.bonde.devel
+      traefik.enable: 'true'
+      traefik.alias: hasura
+      traefik.port: '8080'
+

@@ -69,7 +69,7 @@ services:
       traefik.port: '8080'
       traefik.enable: 'true'
   pgmaster:
-    image: postgres:9
+    image: postgres:10
     environment:
       POSTGRES_DB: monkey_db
       POSTGRES_PASSWORD: monkey_pass

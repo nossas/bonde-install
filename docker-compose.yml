@@ -34,6 +34,16 @@ services:
       file: docker-compose.common.yml
       service: assets-images
 
+  migrations:
+    extends:
+      file: docker-compose.workers.yml
+      service: migrations
+    depends_on:
+    - pgmaster
+    environment:
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster/bonde
+    volumes:
+    - ./../bonde-migrations/:/volumes
   bot:
     image: nossas/bonde-bot:develop
     environment:
@@ -179,9 +189,9 @@ services:
     # - common/pgpool:pgpool
     # - common/redis:redis
     # - common/smtp:smtp
-    depends_on:
-    - pgmaster
-    - redis
+    # depends_on:
+    # - pgmaster
+    # - redis
     command:
     - bundle
     - exec
@@ -273,13 +283,17 @@ services:
 
   pgadmin4:
     image: dpage/pgadmin4
-    environment: 
+    environment:
       PGADMIN_DEFAULT_EMAIL: admin_foo@bar.com
       PGADMIN_DEFAULT_PASSWORD: foobar!!
     depends_on:
       - pgmaster
-    ports: 
+    ports:
       - 5433:80/tcp
+    labels:
+      traefik.frontend.rule: Host:pgadmin.bonde.devel
+      traefik.enable: 'true'
+      traefik.port: '80'
 
   hasura:
     image: hasura/graphql-engine:v1.0.0-beta.3
@@ -298,3 +312,22 @@ services:
       traefik.alias: hasura
       traefik.port: '8080'
 
+  seeds:
+    extends:
+      service: api-v1
+    command: ["bundle", "exec", "rake", "db:seed"]
+
+  mailchimp:
+    extends:
+      service: api-v1
+    command: ["bundle", "exec", "sidekiq", "-c", "5", "-q", "mailchimp_synchro"]
+
+  mailers:
+    extends:
+      service: api-v1
+    command: ["bundle", "exec", "sidekiq", "-q", "default", "-q", "mailers", "-c", "5"]
+
+  templates-email:
+    extends:
+      service: api-v1
+    command: ["bundle", "exec", "rake", "notifications:all"]

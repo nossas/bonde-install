@@ -33,7 +33,8 @@ mkdir bonde
 cd bonde
 git clone git@github.com:nossas/bonde-install.git
 cd bonde-install
-make begin
+make setup
+make migrate
 ```
 
 **Important**: In case of problems when running make begin run make clean and try again
@@ -57,6 +58,7 @@ These are essentials URLs from BONDE and must be accessible to get local copy fu
 * 2-save-the-whales.bonde.devel
 * 3-vamos-limpar-o-tiete.bonde.devel
 * teste.bonde.devel
+* pgadmin.bonde.devel
 
 If you want to test mail and s3 integrations used by our modules, you should run:
 
@@ -65,6 +67,13 @@ If you want to test mail and s3 integrations used by our modules, you should run
 * fake-s3.bonde.devel
 * fake-smtp.bonde.devel
 * traefik.bonde.devel
+
+### Migrations
+
+Commands to create new:
+
+```docker-compose run --rm migrations diesel migration generate initial_chatbot```
+
 
 ### Dispatchers
 

@@ -10,8 +10,8 @@ version: '2'
 services:
 
   migrations:
-    image: nossas/bonde-server:develop
-    # build: ./../bonde-server
+    image: nossas/bonde-migrations:develop
+    # build: ./../bonde-migrations
     environment:
       AWS_ACCESS_KEY_ID: admin
       AWS_BUCKET: bonde
@@ -48,38 +48,14 @@ services:
       WEB_MEMORY: '256'
     # volumes:
     # - ./../bonde-server:/usr/app
-    external_links:
-    - pgmaster
-    - redis
     command:
-    - bundle
-    - exec
-    - rake
-    - db:migrate
+    - diesel
+    - migration
+    - run
     labels:
       io.rancher.container.start_once: 'true'
     # networks:
     #   bonde:
-
-  seeds:
-    extends:
-      service: migrations
-    command: ["bundle", "exec", "rake", "db:seed"]
-
-  mailchimp:
-    extends:
-      service: migrations
-    command: ["bundle", "exec", "sidekiq", "-c", "5", "-q", "mailchimp_synchro"]
-
-  mailers:
-    extends:
-      service: migrations
-    command: ["bundle", "exec", "sidekiq", "-q", "default", "-q", "mailers", "-c", "5"]
-
-  templates-email:
-    extends:
-      service: migrations
-    command: ["bundle", "exec", "rake", "notifications:all"]
 
   bot-worker:
     image: nossas/bonde-bot:develop

@@ -24,13 +24,14 @@ setup:
 	@docker-compose up -d pgmaster
 
 migrate:
-	@docker-compose exec -T pgmaster psql -Umonkey_user monkey_db -c "create database bonde"
-	@docker-compose -f docker-compose.workers.yml pull migrations
-	@docker-compose -f docker-compose.workers.yml up -d migrations templates-email
+	@docker-compose exec -T pgmaster psql -Umonkey_user monkey_db -c "create database bonde;"
+	@docker-compose exec -T pgmaster psql -Umonkey_user monkey_db -c "create role postgraphql login password '3x4mpl3'; create role anonymous; create role common_user; create role admin; create role postgres; create role microservices;"
+	@docker-compose build migrations
+	@docker-compose up -d migrations
 
 seeds:
 	@sleep 10;
-	@docker-compose -f docker-compose.workers.yml up -d seeds
+	@docker-compose up -d seeds templates-email
 
 start:
 	@docker-compose -f docker-compose.workers.yml up -d

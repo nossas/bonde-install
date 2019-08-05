@@ -31,7 +31,7 @@ migrate:
 
 seeds:
 	@sleep 10;
-	@docker-compose -f  up -d seeds templates-email
+	@docker-compose up -d seeds templates-email
 
 start:
 	@docker-compose -f docker-compose.workers.yml up -d

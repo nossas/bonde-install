@@ -24,6 +24,11 @@ setup:
 	@docker-compose up -d pgmaster
 
 migrate:
+	@printf "Waiting for pgmaster..."
+	@until \
+		(docker-compose exec -T pgmaster psql -Umonkey_user -lqt | cut -d \| -f 1 | grep -qw monkey_db) > /dev/null 2>&1; \
+		do sleep 1; printf ".";\
+	done && printf "\n";
 	@docker-compose exec -T pgmaster psql -Umonkey_user monkey_db -c "create database bonde;"
 	@docker-compose exec -T pgmaster psql -Umonkey_user monkey_db -c "create role postgraphql login password '3x4mpl3'; create role anonymous; create role common_user; create role admin; create role postgres; create role microservices;"
 	@docker-compose build migrations

@@ -306,6 +306,7 @@ services:
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+      HASURA_GRAPHQL_ADMIN_SECRET: "segredo123"
     labels:
       traefik.frontend.rule: Host:hasura.bonde.devel
       traefik.enable: 'true'

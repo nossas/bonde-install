@@ -23,8 +23,6 @@ services:
     extends:
       file: docker-compose.common.yml
       service: pgmaster
-    volumes:
-      - ./tools/db-dumps/init.sql:/docker-entrypoint-initdb.d/init.sql
   redis:
     extends:
       file: docker-compose.common.yml

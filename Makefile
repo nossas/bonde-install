@@ -18,7 +18,7 @@ help:
 	@echo ""
 	@echo "See contents of Makefile for more targets."
 
-begin: setup migrate seeds start-dev
+begin: setup migrate start-dev
 
 setup:
 	@docker-compose up -d pgmaster
@@ -29,10 +29,7 @@ migrate:
 		(docker-compose exec -T pgmaster psql -Umonkey_user -lqt | cut -d \| -f 1 | grep -qw monkey_db) > /dev/null 2>&1; \
 		do sleep 1; printf ".";\
 	done && printf "\n";
-	@docker-compose exec -T pgmaster psql -Umonkey_user monkey_db -c "create database bonde;"
-	@docker-compose exec -T pgmaster psql -Umonkey_user monkey_db -c "create role postgraphql login password '3x4mpl3'; create role anonymous; create role common_user; create role admin; create role postgres; create role microservices;"
-	@docker-compose build migrations
-	@docker-compose up -d migrations
+	cat bonde.sql | docker-compose exec -T pgmaster psql -Umonkey_user monkey_db
 
 seeds:
 	@sleep 10;

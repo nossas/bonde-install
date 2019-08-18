@@ -11,7 +11,7 @@ services:
 
   migrations:
     image: nossas/bonde-migrations:develop
-    # build: ./../bonde-migrations
+    build: ./../bonde-migrations
     environment:
       AWS_ACCESS_KEY_ID: admin
       AWS_BUCKET: bonde
@@ -57,8 +57,9 @@ services:
     # networks:
     #   bonde:
 
-  bot-worker:
+  chatbot-worker:
     image: nossas/bonde-bot:develop
+    # build: ./../bonde-chatbot
     environment:
       API_URL: http://api-v1:3000
       APP_DOMAIN: http://beta.bonde.devel
@@ -76,7 +77,25 @@ services:
     - npm
     - run
     - start:worker
-    labels:
-      io.rancher.container.start_once: 'true'
-    # networks:
-    #   bonde:
+
+  seeds:
+    extends:
+      service: api-rest
+    command: ["bundle", "exec", "rake", "db:seed"]
+
+  api-rest:
+    extends:
+      file: docker-compose.apis.yml
+      service: api-rest
+  mailchimp:
+    extends:
+      service: api-rest
+    command: ["bundle", "exec", "sidekiq", "-c", "5", "-q", "mailchimp_synchro"]
+  mailers:
+    extends:
+      service: api-rest
+    command: ["bundle", "exec", "sidekiq", "-q", "default", "-q", "mailers", "-c", "5"]
+  templates-email:
+    extends:
+      service: api-rest
+    command: ["bundle", "exec", "rake", "notifications:all"]

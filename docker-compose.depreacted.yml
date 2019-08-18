@@ -1,0 +1,58 @@
+version: '2'
+services:
+
+  cache:
+    image: nossas/bonde-cache:v0.3.6
+    environment:
+      GIN_MODE: debug
+      PORT: '3007'
+    stdin_open: true
+    tty: true
+    labels:
+      traefik.frontend.rule: Host:cache.bonde.devel
+      traefik.enable: 'true'
+      traefik.alias: redirect
+      traefik.port: '3007'
+
+  redirect:
+    image: nossas/bonde-redirect:0.3.1
+    environment:
+      GIN_MODE: debug
+      PORT: '3007'
+    stdin_open: true
+    tty: true
+    labels:
+      traefik.frontend.rule: Host:redirect.bonde.devel
+      traefik.enable: 'true'
+      traefik.alias: redirect
+      traefik.port: '3007'
+
+  match-voluntarias:
+    image: nossas/match-voluntarios:latest
+    environment:
+      PORT: '5000'
+      GOOGLE_APPLICATION_CREDENTIALS: /data/credentials.json
+      GCLOUD_PROJECT: name-project
+      REACT_APP_GOOGLE_CLIENT_KEY: key
+    command:
+    - npm
+    - start
+    labels:
+      traefik.frontend.rule: Host:match-voluntarias.bonde.devel
+      traefik.enable: 'true'
+      traefik.alias: match-voluntarias
+      traefik.port: '5000'
+      traefik.acme: 'false'
+      traefik.frontend.entryPoints: http
+
+  docs-api-v1:
+    image: nossas/bonde-docs:develop
+    command:
+    - hugo
+    - server
+    - --bind=0.0.0.0
+    labels:
+      traefik.frontend.rule: Host:docs.bonde.devel;
+      traefik.port: '1313'
+      traefik.enable: 'true'
+      traefik.frontend.entryPoints: http

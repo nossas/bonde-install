@@ -1,0 +1,93 @@
+version: '2'
+
+services:
+
+  api-rest:
+    image: nossas/bonde-server:develop
+    environment:
+      AWS_ACCESS_KEY_ID: admin
+      AWS_BUCKET: bonde
+      AWS_ID: admin
+      AWS_ROUTE53_REGION: sa-east-1
+      AWS_ROUTE53_SYNC: force
+      AWS_ROUTE_IP: 127.0.0.1
+      AWS_SECRET: password
+      AWS_SECRET_ACCESS_KEY: password
+      CLIENT_APP_NAME: hub-client
+      CLIENT_HOST: bonde.devel
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster/bonde
+      JWT_SECRET: segredo123
+      JWT_TYPE: postgraphql.jwt_token
+      MAILCHIMP_API_KEY: 111111-us6
+      MAILCHIMP_GROUP_ID: '11'
+      MAILCHIMP_LIST_ID: 111111ac
+      NEW_RELIC_LICENSE_KEY: 1111111
+      NEW_RELIC_LOG: stdout
+      NO_VHOST: '0'
+      ORG_RECIPIENT_ID: xxxxxx
+      PAGARME_API_KEY: ak_test_jC4dmaMT3njyVuGQomvbMQfvNUjn71
+      PORT: '3000'
+      RAILS_ENV: staging
+      RAILS_SERVE_STATIC_FILES: enabled
+      REDIS_URL: redis://redis:6379
+      SECRET_KEY_BASE: xxxxxx
+      SENTRY_DSN: https://xxxxx:xxxxx@sentry.io/121379
+      SMTP_HOST: smtp
+      SMTP_PASSWORD: xxxxxxxx
+      SMTP_PORT: '1025'
+      SMTP_USERNAME: xxxxxx
+      WEB_CONCURRENCY: '1'
+      WEB_MEMORY: '256'
+    command:
+    - bundle
+    - exec
+    - puma
+    - -C
+    - config/puma.rb
+    labels:
+      traefik.frontend.rule: Host:api-rest.bonde.devel
+      traefik.port: '3000'
+      traefik.enable: 'true'
+      traefik.alias: api-rest
+
+  api-v2:
+    image: nossas/bonde-graphql:develop
+    environment:
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster/bonde
+      JWT_SECRET: segredo123
+      JWT_TYPE: postgraphql.jwt_token
+      NEW_RELIC_ENABLED: 'false'
+      PG_DEFAULT_ROLE: anonymous
+      PORT: '3002'
+      SCHEMA_NAME: postgraphql
+      SENTRY_DSN: https://xxxxx:xxxxx@sentry.io/142717
+      WEB_CONCURRENCY: '1'
+      WEB_MEMORY: '256'
+    depends_on:
+    - pgmaster
+    command:
+    - npm
+    - run
+    - dev
+    labels:
+      traefik.frontend.rule: Host:api-v2.bonde.devel
+      traefik.enable: 'true'
+      traefik.alias: api-v2
+      traefik.port: '3002'
+    ports:
+      - 3002:3002/tcp
+
+  api-graphql:
+    image: hasura/graphql-engine:v1.0.0-beta.4
+    ports:
+    - "5007:8080"
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+      HASURA_GRAPHQL_ADMIN_SECRET: "segredo123"
+    labels:
+      traefik.frontend.rule: Host:api-graphql.bonde.devel
+      traefik.enable: 'true'
+      traefik.alias: api-graphql
+      traefik.port: '8080'

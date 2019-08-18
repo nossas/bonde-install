@@ -1,13 +1,15 @@
 version: '2'
+
 volumes:
-  datascience:
-    driver: local
   redis_data:
     driver: local
   s3_data:
     driver: local
+  elk_data:
+    driver: local
   pgmaster_data:
     driver: local
+
 services:
   redis:
     image: redis:3
@@ -19,6 +21,7 @@ services:
     - redis-server
     - --appendonly
     - 'yes'
+
   s3:
     image: minio/minio
     environment:
@@ -36,6 +39,7 @@ services:
       traefik.port: '9000'
       traefik.enable: 'true'
       traefik.alias: fake-s3
+
   smtp:
     image: mailhog/mailhog
     environment:
@@ -48,6 +52,7 @@ services:
       traefik.port: '8025'
       traefik.enable: 'true'
       traefik.alias: fake-smtp
+
   traefik:
     image: traefik:alpine
     environment:
@@ -56,7 +61,7 @@ services:
       AWS_REGION: us-east-1
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./lb/traefik.toml:/traefik.toml"
+      - "./traefik.toml:/traefik.toml"
     ports:
     - 80:80/tcp
     - 8080:8080/tcp
@@ -68,6 +73,7 @@ services:
       traefik.alias: traefik
       traefik.port: '8080'
       traefik.enable: 'true'
+
   pgmaster:
     image: postgres:10
     environment:
@@ -78,6 +84,7 @@ services:
     - pgmaster_data:/var/lib/postgresql/data
     ports:
     - 5432/tcp
+
   assets-images:
     image: h2non/imaginary
     environment:
@@ -99,16 +106,41 @@ services:
       traefik.port: '9009'
       io.rancher.container.pull_image: always
 
-
-
-  datascience:
-    build: datascience
-    image: nossas/bonde-datascience
-    volumes:
-     - "datascience:/home/jovyan/work"
+  elk:
+    image: sebp/elk
     ports:
-     - "8888"
+      - "5601:5601"
+      - "9200:9200"
+      - "5044:5044"
+    volumes:
+      - elk_data:/var/lib/elasticsearch
     labels:
-      traefik.frontend.rule: Host:datascience.bonde.devel
+      traefik.frontend.rule: Host:kibana.bonde.devel
+      traefik.port: '5601'
       traefik.enable: 'true'
-      traefik.port: '888'
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin_foo@bar.com
+      PGADMIN_DEFAULT_PASSWORD: foobar!!
+    depends_on:
+      - pgmaster
+    ports:
+      - 5433:80/tcp
+    labels:
+      traefik.frontend.rule: Host:pgadmin.bonde.devel
+      traefik.enable: 'true'
+      traefik.port: '80'
+
+  scope:
+    image: weaveworks/scope:1.8.0
+    network_mode: "host"
+    pid: "host"
+    privileged: true
+    labels:
+      - "works.weave.role=system"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+    command:
+      - "--probe.docker=true"

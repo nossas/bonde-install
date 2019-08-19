@@ -7,6 +7,7 @@ version: '2'
 services:
   public:
     image: nossas/bonde-public:develop
+    # build: ../client/packages/public/
     environment:
       API_URL: http://api-v1.bonde.devel
       APP_DOMAIN: bonde.devel
@@ -42,6 +43,7 @@ services:
 
   admin-canary:
     image: nossas/bonde-admin-canary:develop
+    # build: ../client/packages/admin-canary/
     ports:
     - 5000
     environment:
@@ -62,7 +64,7 @@ services:
 
   admin:
     image: nossas/bonde-admin:develop
-    build: ../bonde-client/packages/bonde-admin
+    # build: ../client/packages/admin/
     environment:
       API_URL: http://api-v1.bonde.devel
       APP_DOMAIN: bonde.devel
@@ -99,6 +101,7 @@ services:
 
   cross-storage:
     image: nossas/bonde-cross-storage
+    # build: ../cross-storage
     ports:
       - "8888:80"
     environment:
@@ -112,8 +115,9 @@ services:
 
   styleguide:
     image: nossas/bonde-styleguide:develop
+    # build: ../client/packages/styleguide/
     labels:
-      traefik.frontend.rule: Host:styleguide.bonde.org
+      traefik.frontend.rule: Host:styleguide.bonde.devel
       traefik.enable: 'true'
       traefik.alias: styleguide
       traefik.port: '80'

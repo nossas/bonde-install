@@ -2,6 +2,7 @@ version: '2'
 services:
   chatbot:
     image: nossas/bonde-bot:develop
+    # build: ../chatbot
     environment:
       API_URL: http://api-v1:3000
       APP_DOMAIN: http://beta.bonde.devel
@@ -18,6 +19,7 @@ services:
 
   phone:
     image: nossas/bonde-phone:1.1.0
+    # build: ../phone
     environment:
       AMOUNT: '100'
       APP_DOMAIN: http://phone.bonde.devel
@@ -46,6 +48,7 @@ services:
 
   maquinista:
     image: nossas/bonde-maquinista:develop
+    # build: ../maquinista
     environment:
       DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
       HUBOT_AUTH_ADMIN: userexist
@@ -73,6 +76,7 @@ services:
 
   zendesk-mapa-v1:
     image: nossas/bonde-zendesk:develop
+    # build: ../zendesk-mapa-v1
     environment:
       ZENDESK_ORGANIZATIONS: '{"Advogada":"","MSR":"","Psicologa":""}'
       ZENDESK_API_ROOT: http://xxxx.zendesk.com/api/v2/

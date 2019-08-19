@@ -4,21 +4,25 @@ green='\033[0;32m'
 gray='\033[1;30m'
 blue='\033[0;34m'
 
-
-# echo "${green}# [1/9] Creating root directory...${nc}"
+echo "${green}# [1/9] Creating root directory...${nc}"
 mkdir ../bonde && cd ../bonde && echo "${gray}Folder [$(pwd)] was created.${nc}"
-
 
 echo "${green}# [2/9] Cloning repositories...${nc}"
 git clone git@github.com:nossas/bonde-install.git install
 git clone git@github.com:nossas/bonde-server.git api-rest
+git clone git@github.com:nossas/bonde-client.git client
 git clone git@github.com:nossas/bonde-migrations.git migrations
-git clone git@github.com:nossas/bonde-grpahql.git api-v2
+git clone git@github.com:nossas/bonde-graphql.git api-v2
 git clone git@github.com:nossas/bonde-maquinista.git maquinista
 git clone git@github.com:nossas/bonde-bot.git chatbot
 git clone git@github.com:nossas/bonde-phone.git phone
 git clone git@github.com:nossas/bonde-redirect.git redirect
 git clone git@github.com:nossas/bonde-cache.git cache
+git clone git@github.com:nossas/bonde-cross-storage.git cross-storage
+git clone git@github.com:nossas/bonde-payments.git payments
+git clone git@github.com:nossas/bonde-docs.git docs-api-v1
+git clone git@github.com:nossas/bonde-zendesk.git zendesk-mapa-v1
+git clone git@github.com:nossas/notification-service.git notifications
 # git clone git@gitlab.com:nossas/bonde-match.git match
 
 echo "${green}# [3/9] Fetching branches...${nc}"

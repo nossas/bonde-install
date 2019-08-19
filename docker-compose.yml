@@ -13,18 +13,22 @@ services:
     extends:
       file: docker-compose.common.yml
       service: s3
+
   smtp:
     extends:
       file: docker-compose.common.yml
       service: smtp
+
   traefik:
     extends:
       file: docker-compose.common.yml
       service: traefik
+
   pgmaster:
     extends:
       file: docker-compose.common.yml
       service: pgmaster
+
   redis:
     extends:
       file: docker-compose.common.yml
@@ -40,12 +44,26 @@ services:
       DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster/bonde
     volumes:
     - ./../bonde-migrations/:/volumes
+
   api-rest:
     extends:
       file: docker-compose.apis.yml
       service: api-rest
     depends_on:
     - pgmaster
+    labels:
+      traefik.frontend.rule: Host:api-rest.bonde.devel
+      traefik.port: '3000'
+      traefik.enable: 'true'
+      traefik.alias: api-rest
+
+  api-v2:
+    extends:
+      file: docker-compose.apis.yml
+      service: api-v2
+    depends_on:
+    - pgmaster
+
   api-graphql:
     extends:
       file: docker-compose.apis.yml

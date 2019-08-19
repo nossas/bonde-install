@@ -4,6 +4,7 @@ services:
 
   api-rest:
     image: nossas/bonde-server:develop
+    # build: ../api-rest/
     environment:
       AWS_ACCESS_KEY_ID: admin
       AWS_BUCKET: bonde
@@ -44,14 +45,10 @@ services:
     - puma
     - -C
     - config/puma.rb
-    labels:
-      traefik.frontend.rule: Host:api-rest.bonde.devel
-      traefik.port: '3000'
-      traefik.enable: 'true'
-      traefik.alias: api-rest
 
   api-v2:
     image: nossas/bonde-graphql:develop
+    # build: ../api-v2/
     environment:
       DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster/bonde
       JWT_SECRET: segredo123
@@ -63,8 +60,6 @@ services:
       SENTRY_DSN: https://xxxxx:xxxxx@sentry.io/142717
       WEB_CONCURRENCY: '1'
       WEB_MEMORY: '256'
-    depends_on:
-    - pgmaster
     command:
     - npm
     - run

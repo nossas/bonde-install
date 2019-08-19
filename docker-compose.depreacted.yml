@@ -3,6 +3,7 @@ services:
 
   cache:
     image: nossas/bonde-cache:v0.3.6
+    # build: ../cache/
     environment:
       GIN_MODE: debug
       PORT: '3007'
@@ -16,6 +17,7 @@ services:
 
   redirect:
     image: nossas/bonde-redirect:0.3.1
+    # build: ../redirect/
     environment:
       GIN_MODE: debug
       PORT: '3007'
@@ -29,6 +31,7 @@ services:
 
   match-voluntarias:
     image: nossas/match-voluntarios:latest
+    # build: ../match/
     environment:
       PORT: '5000'
       GOOGLE_APPLICATION_CREDENTIALS: /data/credentials.json
@@ -47,12 +50,13 @@ services:
 
   docs-api-v1:
     image: nossas/bonde-docs:develop
+    # build: ../docs-api-v1/
     command:
     - hugo
     - server
     - --bind=0.0.0.0
     labels:
-      traefik.frontend.rule: Host:docs.bonde.devel;
+      traefik.frontend.rule: Host:docs.bonde.devel
       traefik.port: '1313'
       traefik.enable: 'true'
       traefik.frontend.entryPoints: http

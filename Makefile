@@ -66,7 +66,8 @@ stop:
 	@docker-compose -f docker-compose.webhooks.yml rm --force
 	@docker-compose -f docker-compose.workers.yml stop
 	@docker-compose -f docker-compose.workers.yml rm --force
-
+	@docker-compose -f docker-compose.common.yml stop
+	@docker-compose -f docker-compose.common.yml rm --force
 status:
 	@docker-compose ps
 	@docker-compose -f docker-compose.clients.yml ps
@@ -75,6 +76,7 @@ status:
 	@docker-compose -f docker-compose.dispatchers.yml ps
 	@docker-compose -f docker-compose.webhooks.yml ps
 	@docker-compose -f docker-compose.workers.yml ps
+	@docker-compose -f docker-compose.common.yml ps
 
 clean:
 	@docker-compose down -v --remove-orphans
@@ -84,6 +86,7 @@ clean:
 	@docker-compose -f docker-compose.dispatchers.yml down -v --remove-orphans
 	@docker-compose -f docker-compose.webhooks.yml down -v --remove-orphans
 	@docker-compose -f docker-compose.workers.yml down -v --remove-orphans
+	@docker-compose -f docker-compose.common.yml down -v --remove-orphans
 
 logs:
 	@docker-compose logs -f
@@ -93,6 +96,8 @@ logs:
 	@docker-compose -f docker-compose.dispatchers.yml logs -f
 	@docker-compose -f docker-compose.webhooks.yml logs -f
 	@docker-compose -f docker-compose.workers.yml logs -f
+	@docker-compose -f docker-compose.common.yml logs -f
+
 
 restart: stop start
 
@@ -100,6 +105,6 @@ frontend-rebuild:
 	@docker-compose -f docker-compose.clients.yml exec -T public npm run build
 
 extras:
-	@docker-compose -f docker-compose.common.yml up -d pgadmin4 assets-images scope elk
+	@docker-compose -f docker-compose.common.yml up -d
 
 .PHONY: start stop status restart clean setup migrate seeds serverless logs start-logger start-monitor tail

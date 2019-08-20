@@ -81,6 +81,7 @@ services:
       POSTGRES_PASSWORD: monkey_pass
       POSTGRES_USER: monkey_user
     volumes:
+    - ./backups/:/docker-entrypoint-initdb.d
     - pgmaster_data:/var/lib/postgresql/data
     ports:
     - 5432/tcp

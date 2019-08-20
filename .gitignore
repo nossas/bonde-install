@@ -6,3 +6,4 @@ node_modules
 db-dumps
 concourse/keys/*
 !concourse/keys/.gitignore
+backups/*

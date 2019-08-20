@@ -46,16 +46,12 @@ services:
       SENTRY_DSN: https://xxxxxx:xxxxxx@sentry.io/121379
       WEB_CONCURRENCY: '1'
       WEB_MEMORY: '256'
-    # volumes:
-    # - ./../bonde-server:/usr/app
+    volumes:
+    - ./../migrations:/volumes
     command:
     - diesel
     - migration
     - run
-    labels:
-      io.rancher.container.start_once: 'true'
-    # networks:
-    #   bonde:
 
   chatbot-worker:
     image: nossas/bonde-bot:develop

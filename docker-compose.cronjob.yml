@@ -2,6 +2,7 @@ version: '2'
 services:
   donations:
     image: nossas/bonde-server:develop
+    # build: ../api-rest/
     environment:
       AWS_ACCESS_KEY_ID: admin
       AWS_BUCKET: bonde
@@ -69,6 +70,7 @@ services:
 
   payments:
     image: nossas/bonde-payments:develop
+    # build: ../payments/
     environment:
       AMOUNT: '100'
       API_HOST: bonde.devel

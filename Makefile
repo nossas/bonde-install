@@ -24,58 +24,87 @@ setup:
 	@docker-compose up -d pgmaster
 
 migrate:
+	@printf "Waiting for pgmaster..."
+	@until \
+		(docker-compose exec -T pgmaster psql -Umonkey_user -lqt | cut -d \| -f 1 | grep -qw monkey_db) > /dev/null 2>&1; \
+		do sleep 1; printf ".";\
+	done && printf "\n";
 	@docker-compose exec -T pgmaster psql -Umonkey_user monkey_db -c "create database bonde;"
-	@docker-compose exec -T pgmaster psql -Umonkey_user monkey_db -c "create role postgraphql login password '3x4mpl3'; create role anonymous; create role common_user; create role admin; create role postgres; create role microservices;"
+	# @docker-compose exec -T pgmaster psql -Umonkey_user monkey_db -c "create role postgraphql login password '3x4mpl3'; create role anonymous; create role common_user; create role admin; create role postgres; create role microservices;"
 	@docker-compose build migrations
 	@docker-compose up -d migrations
 
 seeds:
 	@sleep 10;
-	@docker-compose up -d seeds templates-email
-
-start:
-	@docker-compose -f docker-compose.workers.yml up -d
-	@docker-compose up -d admin admin-canary public
-	@docker-compose restart traefik
+	@docker-compose -f docker-compose.workers.yml up -d templates-email
 
 start-dev:
-	@docker-compose up -d traefik
+	@docker-compose up -d
+	@docker-compose -f docker-compose.clients.yml up -d cross-storage
+
+start:
+	@docker-compose up -d
+	@docker-compose -f docker-compose.clients.yml up -d
+	@docker-compose -f docker-compose.cronjob.yml up -d
+	@docker-compose -f docker-compose.depreacted.yml up -d
+	@docker-compose -f docker-compose.dispatchers.yml up -d
+	@docker-compose -f docker-compose.webhooks.yml up -d
 	@docker-compose -f docker-compose.workers.yml up -d
-	@docker-compose up -d cross-storage api-v1 api-v2 hasura notifications
-	@docker-compose restart traefik
 
 stop:
 	@docker-compose stop
-	@docker-compose -f docker-compose.workers.yml stop
 	@docker-compose rm --force
+	@docker-compose -f docker-compose.clients.yml stop
+	@docker-compose -f docker-compose.clients.yml rm --force
+	@docker-compose -f docker-compose.cronjob.yml stop
+	@docker-compose -f docker-compose.cronjob.yml rm --force
+	@docker-compose -f docker-compose.depreacted.yml stop
+	@docker-compose -f docker-compose.depreacted.yml rm --force
+	@docker-compose -f docker-compose.dispatchers.yml stop
+	@docker-compose -f docker-compose.dispatchers.yml rm --force
+	@docker-compose -f docker-compose.webhooks.yml stop
+	@docker-compose -f docker-compose.webhooks.yml rm --force
+	@docker-compose -f docker-compose.workers.yml stop
 	@docker-compose -f docker-compose.workers.yml rm --force
-
+	@docker-compose -f docker-compose.common.yml stop
+	@docker-compose -f docker-compose.common.yml rm --force
 status:
 	@docker-compose ps
+	@docker-compose -f docker-compose.clients.yml ps
+	@docker-compose -f docker-compose.cronjob.yml ps
+	@docker-compose -f docker-compose.depreacted.yml ps
+	@docker-compose -f docker-compose.dispatchers.yml ps
+	@docker-compose -f docker-compose.webhooks.yml ps
 	@docker-compose -f docker-compose.workers.yml ps
-
-restart: stop start
+	@docker-compose -f docker-compose.common.yml ps
 
 clean:
 	@docker-compose down -v --remove-orphans
+	@docker-compose -f docker-compose.clients.yml down -v --remove-orphans
+	@docker-compose -f docker-compose.cronjob.yml down -v --remove-orphans
+	@docker-compose -f docker-compose.depreacted.yml down -v --remove-orphans
+	@docker-compose -f docker-compose.dispatchers.yml down -v --remove-orphans
+	@docker-compose -f docker-compose.webhooks.yml down -v --remove-orphans
 	@docker-compose -f docker-compose.workers.yml down -v --remove-orphans
-
-frontend-rebuild:
-	@docker-compose exec -T public npm run build
-
-extras:
-	@docker-compose up -d s3 smtp pgadmin4
+	@docker-compose -f docker-compose.common.yml down -v --remove-orphans
 
 logs:
-	@docker-compose -f docker-compose.workers.yml -f docker-compose.yml logs -f
-
-start-logger:
-	@docker-compose -f docker-compose.monitor.yml up -d logspout kibana
-
-start-monitor:
-	@docker-compose -f docker-compose.monitor.yml up -d scope
-
-tail:
 	@docker-compose logs -f
+	@docker-compose -f docker-compose.clients.yml logs -f
+	@docker-compose -f docker-compose.cronjob.yml logs -f
+	@docker-compose -f docker-compose.depreacted.yml logs -f
+	@docker-compose -f docker-compose.dispatchers.yml logs -f
+	@docker-compose -f docker-compose.webhooks.yml logs -f
+	@docker-compose -f docker-compose.workers.yml logs -f
+	@docker-compose -f docker-compose.common.yml logs -f
+
+
+restart: stop start
+
+frontend-rebuild:
+	@docker-compose -f docker-compose.clients.yml exec -T public npm run build
+
+extras:
+	@docker-compose -f docker-compose.common.yml up -d
 
 .PHONY: start stop status restart clean setup migrate seeds serverless logs start-logger start-monitor tail

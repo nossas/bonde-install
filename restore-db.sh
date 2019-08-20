@@ -11,10 +11,10 @@ else
   src_psql_uri="${DSN_SRC}"
 fi
 
-[[ -z "${DSN_DEST}" ]] && dest_psql_uri='postgres://postgres:3x4mpl3@localhost:5432/bonde' || dest_psql_uri="${DSN_DEST}"
+[[ -z "${DSN_DEST}" ]] && dest_psql_uri='postgres://monkey_user:monkey_pass@localhost:5432/bonde' || dest_psql_uri="${DSN_DEST}"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-dump_dir="$DIR/db-dumps"
+dump_dir="$DIR/backups"
 
 echo "${light_gray}The plan is: ${cyan}src > dest${nc}"
 echo "${green}[01/08]\t${light_gray}Initiating the automated dump process...${nc}"
@@ -55,11 +55,11 @@ docker exec -i bondeinstall_pgmaster_1 psql $dest_psql_uri < $filename_owner_cha
 echo "${dark_gray}Dump restored.\n"
 
 echo "${green}[07/08]${nc}\t${light_gray}Executing rails api migrations...${nc}"
-docker-compose exec api-v1 rake db:migrate
+docker-compose up -d migrations
 echo "${dark_gray}Migrations executed.\n"
 
 echo "${green}[08/08]${nc}\t${light_gray}Restarting graphql service...${nc}"
-docker-compose restart api-v2
+docker-compose restart api-graphql
 echo "${dark_gray}GraphQL restarted.\n"
 
 echo "${cyan}Stored dump files:${nc}"

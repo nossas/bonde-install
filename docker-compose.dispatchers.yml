@@ -1,0 +1,31 @@
+version: '2'
+
+# volumes:
+#   redis_data:
+#     driver: local
+
+services:
+
+  notifications:
+    image: nossas/bonde-notifications:develop
+    # build: ../notifications/
+    environment:
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
+      SMTP_ADDRESS: 'smtp'
+      SMTP_PORT: '1025'
+      SMTP_DOMAIN: 'bonde.devel'
+      SMTP_USER_NAME: ''
+      SMTP_PASSWORD: ''
+      DEFAULT_FROM: 'contato@bonde.devel'
+      DB_CHANNEL: notifications_channel
+      JWT_SECRET: 'segredo123'
+      REDIS_URL: redis://redis:6379
+      WORKERS: '5'
+    # links:
+    # - pgmaster
+    # - smtp
+    # - redis
+    # depends_on:
+    # - pgmaster
+    # - smtp
+    # - redis

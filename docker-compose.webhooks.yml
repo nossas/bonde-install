@@ -93,3 +93,19 @@ services:
       traefik.frontend.rule: Host:webhook-mapa-zendesk.bonde.devel
       traefik.port: '5000'
       traefik.enable: 'true'
+
+  graphql-auth:
+    # image: nossas/bonde-webhooks-auth:develop
+    image: nossas/bonde-webhooks-auth:feature-webhooks-auth
+    # build:
+    #   context: ./../bonde-microservices
+    #   dockerfile: packages/webhooks-auth/Dockerfile
+    environment:
+      PORT: 4001
+      NODE_ENV: development
+      DEBUG: webhooks-auth
+      JWT_SECRET: segredo123
+    labels:
+      traefik.frontend.rule: Host:graphql-auth.bonde.devel
+      traefik.port: '4001'
+      traefik.enable: 'true'

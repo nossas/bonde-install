@@ -70,3 +70,14 @@ services:
       service: api-graphql
     depends_on:
     - pgmaster
+    - api-v2
+    - graphql-auth
+    environment:
+      HASURA_GRAPHQL_ADMIN_SECRET: "segredo123"
+      HASURA_GRAPHQL_AUTH_HOOK: http://graphql-auth:4001/webhook
+      HASURA_GRAPHQL_AUTH_HOOK_MODE: "GET"
+
+  graphql-auth:
+    extends:
+      file: docker-compose.webhooks.yml
+      service: graphql-auth

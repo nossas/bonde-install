@@ -101,11 +101,21 @@ services:
     #   context: ./../bonde-microservices
     #   dockerfile: packages/webhooks-auth/Dockerfile
     environment:
-      PORT: 4001
       NODE_ENV: development
       DEBUG: webhooks-auth
       JWT_SECRET: segredo123
-    labels:
-      traefik.frontend.rule: Host:graphql-auth.bonde.devel
-      traefik.port: '4001'
-      traefik.enable: 'true'
+
+  chatbot:
+    # image: nossas/bonde-bot:develop
+    image: nossas/bonde-bot:feature-beta-graphene
+    # build:
+    #   context: ./../bonde-bot
+    environment:
+      API_URL: http://api-v1:3000
+      REDIS_URL: redis://redis:6379
+      SPEECH_VERSION: v1
+      WIT_SERVER_ACCESS_TOKEN: xxxxxxxxx
+    external_links:
+    - redis
+    - api-graphql
+    - api-v1

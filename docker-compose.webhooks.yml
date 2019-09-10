@@ -115,6 +115,8 @@ services:
       REDIS_URL: redis://redis:6379
       SPEECH_VERSION: v1
       WIT_SERVER_ACCESS_TOKEN: xxxxxxxxx
+      GRAPHQL_URL: http://api-graphql:8080/v1/graphql
+      WS_GRAPHQL_URL: ws://api-graphql:8080/v1/graphql
     external_links:
     - redis
     - api-graphql

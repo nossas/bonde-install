@@ -104,9 +104,7 @@ services:
     environment:
       PORT: 5000
       APP_DOMAIN: http://chatbot.bonde.devel
-      GRAPHQL_URL: http://api-graphql:8080/v1/graphql
-      WS_GRAPHQL_URL: ws://api-graphql:8080/v1/graphql
-      JWT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiY29tbW9uX3VzZXIiLCJ1c2VyX2lkIjoxLCJpYXQiOjE1Njc2MDEyNTgsImV4cCI6MTU2NzY4NzY1OCwiYXVkIjoicG9zdGdyYXBoaWxlIiwiaXNzIjoicG9zdGdyYXBoaWxlIn0.827Or7_jQYmpgtbbHhogp5MZrvHMdJabt4-kWXbT4Ek
+      JWT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiY29tbW9uX3VzZXIiLCJ1c2VyX2lkIjoxLCJpYXQiOjE1NjgxMjAxMzQsImV4cCI6MTU2ODIwNjUzNCwiYXVkIjoicG9zdGdyYXBoaWxlIiwiaXNzIjoicG9zdGdyYXBoaWxlIn0.I52gMRQ8CpOAjRTkxBBHVC-qH6Mnll87ah2wdVgbLw0
     labels:
       traefik.frontend.rule: Host:chatbot.bonde.devel
       traefik.port: '5000'

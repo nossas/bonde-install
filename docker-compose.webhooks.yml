@@ -121,3 +121,13 @@ services:
     - redis
     - api-graphql
     - api-v1
+
+  webhooks-registry:
+    build: 
+      dockerfile: packages/webhooks-registry/Dockerfile
+      context: ../bonde-microservices
+    environment:
+      PORT: 8081
+      HASURA_API_URL: http://api-graphql:8080/v1/graphql
+      X_HASURA_ADMIN_SECRET: segredo123
+      DEBUG: webhooks-registry*

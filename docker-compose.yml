@@ -109,3 +109,16 @@ services:
       traefik.frontend.rule: Host:chatbot.bonde.devel
       traefik.port: '5000'
       traefik.enable: 'true'
+
+  webhooks-registry:
+    extends:
+      file: docker-compose.webhooks.yml
+      service: webhooks-registry
+    depends_on:
+    - api-graphql
+    labels:
+      traefik.frontend.rule: http://webhooks-registry.bonde.devel
+      traefik.port: '8081'
+      traefik.enable: 'true'
+    ports:
+      - 8081:8081

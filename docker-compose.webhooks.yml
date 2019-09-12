@@ -123,9 +123,10 @@ services:
     - api-v1
 
   webhooks-registry:
-    build: 
-      dockerfile: packages/webhooks-registry/Dockerfile
-      context: ../bonde-microservices
+    image: nossas/bonde-webhooks-registry:develop
+    # build: 
+    #   dockerfile: packages/webhooks-registry/Dockerfile
+    #   context: ../bonde-microservices
     environment:
       PORT: 8081
       HASURA_API_URL: http://api-graphql:8080/v1/graphql
@@ -133,9 +134,10 @@ services:
       DEBUG: webhooks-registry*
 
   webhooks-zendesk:
-    build: 
-      dockerfile: packages/webhooks-zendesk/Dockerfile
-      context: ../bonde-microservices
+    image: nossas/bonde-webhooks-zendesk:develop
+    # build: 
+    #   dockerfile: packages/webhooks-zendesk/Dockerfile
+    #   context: ../bonde-microservices
     environment:
       ZENDESK_API_URL: https://xxxxx.zendesk.com/api/v2/
       ZENDESK_API_TOKEN: token

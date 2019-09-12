@@ -131,3 +131,21 @@ services:
       HASURA_API_URL: http://api-graphql:8080/v1/graphql
       X_HASURA_ADMIN_SECRET: segredo123
       DEBUG: webhooks-registry*
+
+  webhooks-zendesk:
+    build: 
+      dockerfile: packages/webhooks-zendesk/Dockerfile
+      context: ../bonde-microservices
+    environment:
+      ZENDESK_API_URL: https://xxxxx.zendesk.com/api/v2/
+      ZENDESK_API_TOKEN: token
+      ZENDESK_API_USER: email@nossas.org/token
+      PORT: 8082
+      ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"","MSR":"","PSICÓLOGA":""}'
+      GOOGLE_MAPS_API_KEY: gmaps
+      WIDGET_IDS: '{"ADVOGADA": , "PSICÓLOGA": }'
+      HASURA_API_URL: http://api-graphql:8080/v1/graphql
+      X_HASURA_ADMIN_SECRET: segredo123
+      DEBUG: webhooks-zendesk*
+    ports: 
+      - 8082:8082

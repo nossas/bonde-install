@@ -122,3 +122,16 @@ services:
       traefik.enable: 'true'
     ports:
       - 8081:8081
+
+  webhooks-zendesk:
+    extends:
+      file: docker-compose.webhooks.yml
+      service: webhooks-zendesk
+    depends_on:
+    - api-graphql
+    labels:
+      traefik.frontend.rule: http://webhooks-zedesk.bonde.devel
+      traefik.port: '8082'
+      traefik.enable: 'true'
+    ports:
+      - 8082:8082

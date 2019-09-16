@@ -10,7 +10,7 @@ version: '2'
 services:
 
   migrations:
-    image: nossas/bonde-migrations:feature-chatbot-persistent-menu
+    image: nossas/bonde-migrations:develop
     # build: ../migrations
     environment:
       AWS_ACCESS_KEY_ID: admin

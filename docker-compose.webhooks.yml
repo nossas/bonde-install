@@ -88,8 +88,7 @@ services:
       JWT_SECRET: segredo123
 
   chatbot:
-    # image: nossas/bonde-bot:develop
-    image: nossas/bonde-bot:feature-persistent-menu
+    image: nossas/bonde-bot:develop
     # build:
     #   context: ./../bonde-bot
     environment:

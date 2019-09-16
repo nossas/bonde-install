@@ -1,22 +1,5 @@
 version: '2'
 services:
-  chatbot:
-    image: nossas/bonde-bot:develop
-    # build: ../chatbot
-    environment:
-      API_URL: http://api-v1:3000
-      APP_DOMAIN: http://beta.bonde.devel
-      GRAPHQL_URL: http://api-v2:3002/graphql
-      JWT_TOKEN: xxxxxxxxx
-      PORT: '5000'
-      REDIS_URL: redis://redis:6379
-      SPEECH_VERSION: v1
-      WIT_SERVER_ACCESS_TOKEN: xxxxxxxxx
-    external_links:
-    - redis
-    - api-v2
-    - api-v1
-
   phone:
     image: nossas/bonde-phone:1.1.0
     # build: ../phone
@@ -95,8 +78,7 @@ services:
       traefik.enable: 'true'
 
   graphql-auth:
-    # image: nossas/bonde-webhooks-auth:develop
-    image: nossas/bonde-webhooks-auth:feature-webhooks-auth
+    image: nossas/bonde-webhooks-auth:develop
     # build:
     #   context: ./../bonde-microservices
     #   dockerfile: packages/webhooks-auth/Dockerfile
@@ -106,8 +88,7 @@ services:
       JWT_SECRET: segredo123
 
   chatbot:
-    # image: nossas/bonde-bot:develop
-    image: nossas/bonde-bot:feature-beta-graphene
+    image: nossas/bonde-bot:develop
     # build:
     #   context: ./../bonde-bot
     environment:

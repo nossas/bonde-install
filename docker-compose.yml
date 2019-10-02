@@ -116,12 +116,6 @@ services:
       service: webhooks-registry
     depends_on:
     - api-graphql
-    labels:
-      traefik.frontend.rule: http://webhooks-registry.bonde.devel
-      traefik.port: '8081'
-      traefik.enable: 'true'
-    ports:
-      - 8081:8081
 
   webhooks-zendesk:
     extends:
@@ -129,9 +123,17 @@ services:
       service: webhooks-zendesk
     depends_on:
     - api-graphql
-    labels:
-      traefik.frontend.rule: http://webhooks-zedesk.bonde.devel
-      traefik.port: '8082'
-      traefik.enable: 'true'
-    ports:
-      - 8082:8082
+
+  webhooks-solidarity-count:
+    extends:
+      file: docker-compose.webhooks.yml
+      service: webhooks-solidarity-count
+    depends_on: 
+    - api-graphql
+
+  webhooks-solidarity-match:
+    extends:
+      file: docker-compose.webhooks.yml
+      service: webhooks-solidarity-match
+    depends_on: 
+    - api-graphql

@@ -109,3 +109,31 @@ services:
       traefik.frontend.rule: Host:chatbot.bonde.devel
       traefik.port: '5000'
       traefik.enable: 'true'
+
+  webhooks-registry:
+    extends:
+      file: docker-compose.webhooks.yml
+      service: webhooks-registry
+    depends_on:
+    - api-graphql
+
+  webhooks-zendesk:
+    extends:
+      file: docker-compose.webhooks.yml
+      service: webhooks-zendesk
+    depends_on:
+    - api-graphql
+
+  webhooks-solidarity-count:
+    extends:
+      file: docker-compose.webhooks.yml
+      service: webhooks-solidarity-count
+    depends_on: 
+    - api-graphql
+
+  webhooks-solidarity-match:
+    extends:
+      file: docker-compose.webhooks.yml
+      service: webhooks-solidarity-match
+    depends_on: 
+    - api-graphql

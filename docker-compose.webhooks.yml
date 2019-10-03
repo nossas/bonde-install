@@ -102,3 +102,65 @@ services:
     - redis
     - api-graphql
     - api-v1
+
+  webhooks-registry:
+    # image: nossas/bonde-webhooks-registry:develop
+    build: 
+      dockerfile: packages/webhooks-registry/Dockerfile
+      context: ../bonde-microservices
+    environment:
+      PORT: 8081
+      HASURA_API_URL: http://api-graphql:8080/v1/graphql
+      X_HASURA_ADMIN_SECRET: segredo123
+      DEBUG: webhooks-registry*
+
+  webhooks-zendesk:
+    # image: nossas/bonde-webhooks-zendesk:develop
+    build: 
+      dockerfile: packages/webhooks-zendesk/Dockerfile
+      context: ../bonde-microservices
+    environment:
+      ZENDESK_API_URL: https://xxxxx.zendesk.com/api/v2/
+      ZENDESK_API_TOKEN: token
+      ZENDESK_API_USER: email@nossas.org/token
+      PORT: 80
+      ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"","MSR":"","PSICÓLOGA":""}'
+      GOOGLE_MAPS_API_KEY: gmaps
+      WIDGET_IDS: '{"ADVOGADA": , "PSICÓLOGA": }'
+      HASURA_API_URL: http://api-graphql:8080/v1/graphql
+      X_HASURA_ADMIN_SECRET: segredo123
+      DEBUG: webhooks-zendesk*
+
+  webhooks-solidarity-count:
+    build:
+      dockerfile: packages/webhooks-solidarity-count/Dockerfile
+      context: ../bonde-microservices
+    environment:
+      DEBUG: webhooks-solidarity-count*
+      ZENDESK_API_URL: https://mapadoacolhimento.zendesk.com/api/v2/
+      ZENDESK_API_TOKEN: token
+      ZENDESK_API_USER: email
+      PORT: 8084
+      ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"360269610652","MSR":"360273031591","PSICÓLOGA":"360282119532"}'
+      GOOGLE_MAPS_API_KEY: gmaps
+      WIDGET_IDS: '{"ADVOGADA": 17633, "PSICÓLOGA": 17628}'
+      HASURA_API_URL: http://api-graphql:8080/v1/graphql
+      X_HASURA_ADMIN_SECRET: segredo123
+      COMMUNITY_ID: 21
+
+  webhooks-solidarity-match:
+    build:
+      dockerfile: packages/webhooks-solidarity-match/Dockerfile
+      context: ../bonde-microservices
+    environment: 
+      DEBUG: webhooks-solidarity-match*
+      ZENDESK_API_URL: https://mapadoacolhimento.zendesk.com/api/v2/
+      ZENDESK_API_TOKEN: token
+      ZENDESK_API_USER: email
+      PORT: 80
+      ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"360269610652","MSR":"360273031591","PSICÓLOGA":"360282119532"}'
+      GOOGLE_MAPS_API_KEY: gmaps
+      WIDGET_IDS: '{"ADVOGADA": 17633, "PSICÓLOGA": 17628}'
+      HASURA_API_URL: http://api-graphql:8080/v1/graphql
+      X_HASURA_ADMIN_SECRET: segredo123
+

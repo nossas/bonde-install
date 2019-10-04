@@ -54,7 +54,7 @@ services:
       traefik.alias: fake-smtp
 
   traefik:
-    image: traefik:alpine
+    image: traefik:1.7-alpine
     environment:
       AWS_ACCESS_KEY_ID: xxxxxxx
       AWS_SECRET_ACCESS_KEY: xxxxxx

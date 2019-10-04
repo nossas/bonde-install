@@ -73,7 +73,7 @@ services:
     command:
     - ./run_webserver.sh
     labels:
-      traefik.frontend.rule: Host:webhook-mapa-zendesk.bonde.devel
+      traefik.frontend.rule: Host:zendesk-mapa-v1.bonde.devel
       traefik.port: '5000'
       traefik.enable: 'true'
 

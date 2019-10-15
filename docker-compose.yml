@@ -111,29 +111,70 @@ services:
       traefik.enable: 'true'
 
   webhooks-registry:
+    build: node-pnpm.dockerfile
     extends:
       file: docker-compose.webhooks.yml
       service: webhooks-registry
+    working_dir: /usr/src/app/packages/webhooks-registry
+    volumes: 
+      - ../bonde-microservices:/usr/src/app
+    tty: true
+    command:
+    - pnpm
+    - run
+    - dev
     depends_on:
     - api-graphql
+    ports: 
+    - 8081:80
 
   webhooks-zendesk:
+    build: node-pnpm.dockerfile
     extends:
       file: docker-compose.webhooks.yml
       service: webhooks-zendesk
+    working_dir: /usr/src/app/packages/webhooks-zendesk
+    volumes: 
+      - ../bonde-microservices:/usr/src/app
+    tty: true
+    command:
+    - pnpm
+    - run
+    - dev
     depends_on:
     - api-graphql
 
   webhooks-solidarity-count:
+    build: node-pnpm.dockerfile
     extends:
       file: docker-compose.webhooks.yml
       service: webhooks-solidarity-count
-    depends_on: 
+    working_dir: /usr/src/app/packages/webhooks-solidarity-count
+    volumes: 
+      - ../bonde-microservices:/usr/src/app
+    tty: true
+    user: "${UID}:${GID}"
+    command:
+    - pnpm
+    - run
+    - dev
+    depends_on:
     - api-graphql
+    ports:
+    - 8084:80
 
   webhooks-solidarity-match:
+    build: node-pnpm.dockerfile
     extends:
       file: docker-compose.webhooks.yml
       service: webhooks-solidarity-match
+    working_dir: /usr/src/app/packages/webhooks-solidarity-match
+    volumes: 
+      - ../bonde-microservices:/usr/src/app
+    tty: true
+    command:
+    - pnpm
+    - run
+    - dev
     depends_on: 
     - api-graphql

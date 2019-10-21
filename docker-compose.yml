@@ -137,3 +137,11 @@ services:
       service: webhooks-solidarity-match
     depends_on: 
     - api-graphql
+
+  webhook-mail:
+    extends:
+      file: docker-compose.webhooks.yml
+      service: webhook-mail
+    depends_on: 
+    - api-graphql
+    - smtp

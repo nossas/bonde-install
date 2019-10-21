@@ -164,3 +164,17 @@ services:
       HASURA_API_URL: http://api-graphql:8080/v1/graphql
       X_HASURA_ADMIN_SECRET: segredo123
 
+  webhook-mail:
+    build:
+      dockerfile: packages/webhook-mail/Dockerfile
+      context: ../bonde-microservices
+    environment: 
+      DEBUG: webhook-mail*
+      PORT: 8080
+      GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
+      HASURA_SECRET: segredo123
+      SMTP_HOST: smtp
+      SMTP_PORT: 1025
+      SMTP_USER: xxxxxxxx
+      SMTP_PASS: xxxxxxxx
+

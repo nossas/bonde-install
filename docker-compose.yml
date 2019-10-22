@@ -78,6 +78,8 @@ services:
       HASURA_GRAPHQL_ADMIN_SECRET: "segredo123"
       HASURA_GRAPHQL_AUTH_HOOK: http://graphql-auth:4001/webhook
       HASURA_GRAPHQL_AUTH_HOOK_MODE: "GET"
+      WEBHOOK_MAIL_URL: http://webhook-mail:8080/webhook
+      WEBHOOK_ACTIVISTS_PRESSURE_URL: http://webhook-activists:8080/webhook/pressure
     labels:
       traefik.frontend.rule: Host:api-graphql.bonde.devel
       traefik.enable: 'true'
@@ -104,7 +106,6 @@ services:
     environment:
       PORT: 5000
       APP_DOMAIN: http://chatbot.bonde.devel
-      JWT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiY29tbW9uX3VzZXIiLCJ1c2VyX2lkIjoxLCJpYXQiOjE1NjgxMjAxMzQsImV4cCI6MTU2ODIwNjUzNCwiYXVkIjoicG9zdGdyYXBoaWxlIiwiaXNzIjoicG9zdGdyYXBoaWxlIn0.I52gMRQ8CpOAjRTkxBBHVC-qH6Mnll87ah2wdVgbLw0
     labels:
       traefik.frontend.rule: Host:chatbot.bonde.devel
       traefik.port: '5000'
@@ -145,3 +146,10 @@ services:
     depends_on: 
     - api-graphql
     - smtp
+
+  webhook-activists:
+    extends:
+      file: docker-compose.webhooks.yml
+      service: webhook-activists
+    depends_on: 
+    - api-graphql

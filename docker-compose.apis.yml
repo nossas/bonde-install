@@ -4,7 +4,7 @@ services:
 
   api-rest:
     image: nossas/bonde-server:develop
-    # build: ../api-rest/
+    # build: ../bonde-server
     environment:
       AWS_ACCESS_KEY_ID: admin
       AWS_BUCKET: bonde
@@ -73,7 +73,7 @@ services:
       - 3002:3002/tcp
 
   api-graphql:
-    image: hasura/graphql-engine:v1.0.0-beta.6
+    image: hasura/graphql-engine:v1.0.0-beta.9
     restart: always
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde

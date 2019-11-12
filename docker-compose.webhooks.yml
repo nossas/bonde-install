@@ -77,16 +77,6 @@ services:
       traefik.port: '5000'
       traefik.enable: 'true'
 
-  graphql-auth:
-    image: nossas/bonde-webhooks-auth:develop
-    # build:
-    #   context: ./../bonde-microservices
-    #   dockerfile: packages/webhooks-auth/Dockerfile
-    environment:
-      NODE_ENV: development
-      DEBUG: webhooks-auth
-      JWT_SECRET: segredo123
-
   chatbot:
     image: nossas/bonde-bot:develop
     # build:

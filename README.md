@@ -8,44 +8,56 @@
 />
 
 # Bonde Install
+
 This repository provides scripts to ease the development. To do that, configurations  are abstracted to containers with docker.
 
 ## Requirements
 
-Our development setup could be started by two ways, using vagrant or with local docker.
+Our development enviroment can be setup in two different ways, using vagrant or with local docker.
 
 If you only want to start containers locally:
+
 * Docker ( required 17.10.0-ce or later ) - https://docs.docker.com/install/
 * Docker Compose ( required: 1.20.1 ) - https://docs.docker.com/compose/install/
 * Make ( optional: 3.81 ) - https://www.gnu.org/software/make/
+  * If you don't have `make` installed, just run:
+
+    ``` bash
+      sudo apt-get update
+      sudo apt-get install build-essentials
+    ```
 
 To provision services using VirtualBox and Vagrant, we recomend the following versions:
+
 * VirtualBox ( required: 5.2.8 r121009 ) - https://www.virtualbox.org/wiki/Downloads
 * Vagrant ( required: 2.0.3 ) - https://www.vagrantup.com/downloads.html
 
 
 ## How to
 
-Running the commands will result in downloading a big amount of gigabytes, and some commands will demand  high levels of usage from cpu:
+When running the commands they'll be downloading a big amount of gigabytes, and some commands will demand  high levels of usage from CPU:
 
-```
+``` bash
 mkdir bonde
 cd bonde
 git clone git@github.com:nossas/bonde-install.git
 cd bonde-install
-make setup
-make migrate
+make begin
 ```
 
-**Important**: In case of problems when running make begin run make clean and try again
+**Important**: In case of problems when running make begin run `make clean` and try again
 
+<!-- Why exacly? -->
 Add to ```/etc/hosts``` following lines:
 
-```
+``` bash
 
-127.0.0.1   api-v3.bonde.devel traefik.bonde.devel bonde.devel app.bonde.devel admin-canary.bonde.devel api-v1.bonde.devel api-v2.bonde.devel teste.bonde.devel
+127.0.0.1 traefik.bonde.devel api-rest.bonde.devel api-graphql.bonde.devel api-v2.bonde.devel db.devel keyval.devel graphql-auth.bonde.devel
+
+127.0.0.1 bonde.devel app.bonde.devel admin-canary.bonde.devel cross-storage.bonde.devel chatbot.bonde.devel
 
 127.0.0.1 3-vamos-limpar-o-tiete.bonde.devel 2-save-the-whales.bonde.devel 1-vamos-limpar-o-tiete.bonde.devel
+
 ```
 
 These are essentials URLs from BONDE and must be accessible to get local copy fully working:
@@ -85,11 +97,24 @@ To Run:
 
 ```docker-compose up -d notifications```
 
+### Database
+
+* Have pgAdmin4 running in your machine
+* Click in **Add new server**
+* Give any name you'd like to the server (general tab)
+* Now go to the **Connection** tab
+  * host name/address: db.level
+  * port: 5542
+  * maintance database: bonde
+  * username: monkey_user
+  * password: monkey_pass
+
+
 ## Check
 
 Congratulations, when command finished of running, you could check if everything are ok running ```make status```, you should see a table like the following:
 
-```
+``` bash
            Name                          Command                  State                                                      Ports
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bonde-install_admin_1         yarn start                       Up             0.0.0.0:32770->5001/tcp
@@ -117,12 +142,10 @@ bonde-install_dispatcher-notification_1   /bin/sh -c ./run_dispatche ...   Up
 bonde-install_redis_1                     docker-entrypoint.sh redis ...   Up      0.0.0.0:6379->6379/tcp
 ```
 
-## What's next?
+## What's next
 
 Go to the local admin v1 url: http://app.bonde.devel.
 
-When login form finish to load, use "admin_foo@bar.com" as e-mail and "foobar!!" as password. After login, you will must create a community and mobilization.
+When the login form finishes loading, use "admin_foo@bar.com" as e-mail and "foobar!!" as password. After login, you must create a community and a mobilization.
 
 To more detailed documentation about technical decisions, or how to contribute, access http://docs.bonde.org or run ```make docs```.
-
-

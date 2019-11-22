@@ -3,22 +3,22 @@ version: '2'
 services:
 
   webhook-auth:
-    # image: nossas/bonde-auth-webhook:develop
-    build:
-      context: ./../bonde-auth
-      dockerfile: packages/webhook/Dockerfile
+    image: nossas/bonde-auth-webhook:latest
+    # build:
+    #   context: ./../bonde-auth
+    #   dockerfile: packages/webhook/Dockerfile
     environment:
       NODE_ENV: development
       DEBUG: bonde-auth-webhook
       JWT_SECRET: segredo123
 
   api-auth:
-    # image: nossas/bonde-auth-api:develop
-    build:
-      context: ./../bonde-auth
-      dockerfile: packages/api/Dockerfile
+    image: nossas/bonde-auth-api:latest
+    # build:
+    #   context: ./../bonde-auth
+    #   dockerfile: packages/api/Dockerfile
     environment:
       NODE_ENV: development
-      DEBUG: bonde-auth-webhook
+      DEBUG: bonde-auth-api
       JWT_SECRET: segredo123
       HASURA_SECRET: segredo123

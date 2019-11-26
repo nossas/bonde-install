@@ -3,7 +3,7 @@ version: '2'
 services:
 
   webhook-auth:
-    image: nossas/bonde-auth-webhook:latest
+    image: nossas/bonde-auth-webhook:develop
     # build:
     #   context: ./../bonde-auth
     #   dockerfile: packages/webhook/Dockerfile
@@ -13,7 +13,7 @@ services:
       JWT_SECRET: segredo123
 
   api-auth:
-    image: nossas/bonde-auth-api:latest
+    image: nossas/bonde-auth-api:develop
     # build:
     #   context: ./../bonde-auth
     #   dockerfile: packages/api/Dockerfile

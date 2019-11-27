@@ -71,12 +71,12 @@ services:
     depends_on:
     - pgmaster
     - api-v2
-    - graphql-auth
+    - webhook-auth
     ports:
     - "5007:8080"
     environment:
       HASURA_GRAPHQL_ADMIN_SECRET: "segredo123"
-      HASURA_GRAPHQL_AUTH_HOOK: http://graphql-auth:4001/webhook
+      HASURA_GRAPHQL_AUTH_HOOK: http://webhook-auth:4001/hasura
       HASURA_GRAPHQL_AUTH_HOOK_MODE: "GET"
       WEBHOOK_MAIL_URL: http://webhook-mail:8080/webhook
       WEBHOOK_ACTIVISTS_PRESSURE_URL: http://webhook-activists:8080/webhook/pressure
@@ -86,14 +86,26 @@ services:
       traefik.alias: api-graphql
       traefik.port: '8080'
 
-  graphql-auth:
+  webhook-auth:
     extends:
-      file: docker-compose.webhooks.yml
-      service: graphql-auth
+      file: docker-compose.auth.yml
+      service: webhook-auth
     environment:
       PORT: 4001
     labels:
-      traefik.frontend.rule: Host:graphql-auth.bonde.devel
+      traefik.frontend.rule: Host:webhook.auth.bonde.devel
+      traefik.port: '4001'
+      traefik.enable: 'true'
+
+  api-auth:
+    extends:
+      file: docker-compose.auth.yml
+      service: api-auth
+    environment:
+      PORT: 4001
+      GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
+    labels:
+      traefik.frontend.rule: Host:api.auth.bonde.devel
       traefik.port: '4001'
       traefik.enable: 'true'
 

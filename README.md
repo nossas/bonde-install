@@ -96,6 +96,15 @@ Commands to create new:
 
 ``docker-compose run --rm migrations diesel migration generate initial_chatbot``
 
+Commands to update migrations:
+
+``` bash
+docker-compose -f docker-compose.workers.yml build --no-cache migrations
+docker-compose -f docker-compose.workers.yml up -d migrations
+```
+
+You also need to be up to date with the `bonde-migrations` repository.
+
 ### Dispatchers
 
 #### Notifications
@@ -276,6 +285,31 @@ mutation InsertCommunityUsers {
   }
 }
 ```
+
+5. Add tags to db via **query** in pgAdmin4
+
+* Insert tags
+
+``` sql
+  insert into tags ("name", "label") values ('user_meio-ambiente', 'Meio Ambiente') ON CONFLICT (name) DO NOTHING;
+  insert into tags ("name", "label") values ('user_direitos-humanos', 'Direitos Humanos') ON CONFLICT (name) DO NOTHING;
+  insert into tags ("name", "label") values ('user_segurança-publica', 'Segurança pública') ON CONFLICT (name) DO NOTHING;
+  insert into tags ("name", "label") values ('user_mobilidade', 'Mobilidade') ON CONFLICT (name) DO NOTHING;
+  insert into tags ("name", "label") values ('user_direito-das-mulheres', 'Direito das Mulheres') ON CONFLICT (name) DO NOTHING;
+  insert into tags ("name", "label") values ('user_feminismo', 'Feminismo') ON CONFLICT (name) DO NOTHING;
+  insert into tags ("name", "label") values ('user_participacao-social', 'Participação Social') ON CONFLICT (name) DO NOTHING;
+  insert into tags ("name", "label") values ('user_educacao', 'Educação') ON CONFLICT (name) DO NOTHING;
+  insert into tags ("name", "label") values ('user_transparencia', 'Transparência') ON CONFLICT (name) DO NOTHING;
+  insert into tags ("name", "label") values ('user_direito-lgbtqi+', 'Direito LGBTQI+') ON CONFLICT (name) DO NOTHING;
+  insert into tags ("name", "label") values ('user_direito-a-moradia', 'Direito à Moradia') ON CONFLICT (name) DO NOTHING;
+  insert into tags ("name", "label") values ('user_combate-a-corrupção', 'Combate à Corrupção') ON CONFLICT (name) DO NOTHING;
+  insert into tags ("name", "label") values ('user_combate-ao-racismo', 'Combate ao Racismo') ON CONFLICT (name) DO NOTHING;
+  insert into tags ("name", "label") values ('user_saude-publica', 'Saúde Pública') ON CONFLICT (name) DO NOTHING;
+```
+
+* Add field **kind** to **tags**
+
+`update public.tags set kind = 'user' where name like 'user_%';`
 
 If it all went well, go back to **admin-canary.bonde.devel** where you now have a login. Use "admin_foo@bar.com" as e-mail and "foobar!!" as password. After login, you can create mobilizations or play around with all the other features the app offers.
 

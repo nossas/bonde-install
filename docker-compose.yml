@@ -5,8 +5,8 @@ volumes:
     driver: local
   s3_data:
     driver: local
-  pgmaster_data:
-    driver: local
+  # pgmaster_data:
+  #   driver: local
 
 services:
   s3:
@@ -80,6 +80,7 @@ services:
       HASURA_GRAPHQL_AUTH_HOOK_MODE: "GET"
       WEBHOOK_MAIL_URL: http://webhook-mail:8080/webhook
       WEBHOOK_ACTIVISTS_PRESSURE_URL: http://webhook-activists:8080/webhook/pressure
+      WEBHOOK_INVITATIONS_URL: http://webhook-auth:4001/invitations
     labels:
       traefik.frontend.rule: Host:api-graphql.bonde.devel
       traefik.enable: 'true'
@@ -92,6 +93,7 @@ services:
       service: webhook-auth
     environment:
       PORT: 4001
+      GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
     labels:
       traefik.frontend.rule: Host:webhook.auth.bonde.devel
       traefik.port: '4001'

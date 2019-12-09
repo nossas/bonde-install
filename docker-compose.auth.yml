@@ -11,6 +11,7 @@ services:
       NODE_ENV: development
       DEBUG: bonde-auth-webhook
       JWT_SECRET: segredo123
+      HASURA_SECRET: segredo123
 
   api-auth:
     image: nossas/bonde-auth-api:develop

@@ -113,14 +113,27 @@ services:
       traefik.alias: cross-storage
       traefik.port: '80'
 
-  styleguide:
-    image: nossas/bonde-styleguide:develop
-    # build: ../client/packages/styleguide/
+      styleguide:
+        image: nossas/bonde-styleguide:develop
+        # build: ../client/packages/styleguide/
+        labels:
+          traefik.frontend.rule: Host:styleguide.bonde.devel
+          traefik.enable: 'true'
+          traefik.alias: styleguide
+          traefik.port: '80'
+          io.rancher.container.pull_image: always
+          traefik.acme: 'false'
+          traefik.frontend.entryPoints: http
+
+  redes-client:
+    image: nossas/bonde-redes-client:develop
+    build: ../bonde-microservices/packages/solidarity-client/
     labels:
-      traefik.frontend.rule: Host:styleguide.bonde.devel
+      traefik.frontend.rule: Host:redes.bonde.devel
       traefik.enable: 'true'
-      traefik.alias: styleguide
+      traefik.alias: redes
       traefik.port: '80'
       io.rancher.container.pull_image: always
       traefik.acme: 'false'
       traefik.frontend.entryPoints: http
+

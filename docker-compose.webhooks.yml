@@ -57,124 +57,73 @@ services:
       traefik.acme: 'false'
       traefik.frontend.entryPoints: http
 
-  zendesk-mapa-v1:
-    image: nossas/bonde-zendesk:develop
-    # build: ../zendesk-mapa-v1
-    environment:
-      ZENDESK_ORGANIZATIONS: '{"Advogada":"","MSR":"","Psicologa":""}'
-      ZENDESK_API_ROOT: http://xxxx.zendesk.com/api/v2/
-      ZENDESK_API_TOKEN: token
-      ZENDESK_API_USER: email@email.com.br
-      JWT_SECRET: asd
-      GOOGLE_MAPS_API_KEY: vcxz
-      SENDGRID_SEND_EMAIL: email@email.com.br
-      DEBUG: '0'
-      SENDGRID_API_KEY: key
-    command:
-    - ./run_webserver.sh
-    labels:
-      traefik.frontend.rule: Host:zendesk-mapa-v1.bonde.devel
-      traefik.port: '5000'
-      traefik.enable: 'true'
+  # zendesk-mapa-v1:
+  #   image: nossas/bonde-zendesk:develop
+  #   # build: ../zendesk-mapa-v1
+  #   environment:
+  #     ZENDESK_ORGANIZATIONS: '{"Advogada":"","MSR":"","Psicologa":""}'
+  #     ZENDESK_API_ROOT: http://xxxx.zendesk.com/api/v2/
+  #     ZENDESK_API_TOKEN: token
+  #     ZENDESK_API_USER: email@email.com.br
+  #     JWT_SECRET: asd
+  #     GOOGLE_MAPS_API_KEY: vcxz
+  #     SENDGRID_SEND_EMAIL: email@email.com.br
+  #     DEBUG: '0'
+  #     SENDGRID_API_KEY: key
+  #   command:
+  #   - ./run_webserver.sh
+  #   labels:
+  #     traefik.frontend.rule: Host:zendesk-mapa-v1.bonde.devel
+  #     traefik.port: '5000'
+  #     traefik.enable: 'true'
 
-  chatbot:
-    image: nossas/bonde-bot:develop
-    # build:
-    #   context: ./../bonde-bot
-    environment:
-      API_URL: http://api-v1:3000
-      REDIS_URL: redis://redis:6379
-      SPEECH_VERSION: v1
-      WIT_SERVER_ACCESS_TOKEN: xxxxxxxxx
-      GRAPHQL_URL: http://api-graphql:8080/v1/graphql
-      WS_GRAPHQL_URL: ws://api-graphql:8080/v1/graphql
-      HASURA_SECRET: segredo123
-    external_links:
-    - redis
-    - api-graphql
-    - api-v1
+  # webhooks-zendesk:
+  #   # image: nossas/bonde-webhooks-zendesk:develop
+  #   build: 
+  #     dockerfile: packages/webhooks-zendesk/Dockerfile
+  #     context: ../bonde-microservices
+  #   environment:
+  #     ZENDESK_API_URL: https://xxxxx.zendesk.com/api/v2/
+  #     ZENDESK_API_TOKEN: token
+  #     ZENDESK_API_USER: email@nossas.org/token
+  #     PORT: 80
+  #     ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"","MSR":"","PSICÓLOGA":""}'
+  #     GOOGLE_MAPS_API_KEY: gmaps
+  #     WIDGET_IDS: '{"ADVOGADA": , "PSICÓLOGA": }'
+  #     HASURA_API_URL: http://api-graphql:8080/v1/graphql
+  #     X_HASURA_ADMIN_SECRET: segredo123
+  #     DEBUG: webhooks-zendesk*
 
-  webhooks-registry:
-    # image: nossas/bonde-webhooks-registry:develop
-    build: 
-      dockerfile: packages/webhooks-registry/Dockerfile
-      context: ../bonde-microservices
-    environment:
-      PORT: 8081
-      HASURA_API_URL: http://api-graphql:8080/v1/graphql
-      X_HASURA_ADMIN_SECRET: segredo123
-      DEBUG: webhooks-registry*
+  # webhooks-solidarity-count:
+  #   build:
+  #     dockerfile: packages/webhooks-solidarity-count/Dockerfile
+  #     context: ../bonde-microservices
+  #   environment:
+  #     DEBUG: webhooks-solidarity-count*
+  #     ZENDESK_API_URL: https://mapadoacolhimento.zendesk.com/api/v2/
+  #     ZENDESK_API_TOKEN: token
+  #     ZENDESK_API_USER: email
+  #     PORT: 8084
+  #     ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"360269610652","MSR":"360273031591","PSICÓLOGA":"360282119532"}'
+  #     GOOGLE_MAPS_API_KEY: gmaps
+  #     WIDGET_IDS: '{"ADVOGADA": 17633, "PSICÓLOGA": 17628}'
+  #     HASURA_API_URL: http://api-graphql:8080/v1/graphql
+  #     X_HASURA_ADMIN_SECRET: segredo123
+  #     COMMUNITY_ID: 21
 
-  webhooks-zendesk:
-    # image: nossas/bonde-webhooks-zendesk:develop
-    build: 
-      dockerfile: packages/webhooks-zendesk/Dockerfile
-      context: ../bonde-microservices
-    environment:
-      ZENDESK_API_URL: https://xxxxx.zendesk.com/api/v2/
-      ZENDESK_API_TOKEN: token
-      ZENDESK_API_USER: email@nossas.org/token
-      PORT: 80
-      ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"","MSR":"","PSICÓLOGA":""}'
-      GOOGLE_MAPS_API_KEY: gmaps
-      WIDGET_IDS: '{"ADVOGADA": , "PSICÓLOGA": }'
-      HASURA_API_URL: http://api-graphql:8080/v1/graphql
-      X_HASURA_ADMIN_SECRET: segredo123
-      DEBUG: webhooks-zendesk*
+  # webhooks-solidarity-match:
+  #   build:
+  #     dockerfile: packages/webhooks-solidarity-match/Dockerfile
+  #     context: ../bonde-microservices
+  #   environment: 
+  #     DEBUG: webhooks-solidarity-match*
+  #     ZENDESK_API_URL: https://mapadoacolhimento.zendesk.com/api/v2/
+  #     ZENDESK_API_TOKEN: token
+  #     ZENDESK_API_USER: email
+  #     PORT: 80
+  #     ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"360269610652","MSR":"360273031591","PSICÓLOGA":"360282119532"}'
+  #     GOOGLE_MAPS_API_KEY: gmaps
+  #     WIDGET_IDS: '{"ADVOGADA": 17633, "PSICÓLOGA": 17628}'
+  #     HASURA_API_URL: http://api-graphql:8080/v1/graphql
+  #     X_HASURA_ADMIN_SECRET: segredo123
 
-  webhooks-solidarity-count:
-    build:
-      dockerfile: packages/webhooks-solidarity-count/Dockerfile
-      context: ../bonde-microservices
-    environment:
-      DEBUG: webhooks-solidarity-count*
-      ZENDESK_API_URL: https://mapadoacolhimento.zendesk.com/api/v2/
-      ZENDESK_API_TOKEN: token
-      ZENDESK_API_USER: email
-      PORT: 8084
-      ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"360269610652","MSR":"360273031591","PSICÓLOGA":"360282119532"}'
-      GOOGLE_MAPS_API_KEY: gmaps
-      WIDGET_IDS: '{"ADVOGADA": 17633, "PSICÓLOGA": 17628}'
-      HASURA_API_URL: http://api-graphql:8080/v1/graphql
-      X_HASURA_ADMIN_SECRET: segredo123
-      COMMUNITY_ID: 21
-
-  webhooks-solidarity-match:
-    build:
-      dockerfile: packages/webhooks-solidarity-match/Dockerfile
-      context: ../bonde-microservices
-    environment: 
-      DEBUG: webhooks-solidarity-match*
-      ZENDESK_API_URL: https://mapadoacolhimento.zendesk.com/api/v2/
-      ZENDESK_API_TOKEN: token
-      ZENDESK_API_USER: email
-      PORT: 80
-      ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"360269610652","MSR":"360273031591","PSICÓLOGA":"360282119532"}'
-      GOOGLE_MAPS_API_KEY: gmaps
-      WIDGET_IDS: '{"ADVOGADA": 17633, "PSICÓLOGA": 17628}'
-      HASURA_API_URL: http://api-graphql:8080/v1/graphql
-      X_HASURA_ADMIN_SECRET: segredo123
-
-  webhook-mail:
-    build:
-      dockerfile: packages/webhook-mail/Dockerfile
-      context: ../bonde-microservices
-    environment: 
-      DEBUG: webhook-mail*
-      PORT: 8080
-      GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
-      HASURA_SECRET: segredo123
-      SMTP_HOST: smtp
-      SMTP_PORT: 1025
-      SMTP_USER: xxxxxxxx
-      SMTP_PASS: xxxxxxxx
-
-  webhook-activists:
-    build:
-      dockerfile: packages/webhook-activists/Dockerfile
-      context: ../bonde-microservices
-    environment: 
-      DEBUG: webhook-activists*
-      PORT: 8080
-      GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
-      HASURA_SECRET: segredo123

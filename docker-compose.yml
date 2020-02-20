@@ -5,8 +5,8 @@ volumes:
     driver: local
   s3_data:
     driver: local
-  # pgmaster_data:
-  #   driver: local
+  pgmaster_data:
+    driver: local
 
 services:
   s3:
@@ -111,9 +111,9 @@ services:
       traefik.port: '4001'
       traefik.enable: 'true'
 
-  chatbot:
+  listener-chatbot:
     extends:
-      file: docker-compose.webhooks.yml
+      file: docker-compose.listeners.yml
       service: chatbot
     depends_on:
     - api-graphql
@@ -125,45 +125,59 @@ services:
       traefik.port: '5000'
       traefik.enable: 'true'
 
-  webhooks-registry:
+  pipeline-registries-to-zendesk:
     extends:
-      file: docker-compose.webhooks.yml
-      service: webhooks-registry
+      file: docker-compose.pipelines.yml
+      service: registries-to-zendesk
     depends_on:
     - api-graphql
 
-  webhooks-zendesk:
+  # webhooks-zendesk:
+  #   extends:
+  #     file: docker-compose.webhooks.yml
+  #     service: webhooks-zendesk
+  #   depends_on:
+  #   - api-graphql
+
+  # webhooks-solidarity-count:
+  #   extends:
+  #     file: docker-compose.webhooks.yml
+  #     service: webhooks-solidarity-count
+  #   depends_on:
+  #   - api-graphql
+
+  # webhooks-solidarity-match:
+  #   extends:
+  #     file: docker-compose.webhooks.yml
+  #     service: webhooks-solidarity-match
+  #   depends_on:
+  #   - api-graphql
+
+  listener-notifications:
     extends:
-      file: docker-compose.webhooks.yml
-      service: webhooks-zendesk
+      file: docker-compose.listeners.yml
+      service: notifications
     depends_on:
-    - api-graphql
-
-  webhooks-solidarity-count:
-    extends:
-      file: docker-compose.webhooks.yml
-      service: webhooks-solidarity-count
-    depends_on: 
-    - api-graphql
-
-  webhooks-solidarity-match:
-    extends:
-      file: docker-compose.webhooks.yml
-      service: webhooks-solidarity-match
-    depends_on: 
-    - api-graphql
-
-  webhook-mail:
-    extends:
-      file: docker-compose.webhooks.yml
-      service: webhook-mail
-    depends_on: 
     - api-graphql
     - smtp
 
-  webhook-activists:
+  pipeline-activists-to-notifications:
     extends:
-      file: docker-compose.webhooks.yml
-      service: webhook-activists
-    depends_on: 
+      file: docker-compose.pipelines.yml
+      service: activists-to-notifications
+    depends_on:
+    - api-graphql
+
+  listener-redes:
+    extends:
+      file: docker-compose.listeners.yml
+      service: redes
+    depends_on:
+    - api-graphql
+
+  pipeline-form-entries-to-redes:
+    extends:
+      file: docker-compose.pipelines.yml
+      service: form-entries-to-redes
+    depends_on:
     - api-graphql

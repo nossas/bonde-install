@@ -1,5 +1,5 @@
 version: '2'
-services:  
+services:
 
   chatbot:
     image: nossas/bonde-bot:develop
@@ -22,7 +22,7 @@ services:
     build:
       dockerfile: packages/webhook-mail/Dockerfile
       context: ../bonde-microservices
-    environment: 
+    environment:
       DEBUG: webhook-mail*
       PORT: 8080
       GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
@@ -33,10 +33,9 @@ services:
       SMTP_PASS: xxxxxxxx
 
   redes:
-    image: nossas/bonde-redes:develop
-    build: ../bonde-microservices/packages/listener-redes
+    # image: nossas/bonde-redes:develop
     environment:
-    build: 
+    build:
       dockerfile: packages/listener-redes/Dockerfile
       context: ../bonde-microservices
     environment:

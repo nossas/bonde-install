@@ -82,6 +82,7 @@ services:
       POSTGRES_USER: monkey_user
     volumes:
     - pgmaster_data:/var/lib/postgresql/data
+    - ./backups:/backups
     ports:
     - 5432/tcp
 

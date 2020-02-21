@@ -131,26 +131,26 @@ If you check the "docker-compose.commom.yml", there are two setups that configur
 Congratulations, when command finished of running, you could check if everything are ok running ```make status```, you should see a table like the following:
 
 ``` bash
-                  Name                                 Command               State                                 Ports                              
+                  Name                                 Command               State                                 Ports
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-bonde-install_api-graphql_1                 graphql-engine serve             Up       0.0.0.0:5007->8080/tcp                                          
-bonde-install_api-rest_1                    bundle exec puma -C config ...   Up       3000/tcp                                                        
-bonde-install_api-v2_1                      npm run dev                      Up       0.0.0.0:3002->3002/tcp                                          
-bonde-install_chatbot_1                     docker-entrypoint.sh yarn  ...   Up                                                                       
-bonde-install_graphql-auth_1                docker-entrypoint.sh /bin/ ...   Up                                                                       
-bonde-install_migrations_1                  diesel migration run             Exit 0                                                                   
-bonde-install_pgmaster_1                    docker-entrypoint.sh postgres    Up       0.0.0.0:32770->5432/tcp                                         
-bonde-install_redis_1                       docker-entrypoint.sh redis ...   Up       0.0.0.0:6379->6379/tcp                                          
-bonde-install_s3_1                          /usr/bin/docker-entrypoint ...   Up       0.0.0.0:9000->9000/tcp                                          
-bonde-install_smtp_1                        MailHog                          Up       0.0.0.0:1025->1025/tcp, 0.0.0.0:8025->8025/tcp                  
+bonde-install_api-graphql_1                 graphql-engine serve             Up       0.0.0.0:5007->8080/tcp
+bonde-install_api-rest_1                    bundle exec puma -C config ...   Up       3000/tcp
+bonde-install_api-v2_1                      npm run dev                      Up       0.0.0.0:3002->3002/tcp
+bonde-install_chatbot_1                     docker-entrypoint.sh yarn  ...   Up
+bonde-install_graphql-auth_1                docker-entrypoint.sh /bin/ ...   Up
+bonde-install_migrations_1                  diesel migration run             Exit 0
+bonde-install_pgmaster_1                    docker-entrypoint.sh postgres    Up       0.0.0.0:32770->5432/tcp
+bonde-install_redis_1                       docker-entrypoint.sh redis ...   Up       0.0.0.0:6379->6379/tcp
+bonde-install_s3_1                          /usr/bin/docker-entrypoint ...   Up       0.0.0.0:9000->9000/tcp
+bonde-install_smtp_1                        MailHog                          Up       0.0.0.0:1025->1025/tcp, 0.0.0.0:8025->8025/tcp
 bonde-install_traefik_1                     /entrypoint.sh --configfil ...   Up       0.0.0.0:443->443/tcp, 0.0.0.0:80->80/tcp, 0.0.0.0:8080->8080/tcp
-bonde-install_webhook-activists_1           docker-entrypoint.sh /bin/ ...   Up                                                                       
-bonde-install_webhook-mail_1                docker-entrypoint.sh /bin/ ...   Up                                                                       
-bonde-install_webhooks-registry_1           docker-entrypoint.sh /bin/ ...   Up                                                                       
-bonde-install_webhooks-solidarity-count_1   docker-entrypoint.sh /bin/ ...   Up                                                                       
-bonde-install_webhooks-solidarity-match_1   docker-entrypoint.sh /bin/ ...   Up                                                                       
-bonde-install_webhooks-zendesk_1            docker-entrypoint.sh /bin/ ...   Up                                                                       
-            Name                           Command               State          Ports        
+bonde-install_webhook-activists_1           docker-entrypoint.sh /bin/ ...   Up
+bonde-install_webhook-mail_1                docker-entrypoint.sh /bin/ ...   Up
+bonde-install_webhooks-registry_1           docker-entrypoint.sh /bin/ ...   Up
+bonde-install_webhooks-solidarity-count_1   docker-entrypoint.sh /bin/ ...   Up
+bonde-install_webhooks-solidarity-match_1   docker-entrypoint.sh /bin/ ...   Up
+bonde-install_webhooks-zendesk_1            docker-entrypoint.sh /bin/ ...   Up
+            Name                           Command               State          Ports
 ---------------------------------------------------------------------------------------------
 bonde-install_cross-storage_1   /bin/bash -c exec nginx -g ...   Up      0.0.0.0:8888->80/tcp
 Name   Command   State   Ports
@@ -161,26 +161,26 @@ Name   Command   State   Ports
 ------------------------------
                   Name                                 Command               State   Ports
 ------------------------------------------------------------------------------------------
-bonde-install_chatbot_1                     docker-entrypoint.sh yarn  ...   Up           
-bonde-install_graphql-auth_1                docker-entrypoint.sh /bin/ ...   Up           
-bonde-install_webhook-activists_1           docker-entrypoint.sh /bin/ ...   Up           
-bonde-install_webhook-mail_1                docker-entrypoint.sh /bin/ ...   Up           
-bonde-install_webhooks-registry_1           docker-entrypoint.sh /bin/ ...   Up           
-bonde-install_webhooks-solidarity-count_1   docker-entrypoint.sh /bin/ ...   Up           
-bonde-install_webhooks-solidarity-match_1   docker-entrypoint.sh /bin/ ...   Up           
-bonde-install_webhooks-zendesk_1            docker-entrypoint.sh /bin/ ...   Up           
-             Name                            Command               State     Ports  
+bonde-install_chatbot_1                     docker-entrypoint.sh yarn  ...   Up
+bonde-install_graphql-auth_1                docker-entrypoint.sh /bin/ ...   Up
+bonde-install_webhook-activists_1           docker-entrypoint.sh /bin/ ...   Up
+bonde-install_webhook-mail_1                docker-entrypoint.sh /bin/ ...   Up
+bonde-install_webhooks-registry_1           docker-entrypoint.sh /bin/ ...   Up
+bonde-install_webhooks-solidarity-count_1   docker-entrypoint.sh /bin/ ...   Up
+bonde-install_webhooks-solidarity-match_1   docker-entrypoint.sh /bin/ ...   Up
+bonde-install_webhooks-zendesk_1            docker-entrypoint.sh /bin/ ...   Up
+             Name                            Command               State     Ports
 ------------------------------------------------------------------------------------
 bonde-install_api-rest_1          bundle exec puma -C config ...   Up       3000/tcp
-bonde-install_migrations_1        diesel migration run             Exit 0           
-bonde-install_templates-email_1   bundle exec rake notificat ...   Exit 0           
-          Name                        Command               State                                Ports                              
+bonde-install_migrations_1        diesel migration run             Exit 0
+bonde-install_templates-email_1   bundle exec rake notificat ...   Exit 0
+          Name                        Command               State                                Ports
 ------------------------------------------------------------------------------------------------------------------------------------
-bonde-install_pgadmin4_1   /entrypoint.sh                   Up      443/tcp, 0.0.0.0:5433->80/tcp                                   
-bonde-install_pgmaster_1   docker-entrypoint.sh postgres    Up      0.0.0.0:32770->5432/tcp                                         
-bonde-install_redis_1      docker-entrypoint.sh redis ...   Up      0.0.0.0:6379->6379/tcp                                          
-bonde-install_s3_1         /usr/bin/docker-entrypoint ...   Up      0.0.0.0:9000->9000/tcp                                          
-bonde-install_smtp_1       MailHog                          Up      0.0.0.0:1025->1025/tcp, 0.0.0.0:8025->8025/tcp                  
+bonde-install_pgadmin4_1   /entrypoint.sh                   Up      443/tcp, 0.0.0.0:5433->80/tcp
+bonde-install_pgmaster_1   docker-entrypoint.sh postgres    Up      0.0.0.0:32770->5432/tcp
+bonde-install_redis_1      docker-entrypoint.sh redis ...   Up      0.0.0.0:6379->6379/tcp
+bonde-install_s3_1         /usr/bin/docker-entrypoint ...   Up      0.0.0.0:9000->9000/tcp
+bonde-install_smtp_1       MailHog                          Up      0.0.0.0:1025->1025/tcp, 0.0.0.0:8025->8025/tcp
 bonde-install_traefik_1    /entrypoint.sh --configfil ...   Up      0.0.0.0:443->443/tcp, 0.0.0.0:80->80/tcp, 0.0.0.0:8080->8080/tcp
 
 ```
@@ -280,3 +280,13 @@ mutation InsertCommunityUsers {
 If it all went well, go back to **admin-canary.bonde.devel** where you now have a login. Use "admin_foo@bar.com" as e-mail and "foobar!!" as password. After login, you can create mobilizations or play around with all the other features the app offers.
 
 To more detailed documentation about technical decisions, or how to contribute, access http://docs.bonde.org or run ```make docs```.
+
+
+## Seeds from sql files
+
+Copy sql file to ```backups/``` folder, before start.
+
+```
+docker-compose exec pgmaster sh
+# psql -hlocalhost -Umonkey_user -W bonde < /backups/local.txt
+ ```

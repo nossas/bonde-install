@@ -73,7 +73,7 @@ services:
       - 3002:3002/tcp
 
   api-graphql:
-    image: hasura/graphql-engine:v1.0.0-beta.10
+    image: hasura/graphql-engine
     restart: always
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde

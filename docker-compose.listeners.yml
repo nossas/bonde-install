@@ -36,14 +36,10 @@ services:
     # image: nossas/bonde-redes:develop
     environment:
     build:
-      dockerfile: packages/listener-redes/Dockerfile
       context: ../bonde-microservices
     environment:
-      PORT: 8081
-      HASURA_API_URL: http://api-graphql:8080/v1/graphql
-      X_HASURA_ADMIN_SECRET: segredo123
-      DEBUG: webhooks-registry*
+      GRAPHQL_URL: http://api-graphql:8080/v1/graphql
+      WS_GRAPHQL_URL: ws://api-graphql:8080/v1/graphql
+      HASURA_SECRET: segredo123
     external_links:
-    - redis
-    - api-v2
-    - api-v1
+    - api-graphql

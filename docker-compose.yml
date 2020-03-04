@@ -125,6 +125,13 @@ services:
       traefik.port: '5000'
       traefik.enable: 'true'
 
+  listener-redes:
+    extends:
+      file: docker-compose.listeners.yml
+      service: redes
+    depends_on:
+    - api-graphql
+
   pipeline-registries-to-zendesk:
     extends:
       file: docker-compose.pipelines.yml
@@ -172,12 +179,13 @@ services:
     extends:
       file: docker-compose.listeners.yml
       service: redes
+    command: pnpm run dev --filter listener-redes
     depends_on:
     - api-graphql
 
-  pipeline-form-entries-to-redes:
-    extends:
-      file: docker-compose.pipelines.yml
-      service: form-entries-to-redes
-    depends_on:
-    - api-graphql
+  # pipeline-form-entries-to-redes:
+  #   extends:
+  #     file: docker-compose.pipelines.yml
+  #     service: form-entries-to-redes
+  #   depends_on:
+  #   - api-graphql

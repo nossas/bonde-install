@@ -667,6 +667,22 @@
         "schema": "public",
         "name": "community_users"
       },
+      "object_relationships": [
+        {
+          "name": "user",
+          "using": {
+            "manual_configuration": {
+              "remote_table": {
+                "schema": "public",
+                "name": "users"
+              },
+              "column_mapping": {
+                "user_id": "id"
+              }
+            }
+          }
+        }
+      ],
       "select_permissions": [
         {
           "role": "common_user",
@@ -1101,19 +1117,41 @@
       "table": {
         "schema": "public",
         "name": "rede_individuals"
-      }
+      },
+      "object_relationships": [
+        {
+          "name": "group",
+          "using": {
+            "foreign_key_constraint_on": "rede_group_id"
+          }
+        }
+      ]
     },
     {
       "table": {
         "schema": "public",
         "name": "rede_relationships"
-      }
-    },
-    {
-      "table": {
-        "schema": "public",
-        "name": "rede_settings"
-      }
+      },
+      "object_relationships": [
+        {
+          "name": "agent",
+          "using": {
+            "foreign_key_constraint_on": "user_id"
+          }
+        },
+        {
+          "name": "recipient",
+          "using": {
+            "foreign_key_constraint_on": "recipient_id"
+          }
+        },
+        {
+          "name": "volunteer",
+          "using": {
+            "foreign_key_constraint_on": "volunteer_id"
+          }
+        }
+      ]
     },
     {
       "table": {

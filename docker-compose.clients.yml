@@ -127,9 +127,7 @@ services:
 
   redes-client:
     image: nossas/bonde-redes-client:develop
-    build:
-      dockerfile: packages/solidarity-client/Dockerfile
-      context: ../bonde-microservices
+    build: ../bonde-microservices
     labels:
       traefik.frontend.rule: Host:redes.bonde.devel
       traefik.enable: 'true'
@@ -138,4 +136,4 @@ services:
       io.rancher.container.pull_image: always
       traefik.acme: 'false'
       traefik.frontend.entryPoints: http
-
+    command: node packages/solidarity-client/dist

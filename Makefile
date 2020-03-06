@@ -18,7 +18,7 @@ help:
 	@echo ""
 	@echo "See contents of Makefile for more targets."
 
-begin: setup migrate seeds start-dev
+begin: pull setup migrate seeds start-dev
 
 setup:
 	@docker-compose up -d pgmaster
@@ -106,5 +106,8 @@ frontend-rebuild:
 
 extras:
 	@docker-compose -f docker-compose.common.yml up -d
+
+pull:
+	@docker-compose pull
 
 .PHONY: start stop status restart clean setup migrate seeds serverless logs start-logger start-monitor tail

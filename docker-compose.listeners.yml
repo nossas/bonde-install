@@ -19,7 +19,8 @@ services:
     - api-v1
 
   notifications:
-    build: ../bonde-microservices
+    image: nossas/bonde-webhooks-mail:develop
+    # build: ../bonde-microservices
     environment:
       DEBUG: webhook-mail*
       PORT: 8080
@@ -31,26 +32,24 @@ services:
       SMTP_PASS: xxxxxxxx
     command: node packages/webhook-mail/dist
 
-    redes:
-      # image: nossas/bonde-redes:develop
-      environment:
-      build: ../bonde-microservices
-      environment:
-        GRAPHQL_URL: http://api-graphql:8080/v1/graphql
-        WS_GRAPHQL_URL: ws://api-graphql:8080/v1/graphql
-        HASURA_SECRET: segredo123
-      external_links:
-      - api-graphql
-      command: node packages/listener-redes/dist
+  redes:
+    image: nossas/bonde-redes:develop
+    # build: ../bonde-microservices
+    environment:
+      GRAPHQL_URL: http://api-graphql:8080/v1/graphql
+      WS_GRAPHQL_URL: ws://api-graphql:8080/v1/graphql
+      HASURA_SECRET: segredo123
+    external_links:
+    - api-graphql
+    command: pnpm run start --filter=listener-redes
 
-    redes-individuals-geolocation:
-      # image: nossas/bonde-redes:develop
-      environment:
-        build: ../bonde-microservices
-      environment:
-        GRAPHQL_URL: http://api-graphql:8080/v1/graphql
-        WS_GRAPHQL_URL: ws://api-graphql:8080/v1/graphql
-        HASURA_SECRET: segredo123
-      external_links:
-      - api-graphql
-      command: node packages/listener-redes-geolocation/dist
+  redes-geolocation:
+    image: nossas/bonde-redes:develop
+    # build: ../bonde-microservices
+    environment:
+      GRAPHQL_URL: http://api-graphql:8080/v1/graphql
+      WS_GRAPHQL_URL: ws://api-graphql:8080/v1/graphql
+      HASURA_SECRET: segredo123
+    external_links:
+    - api-graphql
+    command: pnpm run start --filter=listener-redes-geolocation

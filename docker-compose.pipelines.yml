@@ -2,10 +2,8 @@ version: '2'
 services:
 
   registries-to-zendesk:
-    # image: nossas/bonde-webhooks-registry:develop
-    build: 
-      dockerfile: packages/webhooks-registry/Dockerfile
-      context: ../bonde-microservices
+    image: nossas/bonde-webhooks-registry:develop
+    # build: ../bonde-microservices
     environment:
       PORT: 8081
       HASURA_API_URL: http://api-graphql:8080/v1/graphql
@@ -13,21 +11,10 @@ services:
       DEBUG: webhooks-registry*
 
   activists-to-notifications:
-    build:
-      dockerfile: packages/webhook-activists/Dockerfile
-      context: ../bonde-microservices
+    image: nossas/bonde-webhooks-activists:develop
+    # build: ../bonde-microservices
     environment: 
       DEBUG: webhook-activists*
-      PORT: 8080
-      GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
-      HASURA_SECRET: segredo123
-  
-  form-entries-to-redes:
-    build:
-      dockerfile: packages/pipeline-form-entries-to-redes/Dockerfile
-      context: ../bonde-microservices
-    environment: 
-      DEBUG: pipeline-form-entries-to-redes*
       PORT: 8080
       GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
       HASURA_SECRET: segredo123

@@ -36,11 +36,11 @@ migrate:
 
 seeds:
 	@sleep 10;
-	@docker-compose -f docker-compose.workers.yml up -d templates-email
+	@docker-compose -f docker-compose.workers.yml up -d --remove-orphans templates-email
 
 start-dev:
-	@docker-compose up -d
-	@docker-compose -f docker-compose.clients.yml up -d cross-storage
+	@docker-compose up -d --remove-orphans
+	@docker-compose -f docker-compose.clients.yml up -d --remove-orphans cross-storage
 
 start:
 	@docker-compose up -d

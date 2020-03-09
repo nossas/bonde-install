@@ -125,40 +125,12 @@ services:
       traefik.port: '5000'
       traefik.enable: 'true'
 
-  listener-redes:
-    extends:
-      file: docker-compose.listeners.yml
-      service: redes
-    depends_on:
-    - api-graphql
-
   pipeline-registries-to-zendesk:
     extends:
       file: docker-compose.pipelines.yml
       service: registries-to-zendesk
     depends_on:
     - api-graphql
-
-  # webhooks-zendesk:
-  #   extends:
-  #     file: docker-compose.webhooks.yml
-  #     service: webhooks-zendesk
-  #   depends_on:
-  #   - api-graphql
-
-  # webhooks-solidarity-count:
-  #   extends:
-  #     file: docker-compose.webhooks.yml
-  #     service: webhooks-solidarity-count
-  #   depends_on:
-  #   - api-graphql
-
-  # webhooks-solidarity-match:
-  #   extends:
-  #     file: docker-compose.webhooks.yml
-  #     service: webhooks-solidarity-match
-  #   depends_on:
-  #   - api-graphql
 
   listener-notifications:
     extends:
@@ -179,13 +151,12 @@ services:
     extends:
       file: docker-compose.listeners.yml
       service: redes
-    command: pnpm run dev --filter listener-redes
     depends_on:
     - api-graphql
 
-  # pipeline-form-entries-to-redes:
-  #   extends:
-  #     file: docker-compose.pipelines.yml
-  #     service: form-entries-to-redes
-  #   depends_on:
-  #   - api-graphql
+  listener-redes-geolocation:
+    extends:
+      file: docker-compose.listeners.yml
+      service: redes-geolocation
+    depends_on:
+    - api-graphql

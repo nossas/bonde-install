@@ -18,7 +18,7 @@ help:
 	@echo ""
 	@echo "See contents of Makefile for more targets."
 
-begin: setup migrate seeds start-dev
+begin: pull setup migrate seeds start-dev
 
 setup:
 	@docker-compose up -d pgmaster
@@ -36,11 +36,11 @@ migrate:
 
 seeds:
 	@sleep 10;
-	@docker-compose -f docker-compose.workers.yml up -d templates-email
+	@docker-compose -f docker-compose.workers.yml up -d --remove-orphans templates-email
 
 start-dev:
-	@docker-compose up -d
-	@docker-compose -f docker-compose.clients.yml up -d cross-storage
+	@docker-compose up -d --remove-orphans
+	@docker-compose -f docker-compose.clients.yml up -d --remove-orphans cross-storage
 
 start:
 	@docker-compose up -d
@@ -106,5 +106,8 @@ frontend-rebuild:
 
 extras:
 	@docker-compose -f docker-compose.common.yml up -d
+
+pull:
+	@docker-compose pull
 
 .PHONY: start stop status restart clean setup migrate seeds serverless logs start-logger start-monitor tail

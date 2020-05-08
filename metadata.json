@@ -3,176 +3,6 @@
   "tables": [
     {
       "table": {
-        "schema": "anonymous",
-        "name": "activist_actions"
-      },
-      "select_permissions": [
-        {
-          "role": "anonymous",
-          "permission": {
-            "columns": [
-              "action_created_at",
-              "id",
-              "action",
-              "mobilization_id"
-            ],
-            "filter": {},
-            "allow_aggregations": true
-          }
-        },
-        {
-          "role": "common_user",
-          "permission": {
-            "columns": [
-              "id",
-              "mobilization_id",
-              "action",
-              "action_created_at"
-            ],
-            "filter": {},
-            "allow_aggregations": true
-          }
-        }
-      ]
-    },
-    {
-      "table": {
-        "schema": "anonymous",
-        "name": "communities"
-      },
-      "select_permissions": [
-        {
-          "role": "anonymous",
-          "permission": {
-            "columns": [
-              "id",
-              "name",
-              "city",
-              "created_at",
-              "image",
-              "description",
-              "fb_link",
-              "twitter_link",
-              "email_template_from"
-            ],
-            "filter": {}
-          }
-        },
-        {
-          "role": "common_user",
-          "permission": {
-            "columns": [
-              "id",
-              "description",
-              "created_at",
-              "city",
-              "email_template_from",
-              "fb_link",
-              "image",
-              "name",
-              "twitter_link"
-            ],
-            "filter": {}
-          }
-        }
-      ]
-    },
-    {
-      "table": {
-        "schema": "anonymous",
-        "name": "mobilizations"
-      },
-      "object_relationships": [
-        {
-          "name": "community",
-          "using": {
-            "manual_configuration": {
-              "remote_table": {
-                "schema": "anonymous",
-                "name": "communities"
-              },
-              "column_mapping": {
-                "community_id": "id"
-              }
-            }
-          }
-        }
-      ],
-      "array_relationships": [
-        {
-          "name": "activist_actions",
-          "using": {
-            "manual_configuration": {
-              "remote_table": {
-                "schema": "anonymous",
-                "name": "activist_actions"
-              },
-              "column_mapping": {
-                "id": "mobilization_id"
-              }
-            }
-          }
-        }
-      ],
-      "select_permissions": [
-        {
-          "role": "anonymous",
-          "permission": {
-            "columns": [
-              "community_id",
-              "id",
-              "user_id",
-              "facebook_share_description",
-              "goal",
-              "created_at",
-              "body_font",
-              "color_scheme",
-              "custom_domain",
-              "facebook_share_image",
-              "facebook_share_title",
-              "favicon",
-              "google_analytics_code",
-              "header_font",
-              "name",
-              "slug",
-              "traefik_backend_address",
-              "traefik_host_rule",
-              "twitter_share_text"
-            ],
-            "filter": {}
-          }
-        },
-        {
-          "role": "common_user",
-          "permission": {
-            "columns": [
-              "id",
-              "name",
-              "created_at",
-              "user_id",
-              "color_scheme",
-              "google_analytics_code",
-              "goal",
-              "facebook_share_title",
-              "facebook_share_description",
-              "header_font",
-              "body_font",
-              "facebook_share_image",
-              "slug",
-              "custom_domain",
-              "twitter_share_text",
-              "community_id",
-              "favicon",
-              "traefik_host_rule",
-              "traefik_backend_address"
-            ],
-            "filter": {}
-          }
-        }
-      ]
-    },
-    {
-      "table": {
         "schema": "public",
         "name": "activist_actions"
       },
@@ -238,6 +68,28 @@
         "schema": "public",
         "name": "activists"
       }
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "blocks"
+      },
+      "array_relationships": [
+        {
+          "name": "widgets",
+          "using": {
+            "manual_configuration": {
+              "remote_table": {
+                "schema": "public",
+                "name": "widgets"
+              },
+              "column_mapping": {
+                "id": "block_id"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "table": {
@@ -331,7 +183,8 @@
                   }
                 }
               }
-            }
+            },
+            "check": null
           }
         }
       ],
@@ -447,7 +300,8 @@
                   }
                 }
               }
-            }
+            },
+            "check": null
           }
         }
       ]
@@ -557,7 +411,8 @@
                   }
                 }
               }
-            }
+            },
+            "check": null
           }
         }
       ]
@@ -657,10 +512,17 @@
                   "_eq": "X-Hasura-User-Id"
                 }
               }
-            }
+            },
+            "check": null
           }
         }
       ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "community_settings"
+      }
     },
     {
       "table": {
@@ -709,39 +571,20 @@
     {
       "table": {
         "schema": "public",
+        "name": "facebook_bot_campaign_activists"
+      }
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "facebook_bot_campaigns"
+      }
+    },
+    {
+      "table": {
+        "schema": "public",
         "name": "form_entries"
-      },
-      "event_triggers": [
-        {
-          "name": "pipeline-form-entries-to-redes",
-          "definition": {
-            "enable_manual": false,
-            "insert": {
-              "columns": "*"
-            },
-            "update": {
-              "columns": [
-                "synchronized",
-                "activist_id",
-                "cached_community_id",
-                "id",
-                "widget_id",
-                "fields",
-                "mailchimp_syncronization_error_reason",
-                "created_at",
-                "mailchimp_syncronization_at",
-                "updated_at"
-              ]
-            }
-          },
-          "retry_conf": {
-            "num_retries": 0,
-            "interval_sec": 10,
-            "timeout_sec": 60
-          },
-          "webhook": "http://pipeline-form-entries-to-redes"
-        }
-      ]
+      }
     },
     {
       "table": {
@@ -754,57 +597,17 @@
           "using": {
             "foreign_key_constraint_on": "community_id"
           }
-        }
-      ],
-      "insert_permissions": [
+        },
         {
-          "role": "common_user",
-          "permission": {
-            "check": {
-              "community": {
-                "community_users": {
-                  "user_id": {
-                    "_eq": "X-Hasura-User-Id"
-                  }
-                }
-              }
-            },
-            "set": {
-              "user_id": "x-hasura-User-Id"
-            },
-            "columns": [
-              "callback_url",
-              "community_id",
-              "email",
-              "role"
-            ]
-          }
-        }
-      ],
-      "select_permissions": [
-        {
-          "role": "common_user",
-          "permission": {
-            "columns": [
-              "callback_url",
-              "code",
-              "community_id",
-              "created_at",
-              "email",
-              "expired",
-              "expires",
-              "id",
-              "role",
-              "updated_at",
-              "user_id"
-            ],
-            "filter": {
-              "community": {
-                "community_users": {
-                  "user_id": {
-                    "_eq": "X-Hasura-User-Id"
-                  }
-                }
+          "name": "user",
+          "using": {
+            "manual_configuration": {
+              "remote_table": {
+                "schema": "public",
+                "name": "users"
+              },
+              "column_mapping": {
+                "user_id": "id"
               }
             }
           }
@@ -849,6 +652,20 @@
               "remote_table": {
                 "schema": "public",
                 "name": "activist_actions"
+              },
+              "column_mapping": {
+                "id": "mobilization_id"
+              }
+            }
+          }
+        },
+        {
+          "name": "blocks",
+          "using": {
+            "manual_configuration": {
+              "remote_table": {
+                "schema": "public",
+                "name": "blocks"
               },
               "column_mapping": {
                 "id": "mobilization_id"
@@ -1033,7 +850,8 @@
                   }
                 }
               ]
-            }
+            },
+            "check": null
           }
         }
       ]
@@ -1163,55 +981,7 @@
       "table": {
         "schema": "public",
         "name": "solidarity_tickets"
-      },
-      "event_triggers": [
-        {
-          "name": "solidarity-tickets",
-          "definition": {
-            "enable_manual": false,
-            "insert": {
-              "columns": "*"
-            },
-            "update": {
-              "columns": [
-                "community_id",
-                "id",
-                "webhooks_registry_id",
-                "assignee_id",
-                "group_id",
-                "organization_id",
-                "requester_id",
-                "submitter_id",
-                "ticket_id",
-                "custom_fields",
-                "tags",
-                "cidade",
-                "data_encaminhamento",
-                "data_inscricao_bonde",
-                "description",
-                "estado",
-                "link_match",
-                "nome_msr",
-                "nome_voluntaria",
-                "raw_subject",
-                "status",
-                "status_acolhimento",
-                "status_inscricao",
-                "subject",
-                "telefone",
-                "created_at",
-                "updated_at"
-              ]
-            }
-          },
-          "retry_conf": {
-            "num_retries": 0,
-            "interval_sec": 10,
-            "timeout_sec": 60
-          },
-          "webhook": "http://webhooks-solidarity-match"
-        }
-      ]
+      }
     },
     {
       "table": {
@@ -1375,7 +1145,8 @@
               "id": {
                 "_eq": "X-Hasura-User-Id"
               }
-            }
+            },
+            "check": null
           }
         }
       ]

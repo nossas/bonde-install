@@ -94,6 +94,12 @@
     {
       "table": {
         "schema": "public",
+        "name": "certificates"
+      }
+    },
+    {
+      "table": {
+        "schema": "public",
         "name": "chatbot_campaigns"
       },
       "object_relationships": [
@@ -106,7 +112,7 @@
       ],
       "insert_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "check": {
               "chatbot": {
@@ -134,17 +140,17 @@
       ],
       "select_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "columns": [
+              "get_started",
+              "chatbot_id",
+              "id",
+              "diagram",
+              "status",
               "created_at",
               "updated_at",
-              "id",
-              "name",
-              "diagram",
-              "chatbot_id",
-              "status",
-              "get_started"
+              "name"
             ],
             "filter": {
               "chatbot": {
@@ -156,22 +162,24 @@
                   }
                 }
               }
-            }
+            },
+            "allow_aggregations": true
           }
         }
       ],
       "update_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "columns": [
-              "created_at",
-              "diagram",
               "get_started",
+              "chatbot_id",
               "id",
-              "name",
+              "diagram",
               "status",
-              "updated_at"
+              "created_at",
+              "updated_at",
+              "name"
             ],
             "filter": {
               "chatbot": {
@@ -185,24 +193,6 @@
               }
             },
             "check": null
-          }
-        }
-      ],
-      "delete_permissions": [
-        {
-          "role": "common_user",
-          "permission": {
-            "filter": {
-              "chatbot": {
-                "community": {
-                  "community_users": {
-                    "user_id": {
-                      "_eq": "X-Hasura-User-Id"
-                    }
-                  }
-                }
-              }
-            }
           }
         }
       ]
@@ -228,7 +218,7 @@
       ],
       "insert_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "check": {
               "chatbot": {
@@ -242,19 +232,19 @@
               }
             },
             "columns": [
-              "created_at",
-              "updated_at",
+              "chatbot_id",
               "id",
-              "channel",
               "settings",
-              "chatbot_id"
+              "channel",
+              "created_at",
+              "updated_at"
             ]
           }
         }
       ],
       "select_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "columns": [
               "chatbot_id",
@@ -274,13 +264,14 @@
                   }
                 }
               }
-            }
+            },
+            "allow_aggregations": true
           }
         }
       ],
       "update_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "columns": [
               "chatbot_id",
@@ -345,40 +336,17 @@
           }
         }
       ],
-      "insert_permissions": [
+      "select_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
-            "check": {
-              "community": {
-                "community_users": {
-                  "user_id": {
-                    "_eq": "X-Hasura-User-Id"
-                  }
-                }
-              }
-            },
             "columns": [
               "created_at",
               "updated_at",
               "id",
               "name",
-              "community_id"
-            ]
-          }
-        }
-      ],
-      "select_permissions": [
-        {
-          "role": "common_user",
-          "permission": {
-            "columns": [
               "community_id",
-              "created_at",
-              "id",
-              "name",
-              "persistent_menu",
-              "updated_at"
+              "persistent_menu"
             ],
             "filter": {
               "community": {
@@ -388,20 +356,17 @@
                   }
                 }
               }
-            }
+            },
+            "allow_aggregations": true
           }
         }
       ],
       "update_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "columns": [
-              "created_at",
-              "id",
-              "name",
-              "persistent_menu",
-              "updated_at"
+              "persistent_menu"
             ],
             "filter": {
               "community": {
@@ -448,57 +413,22 @@
       ],
       "select_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "columns": [
+              "city",
+              "created_at",
+              "description",
+              "email_template_from",
+              "facebook_app_id",
+              "fb_link",
               "id",
-              "recipient_id",
-              "subscription_dead_days_interval",
-              "subscription_retry_interval",
+              "image",
+              "mailchimp_api_key",
+              "mailchimp_group_id",
+              "mailchimp_list_id",
+              "mailchimp_sync_request_at",
               "modules",
-              "description",
-              "mailchimp_api_key",
-              "mailchimp_group_id",
-              "mailchimp_list_id",
-              "created_at",
-              "mailchimp_sync_request_at",
-              "updated_at",
-              "city",
-              "email_template_from",
-              "facebook_app_id",
-              "fb_link",
-              "image",
-              "name",
-              "twitter_link"
-            ],
-            "filter": {
-              "community_users": {
-                "user_id": {
-                  "_eq": "X-Hasura-User-Id"
-                }
-              }
-            },
-            "allow_aggregations": true
-          }
-        }
-      ],
-      "update_permissions": [
-        {
-          "role": "common_user",
-          "permission": {
-            "columns": [
-              "city",
-              "created_at",
-              "description",
-              "email_template_from",
-              "facebook_app_id",
-              "fb_link",
-              "id",
-              "image",
-              "mailchimp_api_key",
-              "mailchimp_group_id",
-              "mailchimp_list_id",
-              "mailchimp_sync_request_at",
               "name",
               "recipient_id",
               "subscription_dead_days_interval",
@@ -513,6 +443,49 @@
                 }
               }
             },
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "city",
+              "created_at",
+              "description",
+              "email_template_from",
+              "facebook_app_id",
+              "fb_link",
+              "image",
+              "mailchimp_api_key",
+              "mailchimp_group_id",
+              "mailchimp_list_id",
+              "mailchimp_sync_request_at",
+              "name",
+              "recipient_id",
+              "subscription_dead_days_interval",
+              "subscription_retry_interval",
+              "twitter_link",
+              "updated_at"
+            ],
+            "filter": {
+              "community_users": {
+                "_and": [
+                  {
+                    "user_id": {
+                      "_eq": "X-Hasura-User-Id"
+                    }
+                  },
+                  {
+                    "role": {
+                      "_eq": 1
+                    }
+                  }
+                ]
+              }
+            },
             "check": null
           }
         }
@@ -522,7 +495,60 @@
       "table": {
         "schema": "public",
         "name": "community_settings"
-      }
+      },
+      "object_relationships": [
+        {
+          "name": "community",
+          "using": {
+            "foreign_key_constraint_on": "community_id"
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "community_id",
+              "id",
+              "name",
+              "settings",
+              "version"
+            ],
+            "filter": {
+              "community": {
+                "community_users": {
+                  "user_id": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "name",
+              "settings",
+              "version"
+            ],
+            "filter": {
+              "community": {
+                "community_users": {
+                  "user_id": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                }
+              }
+            },
+            "check": null
+          }
+        }
+      ]
     },
     {
       "table": {
@@ -530,6 +556,20 @@
         "name": "community_users"
       },
       "object_relationships": [
+        {
+          "name": "community",
+          "using": {
+            "manual_configuration": {
+              "remote_table": {
+                "schema": "public",
+                "name": "communities"
+              },
+              "column_mapping": {
+                "community_id": "id"
+              }
+            }
+          }
+        },
         {
           "name": "user",
           "using": {
@@ -547,17 +587,60 @@
       ],
       "select_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "columns": [
-              "id",
-              "user_id",
               "community_id",
-              "role",
               "created_at",
-              "updated_at"
+              "id",
+              "role",
+              "updated_at",
+              "user_id"
             ],
-            "filter": {}
+            "filter": {
+              "_or": [
+                {
+                  "user_id": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                },
+                {
+                  "community": {
+                    "community_users": {
+                      "user_id": {
+                        "_eq": "X-Hasura-User-Id"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "community": {
+                "community_users": {
+                  "_and": [
+                    {
+                      "user_id": {
+                        "_eq": "X-Hasura-User-Id"
+                      }
+                    },
+                    {
+                      "role": {
+                        "_eq": 1
+                      }
+                    }
+                  ]
+                }
+              }
+            }
           }
         }
       ]
@@ -608,6 +691,138 @@
               },
               "column_mapping": {
                 "user_id": "id"
+              }
+            }
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "community": {
+                "community_users": {
+                  "_and": [
+                    {
+                      "user_id": {
+                        "_eq": "X-Hasura-User-Id"
+                      }
+                    },
+                    {
+                      "role": {
+                        "_eq": 1
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "set": {
+              "user_id": "x-hasura-User-Id"
+            },
+            "columns": [
+              "code",
+              "community_id",
+              "created_at",
+              "email",
+              "expired",
+              "expires",
+              "id",
+              "role",
+              "updated_at"
+            ]
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "code",
+              "community_id",
+              "created_at",
+              "email",
+              "expired",
+              "expires",
+              "id",
+              "role",
+              "updated_at",
+              "user_id"
+            ],
+            "filter": {
+              "community": {
+                "community_users": {
+                  "user_id": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                }
+              }
+            },
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "code",
+              "community_id",
+              "created_at",
+              "email",
+              "expired",
+              "expires",
+              "role",
+              "updated_at"
+            ],
+            "filter": {
+              "community": {
+                "community_users": {
+                  "_and": [
+                    {
+                      "user_id": {
+                        "_eq": "X-Hasura-User-Id"
+                      }
+                    },
+                    {
+                      "role": {
+                        "_eq": 1
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "check": null,
+            "set": {
+              "user_id": "x-hasura-User-Id"
+            }
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "filter": {
+              "community": {
+                "community_users": {
+                  "_and": [
+                    {
+                      "user_id": {
+                        "_eq": "X-Hasura-User-Id"
+                      }
+                    },
+                    {
+                      "role": {
+                        "_eq": 1
+                      }
+                    }
+                  ]
+                }
               }
             }
           }
@@ -676,49 +891,42 @@
       ],
       "insert_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "check": {
-              "_or": [
-                {
+              "community": {
+                "community_users": {
                   "user_id": {
                     "_eq": "X-Hasura-User-Id"
                   }
-                },
-                {
-                  "community": {
-                    "community_users": {
-                      "id": {
-                        "_eq": "X-Hasura-User-Id"
-                      }
-                    }
-                  }
                 }
-              ]
+              }
+            },
+            "set": {
+              "user_id": "x-hasura-User-Id"
             },
             "columns": [
-              "community_id",
-              "id",
-              "user_id",
-              "status",
-              "facebook_share_description",
-              "goal",
-              "created_at",
-              "deleted_at",
-              "updated_at",
               "body_font",
               "color_scheme",
+              "community_id",
+              "created_at",
               "custom_domain",
+              "deleted_at",
+              "facebook_share_description",
               "facebook_share_image",
               "facebook_share_title",
               "favicon",
+              "goal",
               "google_analytics_code",
               "header_font",
+              "id",
               "name",
               "slug",
+              "status",
               "traefik_backend_address",
               "traefik_host_rule",
-              "twitter_share_text"
+              "twitter_share_text",
+              "updated_at"
             ]
           }
         }
@@ -759,7 +967,7 @@
           }
         },
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "columns": [
               "body_font",
@@ -786,22 +994,13 @@
               "user_id"
             ],
             "filter": {
-              "_or": [
-                {
+              "community": {
+                "community_users": {
                   "user_id": {
                     "_eq": "X-Hasura-User-Id"
                   }
-                },
-                {
-                  "community": {
-                    "community_users": {
-                      "id": {
-                        "_eq": "X-Hasura-User-Id"
-                      }
-                    }
-                  }
                 }
-              ]
+              }
             },
             "allow_aggregations": true
           }
@@ -809,7 +1008,7 @@
       ],
       "update_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "columns": [
               "body_font",
@@ -824,7 +1023,6 @@
               "goal",
               "google_analytics_code",
               "header_font",
-              "id",
               "name",
               "slug",
               "status",
@@ -834,22 +1032,13 @@
               "updated_at"
             ],
             "filter": {
-              "_or": [
-                {
+              "community": {
+                "community_users": {
                   "user_id": {
                     "_eq": "X-Hasura-User-Id"
                   }
-                },
-                {
-                  "community": {
-                    "community_users": {
-                      "id": {
-                        "_eq": "X-Hasura-User-Id"
-                      }
-                    }
-                  }
                 }
-              ]
+              }
             },
             "check": null
           }
@@ -900,16 +1089,16 @@
       ],
       "select_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "columns": [
+              "community_id",
+              "created_at",
               "id",
               "pagarme_recipient_id",
               "recipient",
-              "community_id",
               "transfer_day",
               "transfer_enabled",
-              "created_at",
               "updated_at"
             ],
             "filter": {
@@ -920,7 +1109,42 @@
                   }
                 }
               }
-            }
+            },
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "created_at",
+              "pagarme_recipient_id",
+              "recipient",
+              "transfer_day",
+              "transfer_enabled",
+              "updated_at"
+            ],
+            "filter": {
+              "community": {
+                "community_users": {
+                  "_and": [
+                    {
+                      "user_id": {
+                        "_eq": "X-Hasura-User-Id"
+                      }
+                    },
+                    {
+                      "role": {
+                        "_eq": 1
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "check": null
           }
         }
       ]
@@ -929,7 +1153,42 @@
       "table": {
         "schema": "public",
         "name": "rede_groups"
-      }
+      },
+      "object_relationships": [
+        {
+          "name": "community",
+          "using": {
+            "foreign_key_constraint_on": "community_id"
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "community_id",
+              "created_at",
+              "id",
+              "is_volunteer",
+              "metadata",
+              "name",
+              "updated_at",
+              "widget_id"
+            ],
+            "filter": {
+              "community": {
+                "community_users": {
+                  "user_id": {
+                    "_eq": "X-Hasura-User-Id"
+                  }
+                }
+              }
+            },
+            "allow_aggregations": true
+          }
+        }
+      ]
     },
     {
       "table": {
@@ -941,6 +1200,122 @@
           "name": "group",
           "using": {
             "foreign_key_constraint_on": "rede_group_id"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "group": {
+                "community": {
+                  "community_users": {
+                    "user_id": {
+                      "_eq": "X-Hasura-User-Id"
+                    }
+                  }
+                }
+              }
+            },
+            "columns": [
+              "created_at",
+              "updated_at",
+              "id",
+              "email",
+              "phone",
+              "address",
+              "city",
+              "state",
+              "whatsapp",
+              "rede_group_id",
+              "form_entry_id",
+              "first_name",
+              "coordinates",
+              "zipcode",
+              "status",
+              "availability",
+              "extras",
+              "last_name"
+            ]
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "created_at",
+              "updated_at",
+              "id",
+              "email",
+              "phone",
+              "address",
+              "city",
+              "state",
+              "whatsapp",
+              "rede_group_id",
+              "form_entry_id",
+              "first_name",
+              "coordinates",
+              "zipcode",
+              "status",
+              "availability",
+              "extras",
+              "last_name"
+            ],
+            "filter": {
+              "group": {
+                "community": {
+                  "community_users": {
+                    "user_id": {
+                      "_eq": "X-Hasura-User-Id"
+                    }
+                  }
+                }
+              }
+            },
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "form_entry_id",
+              "id",
+              "rede_group_id",
+              "coordinates",
+              "extras",
+              "address",
+              "city",
+              "email",
+              "phone",
+              "state",
+              "whatsapp",
+              "created_at",
+              "updated_at",
+              "availability",
+              "first_name",
+              "last_name",
+              "status",
+              "zipcode"
+            ],
+            "filter": {
+              "group": {
+                "community": {
+                  "community_users": {
+                    "user_id": {
+                      "_eq": "X-Hasura-User-Id"
+                    }
+                  }
+                }
+              }
+            },
+            "check": null
           }
         }
       ]
@@ -967,6 +1342,164 @@
           "name": "volunteer",
           "using": {
             "foreign_key_constraint_on": "volunteer_id"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "check": {
+              "_or": [
+                {
+                  "recipient": {
+                    "group": {
+                      "community": {
+                        "community_users": {
+                          "user_id": {
+                            "_eq": "X-Hasura-User-Id"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "volunteer": {
+                    "group": {
+                      "community": {
+                        "community_users": {
+                          "user_id": {
+                            "_eq": "X-Hasura-User-Id"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "set": {
+              "user_id": "x-hasura-User-Id"
+            },
+            "columns": [
+              "created_at",
+              "updated_at",
+              "id",
+              "is_archived",
+              "comments",
+              "status",
+              "priority",
+              "metadata",
+              "volunteer_id",
+              "recipient_id",
+              "user_id"
+            ]
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "created_at",
+              "updated_at",
+              "id",
+              "is_archived",
+              "comments",
+              "status",
+              "priority",
+              "metadata",
+              "volunteer_id",
+              "recipient_id",
+              "user_id"
+            ],
+            "filter": {
+              "_or": [
+                {
+                  "recipient": {
+                    "group": {
+                      "community": {
+                        "community_users": {
+                          "user_id": {
+                            "_eq": "X-Hasura-User-Id"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "volunteer": {
+                    "group": {
+                      "community": {
+                        "community_users": {
+                          "user_id": {
+                            "_eq": "X-Hasura-User-Id"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "allow_aggregations": true
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "permission": {
+            "columns": [
+              "is_archived",
+              "id",
+              "priority",
+              "recipient_id",
+              "user_id",
+              "volunteer_id",
+              "metadata",
+              "comments",
+              "status",
+              "created_at",
+              "updated_at"
+            ],
+            "filter": {
+              "_or": [
+                {
+                  "recipient": {
+                    "group": {
+                      "community": {
+                        "community_users": {
+                          "user_id": {
+                            "_eq": "X-Hasura-User-Id"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "volunteer": {
+                    "group": {
+                      "community": {
+                        "community_users": {
+                          "user_id": {
+                            "_eq": "X-Hasura-User-Id"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "check": null,
+            "set": {
+              "user_id": "x-hasura-User-Id"
+            }
           }
         }
       ]
@@ -1102,44 +1635,49 @@
       ],
       "select_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "columns": [
               "admin",
               "avatar",
               "created_at",
-              "current_sign_in_at",
-              "current_sign_in_ip",
               "email",
               "first_name",
               "id",
               "last_name",
-              "last_sign_in_at",
-              "last_sign_in_ip",
               "locale",
-              "provider",
-              "remember_created_at",
-              "sign_in_count",
-              "uid",
               "updated_at"
             ],
             "filter": {
-              "id": {
-                "_eq": "X-Hasura-User-Id"
+              "community_users": {
+                "community": {
+                  "community_users": {
+                    "user_id": {
+                      "_eq": "X-Hasura-User-Id"
+                    }
+                  }
+                }
               }
-            }
+            },
+            "allow_aggregations": true
           }
         }
       ],
       "update_permissions": [
         {
-          "role": "common_user",
+          "role": "user",
           "permission": {
             "columns": [
               "avatar",
+              "confirmed_at",
+              "created_at",
+              "email",
               "first_name",
+              "id",
               "last_name",
-              "locale"
+              "locale",
+              "reset_password_token",
+              "updated_at"
             ],
             "filter": {
               "id": {

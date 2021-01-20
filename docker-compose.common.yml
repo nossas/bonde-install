@@ -35,10 +35,8 @@ services:
     - server
     - /data
     labels:
-      traefik.frontend.rule: Host:fake-s3.bonde.devel
-      traefik.port: '9000'
-      traefik.enable: 'true'
-      traefik.alias: fake-s3
+      - traefik.enable=true
+      - "traefik.http.routers.s3.rule=Host(`s3.bonde.devel`)"
 
   smtp:
     image: mailhog/mailhog
@@ -48,31 +46,34 @@ services:
     - 1025:1025/tcp
     - 8025:8025/tcp
     labels:
-      traefik.frontend.rule: Host:fake-smtp.bonde.devel
-      traefik.port: '8025'
-      traefik.enable: 'true'
-      traefik.alias: fake-smtp
+      - traefik.enable=true
+      - "traefik.http.routers.smtp.rule=Host(`smtp.bonde.devel`)"
+      - traefik.http.services.smtp.loadbalancer.server.port=8025
 
   traefik:
-    image: traefik:1.7-alpine
+    image: "traefik:v2.3"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    # - --configfile=/traefik.toml
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      # - "./traefik.toml:/traefik.toml"
     environment:
       AWS_ACCESS_KEY_ID: xxxxxxx
       AWS_SECRET_ACCESS_KEY: xxxxxx
       AWS_REGION: us-east-1
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./traefik.toml:/traefik.toml"
-    ports:
-    - 80:80/tcp
-    - 8080:8080/tcp
-    - 443:443/tcp
-    command:
-    - --configfile=/traefik.toml
     labels:
-      traefik.frontend.rule: Host:traefik.bonde.devel
-      traefik.alias: traefik
-      traefik.port: '8080'
-      traefik.enable: 'true'
+      - traefik.enable=true
+      - "traefik.http.routers.traefik.rule=Host(`traefik.bonde.devel`)"
+      - traefik.http.services.traefik.loadbalancer.server.port=8080
 
   pgmaster:
     image: postgres:10
@@ -101,11 +102,8 @@ services:
     - '10'
     - -enable-url-source
     labels:
-      traefik.frontend.rule: Host:img.bonde.devel
-      traefik.enable: 'true'
-      traefik.alias: img
-      traefik.port: '9009'
-      io.rancher.container.pull_image: always
+      - traefik.enable=true
+      - "traefik.http.routers.assets-images.rule=Host(`img.bonde.devel`)"
 
   elk:
     image: sebp/elk
@@ -116,9 +114,11 @@ services:
     volumes:
       - elk_data:/var/lib/elasticsearch
     labels:
-      traefik.frontend.rule: Host:kibana.bonde.devel
-      traefik.port: '5601'
-      traefik.enable: 'true'
+      - traefik.enable=true
+      - "traefik.http.routers.elk.rule=Host(`kibana.bonde.devel`)"
+      - "traefik.http.services.elk.loadbalancer.server.port=5601"
+
+  # sudo sysctl -w vm.max_map_count=262144
 
   pgadmin4:
     image: dpage/pgadmin4
@@ -130,12 +130,11 @@ services:
     ports:
       - 5433:80/tcp
     labels:
-      traefik.frontend.rule: Host:pgadmin.bonde.devel
-      traefik.enable: 'true'
-      traefik.port: '80'
+      - traefik.enable=true
+      - "traefik.http.routers.pgadmin4.rule=Host(`pgadmin.bonde.devel`)"
 
   filebeat:
-    image: docker.elastic.co/beats/filebeat:7.3.0
+    image: docker.elastic.co/beats/filebeat:7.10.0
     environment:
       setup.kibana.host: elk:5601
       output.elasticsearch.hosts: elk:9200
@@ -148,7 +147,7 @@ services:
       - elk
 
   metricbeat:
-    image: docker.elastic.co/beats/metricbeat:7.3.0
+    image: docker.elastic.co/beats/metricbeat:7.10.0
     environment:
       setup.kibana.host: elk:5601
       output.elasticsearch.hosts: elk:9200
@@ -163,7 +162,7 @@ services:
       - elk
 
   heartbeat:
-    image: docker.elastic.co/beats/heartbeat:7.3.0
+    image: docker.elastic.co/beats/heartbeat:7.10.0
     environment:
       setup.kibana.host: elk:5601
       output.elasticsearch.hosts: elk:9200

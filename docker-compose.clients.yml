@@ -15,7 +15,7 @@ services:
       AWS_BUCKET: bonde
       AWS_SECRET_ACCESS_KEY: password
       GOOGLE_FONTS_API_KEY: xxxxxx
-      GRAPHQL_URL: http://api-v2.bonde.devel
+      GRAPHQL_URL: http://api-graphql-deprecated.bonde.devel
       NEW_RELIC_HOME: ./src
       NEW_RELIC_LICENSE_KEY: xxxxxx
       NODE_ENV: PRODUCTION
@@ -30,7 +30,7 @@ services:
       WEB_MEMORY: '256'
     # links:
     # - traefik:api-v1.bonde.devel
-    # - traefik:api-v2.bonde.devel # enable use of load balancer inside containers
+    # - traefik:api-graphql-deprecated.bonde.devel # enable use of load balancer inside containers
     command:
     - yarn
     - start
@@ -47,7 +47,7 @@ services:
     ports:
     - 5000
     environment:
-      REACT_APP_GRAPH_URL: http://api-v2.bonde.devel/graphql
+      REACT_APP_GRAPH_URL: http://api-graphql-deprecated.bonde.devel/graphql
       REACT_APP_DOMAIN: http://admin-canary.bonde.devel
     command:
       - yarn
@@ -60,7 +60,7 @@ services:
       io.rancher.container.pull_image: always
     # links:
     # - api-v1:api-v1.bonde.devel
-    # - api-v2:api-v2.bonde.devel
+    # - api-v2:api-graphql-deprecated.bonde.devel
 
   admin:
     image: nossas/bonde-admin:develop
@@ -72,7 +72,7 @@ services:
       AWS_BUCKET: bonde
       AWS_SECRET_ACCESS_KEY: password
       GOOGLE_FONTS_API_KEY: xxxxxx
-      GRAPHQL_URL: http://api-v2.bonde.devel/graphql
+      GRAPHQL_URL: http://api-graphql-deprecated.bonde.devel/graphql
       NEW_RELIC_HOME: ./src
       NEW_RELIC_LICENSE_KEY: xxxx
       NODE_ENV: production
@@ -88,7 +88,7 @@ services:
     - 5001
     # links:
     # - api-v1:api-v1.bonde.devel
-    # - api-v2:api-v2.bonde.devel
+    # - api-v2:api-graphql-deprecated.bonde.devel
     command:
     - yarn
     - start
@@ -108,10 +108,8 @@ services:
       - NGINX_PORT=80
     command: /bin/bash -c "exec nginx -g 'daemon off;'"
     labels:
-      traefik.frontend.rule: Host:cross-storage.bonde.devel
-      traefik.enable: 'true'
-      traefik.alias: cross-storage
-      traefik.port: '80'
+      - traefik.enable=true
+      - traefik.http.routers.cross-storage.rule=Host(`cross-storage.bonde.devel`)
 
   styleguide:
     image: nossas/bonde-styleguide:develop
@@ -127,13 +125,8 @@ services:
 
   redes-client:
     image: nossas/bonde-redes-client:develop
-    build: ../bonde-microservices
+    # build: ../client
     labels:
-      traefik.frontend.rule: Host:redes.bonde.devel
-      traefik.enable: 'true'
-      traefik.alias: redes
-      traefik.port: '80'
-      io.rancher.container.pull_image: always
-      traefik.acme: 'false'
-      traefik.frontend.entryPoints: http
-    command: node packages/solidarity-client/dist
+      - traefik.enable=true
+      - traefik.http.routers.redes-client.rule=Host(`redes.bonde.devel`)
+    command: node packages/redes-client/dist

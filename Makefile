@@ -40,7 +40,7 @@ seeds:
 
 start-dev:
 	@docker-compose up -d --remove-orphans
-	@docker-compose -f docker-compose.clients.yml up -d --remove-orphans cross-storage
+	@docker-compose -f docker-compose.clients.yml up -d cross-storage
 
 start:
 	@docker-compose up -d

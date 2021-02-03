@@ -1,107 +1,32 @@
 version: '2'
-
-# volumes:
-#   es_data:
-#     driver: local
-
 services:
+
   public:
-    image: nossas/bonde-public:develop
-    # build: ../client/packages/public/
+    image: nossas/bonde-public-ts:0.3.4
+    # build: ../server/webpage
     environment:
-      API_URL: http://api-v1.bonde.devel
-      APP_DOMAIN: bonde.devel
-      AWS_ACCESS_KEY_ID: admin
-      AWS_BUCKET: bonde
-      AWS_SECRET_ACCESS_KEY: password
-      GOOGLE_FONTS_API_KEY: xxxxxx
-      GRAPHQL_URL: http://api-graphql-deprecated.bonde.devel
-      NEW_RELIC_HOME: ./src
-      NEW_RELIC_LICENSE_KEY: xxxxxx
-      NODE_ENV: PRODUCTION
-      NODE_MODULES_CACHE: 'false'
-      NPM_CONFIG_PRODUCTION: 'false'
-      PAGARME_KEY: xxxxxxxx
-      PORT: '5001'
-      REDIS_URL: redis://redis:6379
-      SENTRY_DSN: https://xxxxxx:xxxxx@sentry.io/121380
-      VALIDATE_REGION: sa-east-1
-      WEB_CONCURRENCY: '1'
-      WEB_MEMORY: '256'
-    # links:
-    # - traefik:api-v1.bonde.devel
-    # - traefik:api-graphql-deprecated.bonde.devel # enable use of load balancer inside containers
-    command:
-    - yarn
-    - start
-    labels:
-      traefik.frontend.rule: HostRegexp:{catchall:.*}
-      traefik.enable: 'true'
-      traefik.port: '5001'
-      io.rancher.container.pull_image: always
-      traefik.frontend.priority: '1'
-
-  admin-canary:
-    image: nossas/bonde-admin-canary:develop
-    # build: ../client/packages/admin-canary/
-    ports:
-    - 5000
-    environment:
-      REACT_APP_GRAPH_URL: http://api-graphql-deprecated.bonde.devel/graphql
-      REACT_APP_DOMAIN: http://admin-canary.bonde.devel
-    command:
-      - yarn
-      - dev
-    labels:
-      traefik.frontend.rule: Host:admin-canary.bonde.devel
-      traefik.enable: 'true'
-      traefik.alias: admin-canary
-      traefik.port: '5000'
-      io.rancher.container.pull_image: always
-    # links:
-    # - api-v1:api-v1.bonde.devel
-    # - api-v2:api-graphql-deprecated.bonde.devel
-
-  admin:
-    image: nossas/bonde-admin:develop
-    # build: ../client/packages/admin/
-    environment:
-      API_URL: http://api-v1.bonde.devel
-      APP_DOMAIN: bonde.devel
-      AWS_ACCESS_KEY_ID: admin
-      AWS_BUCKET: bonde
-      AWS_SECRET_ACCESS_KEY: password
-      GOOGLE_FONTS_API_KEY: xxxxxx
-      GRAPHQL_URL: http://api-graphql-deprecated.bonde.devel/graphql
-      NEW_RELIC_HOME: ./src
-      NEW_RELIC_LICENSE_KEY: xxxx
+      GOOGLE_FONTS_API_KEY: A
       NODE_ENV: production
-      NODE_MODULES_CACHE: 'false'
-      NPM_CONFIG_PRODUCTION: 'false'
-      PAGARME_KEY: xxxxxxx
-      PORT: '5001'
-      SENTRY_DSN: https://xxxxx:xxxxx@sentry.io/121380
-      VALIDATE_REGION: sa-east-1
+      PORT: '3000'
+      REACT_APP_API_GRAPHQL_SECRET: segredo123
+      REACT_APP_DOMAIN_API_ACTIVISTS: http://api-graphql:8080/v1/graphql
+      REACT_APP_DOMAIN_API_GRAPHQL: http://api-graphql:8080/v1/graphql
+      REACT_APP_DOMAIN_API_REST: http://api-rest:3000
+      REACT_APP_DOMAIN_PUBLIC: bonde.devel
+      REACT_APP_PAGARME_KEY: ak_test
       WEB_CONCURRENCY: '1'
       WEB_MEMORY: '256'
-    ports:
-    - 5001
-    # links:
-    # - api-v1:api-v1.bonde.devel
-    # - api-v2:api-graphql-deprecated.bonde.devel
     command:
     - yarn
     - start
     labels:
-      traefik.frontend.rule: Host:app.bonde.devel
-      traefik.enable: 'true'
-      traefik.alias: app
-      traefik.port: '5001'
-      io.rancher.container.pull_image: always
+      - traefik.enable=true
+      - traefik.http.routers.public.rule=hostregexp(`{host:.+}`)
+      - traefik.http.services.public.loadbalancer.server.port=5001
 
   cross-storage:
     image: nossas/bonde-cross-storage
-    # build: ../cross-storage
+    # build: ../client/packages/storage
     ports:
       - "8888:80"
     environment:
@@ -110,23 +35,4 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.cross-storage.rule=Host(`cross-storage.bonde.devel`)
-
-  styleguide:
-    image: nossas/bonde-styleguide:develop
-    # build: ../client/packages/styleguide/
-    labels:
-      traefik.frontend.rule: Host:styleguide.bonde.devel
-      traefik.enable: 'true'
-      traefik.alias: styleguide
-      traefik.port: '80'
-      io.rancher.container.pull_image: always
-      traefik.acme: 'false'
-      traefik.frontend.entryPoints: http
-
-  redes-client:
-    image: nossas/bonde-redes-client:develop
-    # build: ../client
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.redes-client.rule=Host(`redes.bonde.devel`)
-    command: node packages/redes-client/dist
+      - traefik.http.services.cross-storage.loadbalancer.server.port=80

@@ -1,12 +1,4 @@
 version: '2'
-# networks:
-#   bonde:
-#     driver: bridge
-#     ipam:
-#       driver: default
-#       config:
-#       - subnet:  10.0.0.1/8
-
 services:
 
   migrations:
@@ -50,10 +42,6 @@ services:
     - diesel
     - migration
     - run
-    labels:
-      io.rancher.container.start_once: 'true'
-    # networks:
-    #   bonde:
 
   chatbot-worker:
     image: nossas/bonde-bot:develop
@@ -67,31 +55,77 @@ services:
       REDIS_URL: redis://redis:6379
       SPEECH_VERSION: v1
       WIT_SERVER_ACCESS_TOKEN: xxxxxxxxx
-    external_links:
-    - redis
-    - api-graphql-deprecated
-    - api-v1
     command:
     - npm
     - run
     - start:worker
 
-  api-rest:
-    extends:
-      file: docker-compose.apis.yml
-      service: api-rest
-
   mailchimp:
     extends:
+      file: docker-compose.apis.yml
       service: api-rest
     command: ["bundle", "exec", "sidekiq", "-c", "5", "-q", "mailchimp_synchro"]
 
   mailers:
     extends:
+      file: docker-compose.apis.yml
       service: api-rest
     command: ["bundle", "exec", "sidekiq", "-q", "default", "-q", "mailers", "-c", "5"]
 
   templates-email:
     extends:
+      file: docker-compose.apis.yml
       service: api-rest
     command: ["bundle", "exec", "rake", "notifications:all"]
+
+  cli-zendesk-ticket:
+    image: nossas/mapa-do-acolhimento:1.4.3
+    environment:
+      COMMUNITY_ID: '40'
+      DEBUG: cli-zendesk*
+      GOOGLE_MAPS_API_KEY: A
+      HASURA_API_URL: http://api-graphql.bonde.devel/v1/graphql
+      NODE_ENV: production
+      WIDGET_IDS: '{"ADVOGADA": 17633, "PSICÓLOGA": 17628, "MSR": 16850}'
+      X_HASURA_ADMIN_SECRET: segreedo123
+      ZENDESK_API_TOKEN: 8
+      ZENDESK_API_URL: http://org.zendesk.com/api/v2/
+      ZENDESK_API_USER: enrica@nossas.org/token
+      ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"360269610652","MSR":"360273031591","PSICÓLOGA":"360282119532"}'
+    command:
+    - pnpm
+    - --filter
+    - bonde-cli-zendesk
+    - run
+    - start:ticket
+    labels:
+      io.rancher.container.start_once: 'true'
+      io.rancher.container.pull_image: always
+      cron.restart_timeout: '86400'
+      cron.schedule: 0 0 0 * * *
+
+  cli-zendesk-user:
+    image: nossas/mapa-do-acolhimento:1.4.3
+    environment:
+      COMMUNITY_ID: '40'
+      DEBUG: cli-zendesk*
+      GOOGLE_MAPS_API_KEY: A
+      HASURA_API_URL: http://api-graphql.bonde.devel/v1/graphql
+      NODE_ENV: production
+      WIDGET_IDS: '{"ADVOGADA": 17633, "PSICÓLOGA": 17628, "MSR": 16850}'
+      X_HASURA_ADMIN_SECRET: segreedo123
+      ZENDESK_API_TOKEN: 8
+      ZENDESK_API_URL: http://org.zendesk.com/api/v2/
+      ZENDESK_API_USER: enrica@nossas.org/token
+      ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"360269610652","MSR":"360273031591","PSICÓLOGA":"360282119532"}'
+    command:
+    - pnpm
+    - --filter
+    - bonde-cli-zendesk
+    - run
+    - start:user
+    labels:
+      io.rancher.container.start_once: 'true'
+      io.rancher.container.pull_image: always
+      cron.restart_timeout: '86400'
+      cron.schedule: 0 0 0 * * *

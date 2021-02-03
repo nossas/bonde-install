@@ -36,8 +36,8 @@ services:
     - /data
     labels:
       - traefik.enable=true
-      - "traefik.http.routers.s3.rule=Host(`s3.bonde.devel`)"
-
+      - traefik.http.routers.s3.rule=Host(`s3.bonde.devel`)
+      - traefik.http.services.s3.loadbalancer.server.port=9000
   smtp:
     image: mailhog/mailhog
     environment:
@@ -47,7 +47,7 @@ services:
     - 8025:8025/tcp
     labels:
       - traefik.enable=true
-      - "traefik.http.routers.smtp.rule=Host(`smtp.bonde.devel`)"
+      - traefik.http.routers.smtp.rule=Host(`smtp.bonde.devel`)
       - traefik.http.services.smtp.loadbalancer.server.port=8025
 
   traefik:
@@ -133,46 +133,46 @@ services:
       - traefik.enable=true
       - "traefik.http.routers.pgadmin4.rule=Host(`pgadmin.bonde.devel`)"
 
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:7.10.0
-    environment:
-      setup.kibana.host: elk:5601
-      output.elasticsearch.hosts: elk:9200
-    user: root
-    volumes:
-      - "./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro"
-      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    depends_on:
-      - elk
+  # filebeat:
+  #   image: docker.elastic.co/beats/filebeat:7.10.0
+  #   environment:
+  #     setup.kibana.host: elk:5601
+  #     output.elasticsearch.hosts: elk:9200
+  #   user: root
+  #   volumes:
+  #     - "./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro"
+  #     - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  #   depends_on:
+  #     - elk
 
-  metricbeat:
-    image: docker.elastic.co/beats/metricbeat:7.10.0
-    environment:
-      setup.kibana.host: elk:5601
-      output.elasticsearch.hosts: elk:9200
-    user: root
-    volumes:
-      - "./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro"
-      - "/proc:/hostfs/proc:ro"
-      - "/:/hostfs:ro"
-    depends_on:
-      - elk
+  # metricbeat:
+  #   image: docker.elastic.co/beats/metricbeat:7.10.0
+  #   environment:
+  #     setup.kibana.host: elk:5601
+  #     output.elasticsearch.hosts: elk:9200
+  #   user: root
+  #   volumes:
+  #     - "./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro"
+  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  #     - "/sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro"
+  #     - "/proc:/hostfs/proc:ro"
+  #     - "/:/hostfs:ro"
+  #   depends_on:
+  #     - elk
 
-  heartbeat:
-    image: docker.elastic.co/beats/heartbeat:7.10.0
-    environment:
-      setup.kibana.host: elk:5601
-      output.elasticsearch.hosts: elk:9200
-    user: root
-    volumes:
-      - "./heartbeat.yml:/usr/share/heartbeat/heartbeat.yml:ro"
-      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    depends_on:
-      - elk
+  # heartbeat:
+  #   image: docker.elastic.co/beats/heartbeat:7.10.0
+  #   environment:
+  #     setup.kibana.host: elk:5601
+  #     output.elasticsearch.hosts: elk:9200
+  #   user: root
+  #   volumes:
+  #     - "./heartbeat.yml:/usr/share/heartbeat/heartbeat.yml:ro"
+  #     - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  #   depends_on:
+  #     - elk
 
   # scope:
   #   image: weaveworks/scope:1.11.4

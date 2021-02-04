@@ -2,8 +2,8 @@ version: '2'
 services:
 
   migrations:
-    # image: nossas/bonde-migrations:feature-community-modules
-    build: ../server/migrations
+    # image: nossas/bonde-migrations
+    build: ../workers/migrations
     environment:
       AWS_ACCESS_KEY_ID: admin
       AWS_BUCKET: bonde

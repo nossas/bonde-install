@@ -43,4 +43,4 @@ services:
     environment:
       DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster/bonde
     volumes:
-    - ../server/migrations:/volumes
+    - ../workers/migrations:/volumes

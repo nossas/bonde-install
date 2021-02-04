@@ -36,7 +36,7 @@ migrate:
 
 seeds:
 	@sleep 10;
-	@docker-compose -f docker-compose.workers.yml up -d --remove-orphans templates-email
+	@docker-compose -f docker-compose.workers.yml up -d templates-email
 
 start-dev:
 	@docker-compose up -d --remove-orphans

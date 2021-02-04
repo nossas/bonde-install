@@ -220,25 +220,13 @@ When the login form finishes loading, you'll still need to follow some steps to 
 
 4. Reload the **api-graphql.bonde.devel** page:
 
-* Register a new Users on console
-
-```
-mutation RegisterUser {
-  register (input: {
-    data: "{\"email\": \"admin_foo@bar.com\", \"password\": \"foobar!!\", \"first_name\": \"Foo!\"}"
-  }) {
-    jwtToken
-  }
-}
-```
-
 * Create a new Communities on console:
 
 ```
 mutation InsertCommunity {
   insert_communities (objects: {
-    name: "Beta",
-    city: "Brasil",
+    name: "Minha Organização",
+    city: "Rio de Janeiro",
     created_at: "2019-09-03 00:00:00",
     updated_at: "2019-09-03 00:00:00"
   }) {
@@ -249,6 +237,22 @@ mutation InsertCommunity {
       modules
       created_at
     }
+  }
+}
+```
+
+* Register a new Users on console
+
+```
+mutation MyMutation2 {
+  insert_invitations(objects: {email: "foo@bar.com", code:"111111", role:"1", expired:false, community_id: 1}){
+    affected_rows
+  }
+}
+
+mutation MyMutation3 {
+  register(input: {code: "111111", email: "foo@bar.com", first_name: "FOO", password: "123456"}) {
+    valid
   }
 }
 ```

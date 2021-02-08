@@ -185,3 +185,10 @@ services:
   #     - "/var/run/docker.sock:/var/run/docker.sock:rw"
   #   command:
   #     - "--probe.docker=true"
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+    - REDIS_HOSTS=local:redis:6379
+    ports:
+    - "8081:8081"

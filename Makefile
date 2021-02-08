@@ -39,9 +39,8 @@ seeds:
 	@docker-compose -f docker-compose.workers.yml up -d templates-email
 
 start-dev:
-	@docker-compose up -d --remove-orphans
+	@docker-compose up -d
 	@docker-compose -f docker-compose.apis.yml up -d
-	@docker-compose -f docker-compose.clients.yml up -d cross-storage
 
 start:
 	@docker-compose up -d

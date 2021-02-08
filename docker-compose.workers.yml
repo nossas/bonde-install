@@ -1,6 +1,10 @@
 version: '2'
-services:
 
+volumes:
+  elk_data:
+    driver: local
+
+services:
   migrations:
     # image: nossas/bonde-migrations
     build: ../workers/migrations
@@ -129,3 +133,15 @@ services:
       io.rancher.container.pull_image: always
       cron.restart_timeout: '86400'
       cron.schedule: 0 0 0 * * *
+
+
+  documents:
+    build: ../workers/documents
+    command: npm start brew tea
+    environment:
+      REDIS_URL: redis://redis:6379
+      ELK_HOST: http://elk:9200
+  elk:
+    extends:
+      file: docker-compose.common.yml
+      service: elk

@@ -60,3 +60,47 @@ services:
       traefik.port: '1313'
       traefik.enable: 'true'
       traefik.frontend.entryPoints: http
+
+  notifications:
+    image: nossas/bonde-notifications:develop
+    # build: ../notifications/
+    environment:
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
+      SMTP_ADDRESS: 'smtp'
+      SMTP_PORT: '1025'
+      SMTP_DOMAIN: 'bonde.devel'
+      SMTP_USER_NAME: ''
+      SMTP_PASSWORD: ''
+      DEFAULT_FROM: 'email@bonde.devel'
+      DB_CHANNEL: notifications_channel
+      JWT_SECRET: 'segredo123'
+      REDIS_URL: redis://redis:6379
+      WORKERS: '5'
+
+  maquinista:
+    image: nossas/bonde-maquinista:develop
+    environment:
+      DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
+      HUBOT_AUTH_ADMIN: admin
+      HUBOT_GOOGLE_CSE_ID: O1
+      HUBOT_GOOGLE_CSE_KEY: AI
+      HUBOT_GOOGLE_SAFE_SEARCH: '''off'''
+      HUBOT_NEWRELIC_ACCOUNT_ID: ca
+      HUBOT_NEWRELIC_API_KEY: ''
+      HUBOT_SENDGRID_KEY: SG
+      HUBOT_SENDGRID_USER: apikey
+      HUBOT_SLACK_TOKEN: x
+      HUBOT_UPTIMEROBOT_APIKEY: u
+      PORT: '8088'
+      REDIS_URL: redis://redis:6379/hubot
+      SECRET: 3a
+    external_links:
+    - common/redis3:redis
+    labels:
+      traefik.frontend.rule: Host:maquinista.bonde.org
+      traefik.enable: 'true'
+      traefik.alias: maquinista
+      traefik.port: '8088'
+      io.rancher.container.pull_image: always
+      traefik.acme: 'false'
+      traefik.frontend.entryPoints: http

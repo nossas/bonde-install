@@ -1,11 +1,11 @@
 version: '2'
 services:
-  phone:
+  webhook-phone:
     image: nossas/bonde-phone:1.1.0
     # build: ../phone
     environment:
       AMOUNT: '100'
-      APP_DOMAIN: http://phone.bonde.devel
+      APP_DOMAIN: http://webhook-phone.bonde.devel
       DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
       DEBUG: '0'
       ENABLE_TWILIO_CALL: '1'
@@ -22,108 +22,194 @@ services:
     - run
     - dev
     labels:
-      traefik.frontend.rule: Host:phone.bonde.devel
-      traefik.enable: 'true'
-      traefik.alias: phone
-      traefik.port: '5000'
-      traefik.acme: 'false'
-      traefik.frontend.entryPoints: http
+      - traefik.enable=true
+      - traefik.http.routers.webhook-phone.rule=Host(`webhook-phone.bonde.devel`)
+      - traefik.http.services.webhook-phone.loadbalancer.server.port=5000
 
-  maquinista:
-    image: nossas/bonde-maquinista:develop
-    # build: ../maquinista
+  webhook-accounts:
+    image: nossas/bonde-accounts:0.3.3
     environment:
-      DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
-      HUBOT_AUTH_ADMIN: userexist
-      HUBOT_GOOGLE_CSE_ID: id
-      HUBOT_GOOGLE_CSE_KEY: key
-      HUBOT_GOOGLE_SAFE_SEARCH: '''off'''
-      HUBOT_NEWRELIC_ACCOUNT_ID: id
-      HUBOT_NEWRELIC_API_KEY: ''
-      HUBOT_SENDGRID_KEY: key
-      HUBOT_SENDGRID_USER: apikey
-      HUBOT_SLACK_TOKEN: token
-      HUBOT_UPTIMEROBOT_APIKEY: apikey
-      PORT: '8088'
-      REDIS_URL: redis://redis:6379/hubot
-      SECRET: secret
+      DEBUG: bonde-accounts-webhook
+      GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
+      HASURA_SECRET: segredo123
+      NODE_ENV: production
+      PORT: '4001'
+      JWT_SECRET: segredo123
+      ACCOUNTS_LOGIN_URL: http://accounts.bonde.devel/login
+      ACCOUNTS_REGISTER_URL: http://accounts.bonde.devel/register
+    command:
+    - pnpm
+    - m
+    - run
+    - start
+    - --filter
+    - bonde-accounts-webhook
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.webhook-accounts.rule=Host(`webhook-accounts.bonde.devel`)
+      - traefik.http.services.webhook-accounts.loadbalancer.server.port=4001
+
+  webhook-mail:
+    image: nossas/bonde-webhooks-mail:0.2.2
+    environment:
+      DEBUG: webhook-mail*
+      GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
+      HASURA_SECRET: segredo123
+      PORT: '80'
+      SMTP_HOST: smtp
+      SMTP_PASS: 1
+      SMTP_PORT: '1025'
+      SMTP_USER: apikey
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.webhook-mail.rule=Host(`webhook-mail.bonde.devel`)
+      - traefik.http.services.webhook-mail.loadbalancer.server.port=80
+
+  solidarity-count:
+    image: nossas/mapa-do-acolhimento:1.4.3
+    environment:
+      COMMUNITY_ID: '40'
+      DEBUG: webhooks-solidarity-count*
+      GOOGLE_MAPS_API_KEY: AI
+      HASURA_API_URL: https://api-graphql:8080/v1/graphql
+      MAUTIC_API_URL: https://mautic.bonde.devel/api
+      MAUTIC_PASSWORD: 'segredo123'
+      MAUTIC_USERNAME: email@domain.com
+      NODE_ENV: production
+      PORT: '80'
+      WIDGET_IDS: '{"ADVOGADA": 17633, "PSICOLOGA": 17628, "MSR": 16850}'
+      X_HASURA_ADMIN_SECRET: segreedo123
+      ZENDESK_API_TOKEN: 8J
+      ZENDESK_API_URL: https://zendesk.com/api/v2/
+      ZENDESK_API_USER: email@domain.com/token
+      ZENDESK_ORGANIZATIONS: '{"A":"3","M":"3","P":"3"}'
+    command:
+    - pnpm
+    - --filter
+    - bonde-webhooks-solidarity-count
+    - run
+    - start
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.webhook-solidarity-count.rule=Host(`webhook-solidarity-count.bonde.devel`)
+      - traefik.http.services.webhook-solidarity-count.loadbalancer.server.port=80
+
+  webhook-mautic-registry:
+    image: nossas/mapa-do-acolhimento:1.4.3
+    environment:
+      DEBUG: webhooks-registry
+      ELASTIC_APM_ACTIVE: 'false'
+      HASURA_API_URL: https://api-graphql.bonde.devel/v1/graphql
+      PORT: '8081'
+      X_HASURA_ADMIN_SECRET: segreedo123
+    stdin_open: true
     external_links:
     - common/redis3:redis
+    tty: true
+    command:
+    - pnpm
+    - --filter
+    - bonde-webhooks-mautic-registry
+    - run
+    - start
     labels:
-      traefik.frontend.rule: Host:maquinista.bonde.devel
-      traefik.enable: 'true'
-      traefik.alias: maquinista
-      traefik.port: '8088'
-      traefik.acme: 'false'
-      traefik.frontend.entryPoints: http
+      - traefik.enable=true
+      - traefik.http.routers.webhook-mautic-registry.rule=Host(`webhook-mautic-registry.bonde.devel`)
+      - traefik.http.services.webhook-mautic-registry.loadbalancer.server.port=8081
 
-  # zendesk-mapa-v1:
-  #   image: nossas/bonde-zendesk:develop
-  #   # build: ../zendesk-mapa-v1
-  #   environment:
-  #     ZENDESK_ORGANIZATIONS: '{"Advogada":"","MSR":"","Psicologa":""}'
-  #     ZENDESK_API_ROOT: http://xxxx.zendesk.com/api/v2/
-  #     ZENDESK_API_TOKEN: token
-  #     ZENDESK_API_USER: email@email.com.br
-  #     JWT_SECRET: asd
-  #     GOOGLE_MAPS_API_KEY: vcxz
-  #     SENDGRID_SEND_EMAIL: email@email.com.br
-  #     DEBUG: '0'
-  #     SENDGRID_API_KEY: key
-  #   command:
-  #   - ./run_webserver.sh
-  #   labels:
-  #     traefik.frontend.rule: Host:zendesk-mapa-v1.bonde.devel
-  #     traefik.port: '5000'
-  #     traefik.enable: 'true'
+  webhook-mautic-zendesk:
+    image: nossas/mapa-do-acolhimento:1.4.3
+    environment:
+      COMMUNITY_ID: '40'
+      DEBUG: webhooks-zendesk*
+      ELASTIC_APM_ACTIVE: 'false'
+      GOOGLE_MAPS_API_KEY: A
+      HASURA_API_URL: http://api-graphql:8080/v1/graphql
+      MAUTIC_API_URL: http://mautic/api
+      MAUTIC_PASSWORD: 'xxxx'
+      MAUTIC_USERNAME: email@domain.com
+      NODE_ENV: production
+      PORT: '80'
+      WIDGET_IDS: 2760,16835,17628,8190,16838,17633
+      X_HASURA_ADMIN_SECRET: segreedo123
+      ZENDESK_API_TOKEN: 8
+      ZENDESK_API_URL: https://org.zendesk.com/api/v2/
+      ZENDESK_API_USER: email@domain.com/token
+      ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"360269610652","MSR":"360273031591","PSICÓLOGA":"360282119532"}'
+    command:
+    - pnpe
+    - --filter
+    - bonde-webhooks-mautic-zendesk
+    - run
+    - start
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.webhook-mautic-zendesk.rule=Host(`webhook-mautic-zendesk.bonde.devel`)
+      - traefik.http.services.webhook-mautic-zendesk.loadbalancer.server.port=80
 
-  # webhooks-zendesk:
-  #   # image: nossas/bonde-webhooks-zendesk:develop
-  #   build: 
-  #     dockerfile: packages/webhooks-zendesk/Dockerfile
-  #     context: ../bonde-microservices
-  #   environment:
-  #     ZENDESK_API_URL: https://xxxxx.zendesk.com/api/v2/
-  #     ZENDESK_API_TOKEN: token
-  #     ZENDESK_API_USER: email@nossas.org/token
-  #     PORT: 80
-  #     ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"","MSR":"","PSICÓLOGA":""}'
-  #     GOOGLE_MAPS_API_KEY: gmaps
-  #     WIDGET_IDS: '{"ADVOGADA": , "PSICÓLOGA": }'
-  #     HASURA_API_URL: http://api-graphql:8080/v1/graphql
-  #     X_HASURA_ADMIN_SECRET: segredo123
-  #     DEBUG: webhooks-zendesk*
 
-  # webhooks-solidarity-count:
-  #   build:
-  #     dockerfile: packages/webhooks-solidarity-count/Dockerfile
-  #     context: ../bonde-microservices
-  #   environment:
-  #     DEBUG: webhooks-solidarity-count*
-  #     ZENDESK_API_URL: https://mapadoacolhimento.zendesk.com/api/v2/
-  #     ZENDESK_API_TOKEN: token
-  #     ZENDESK_API_USER: email
-  #     PORT: 8084
-  #     ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"360269610652","MSR":"360273031591","PSICÓLOGA":"360282119532"}'
-  #     GOOGLE_MAPS_API_KEY: gmaps
-  #     WIDGET_IDS: '{"ADVOGADA": 17633, "PSICÓLOGA": 17628}'
-  #     HASURA_API_URL: http://api-graphql:8080/v1/graphql
-  #     X_HASURA_ADMIN_SECRET: segredo123
-  #     COMMUNITY_ID: 21
+  webhook-match-otimizado:
+    image: nossas/mapa-do-acolhimento:0.4.9
+    environment:
+      COMMUNITY_ID: '22'
+      HASURA_API_URL: http://api-graphql:8080/v1/graphql
+      PORT: '5000'
+      REACT_APP_DOMAIN_CROSS_STORAGE: http://localhost:5003
+      REACT_APP_ENVIRONMENT: production
+      REACT_APP_GOOGLE_CLIENT_KEY: A
+      REACT_APP_LOGIN_URL: http://localhost:5000/auth/login
+      REACT_APP_ZENDESK_ORGANIZATIONS: '{"lawyer":360269610652,"individual":360273031591,"therapist":360282119532}'
+      X_HASURA_ADMIN_SECRET: segredo123
+      ZENDESK_API_TOKEN: e
+      ZENDESK_API_URL: https://org.zendesk.com/api/v2/
+      ZENDESK_API_USER: email@domain.com
+    command:
+    - pnpm
+    - --filter
+    - client-solidarity
+    - run
+    - start
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.webhook-match-otimizado.rule=Host(`webhook-match-otimizado.bonde.devel`)
+      - traefik.http.services.webhook-match-otimizado.loadbalancer.server.port=5000
 
-  # webhooks-solidarity-match:
-  #   build:
-  #     dockerfile: packages/webhooks-solidarity-match/Dockerfile
-  #     context: ../bonde-microservices
-  #   environment: 
-  #     DEBUG: webhooks-solidarity-match*
-  #     ZENDESK_API_URL: https://mapadoacolhimento.zendesk.com/api/v2/
-  #     ZENDESK_API_TOKEN: token
-  #     ZENDESK_API_USER: email
-  #     PORT: 80
-  #     ZENDESK_ORGANIZATIONS: '{"ADVOGADA":"360269610652","MSR":"360273031591","PSICÓLOGA":"360282119532"}'
-  #     GOOGLE_MAPS_API_KEY: gmaps
-  #     WIDGET_IDS: '{"ADVOGADA": 17633, "PSICÓLOGA": 17628}'
-  #     HASURA_API_URL: http://api-graphql:8080/v1/graphql
-  #     X_HASURA_ADMIN_SECRET: segredo123
+  webhook-beta:
+    image: nossas/bonde-bot-beta:3.1.8
+    environment:
+      API_URL: http://api-rest:3000
+      APP_DOMAIN: http://webhook-beta.bonde.devel
+      ELASTIC_APM_ACTIVE: 'false'
+      FORM_MOBILIZATION_ID: '1305'
+      FORM_WIDGET_ID: '23416'
+      GRAPHQL_URL: http://api-graphql-deprecated:3002/graphql
+      JWT_TOKEN: e
+      NODE_ENV: production
+      PORT: '5000'
+      REDIS_URL: redis://redis:6379
+      SPEECH_VERSION: v2
+      WIT_SERVER_ACCESS_TOKEN: M
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.webhook-beta.rule=Host(`webhook-beta.bonde.devel`)
+      - traefik.http.services.webhook-beta.loadbalancer.server.port=5000
 
+  webhook-chatbot:
+    image: nossas/bonde-bot-chatbot:3.1.8
+    environment:
+      API_URL: http://api-rest:3000
+      APP_DOMAIN: https://webhook-chatbot.bonde.devel
+      ELASTIC_APM_ACTIVE: 'false'
+      GRAPHQL_URL: https://api-graphql:8080/v1/graphql
+      HASURA_SECRET: segredo123
+      JWT_TOKEN: e
+      NODE_ENV: production
+      PORT: '5000'
+      REDIS_URL: redis://redis3:6379
+      SPEECH_VERSION: v2
+      WIT_SERVER_ACCESS_TOKEN: M
+      WS_GRAPHQL_URL: ws://api-graphql:8080/v1/graphql
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.webhook-chatbot.rule=Host(`webhook-chatbot.bonde.devel`)
+      - traefik.http.services.webhook-chatbot.loadbalancer.server.port=5000

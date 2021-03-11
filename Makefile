@@ -36,68 +36,69 @@ migrate:
 
 seeds:
 	@sleep 10;
-	@docker-compose -f docker-compose.workers.yml up -d --remove-orphans templates-email
+	@docker-compose -f docker-compose.workers.yml up -d templates-email
 
 start-dev:
-	@docker-compose up -d --remove-orphans
-	@docker-compose -f docker-compose.clients.yml up -d --remove-orphans cross-storage
+	@docker-compose up -d
+	@docker-compose -f docker-compose.apis.yml up -d
 
 start:
 	@docker-compose up -d
+	@docker-compose -f docker-compose.apis.yml up -d
 	@docker-compose -f docker-compose.clients.yml up -d
+	@docker-compose -f docker-compose.common.yml up -d
 	@docker-compose -f docker-compose.cronjob.yml up -d
-	@docker-compose -f docker-compose.depreacted.yml up -d
-	@docker-compose -f docker-compose.dispatchers.yml up -d
+	@docker-compose -f docker-compose.listeners.yml up -d
 	@docker-compose -f docker-compose.webhooks.yml up -d
 	@docker-compose -f docker-compose.workers.yml up -d
 
 stop:
 	@docker-compose stop
 	@docker-compose rm --force
+	@docker-compose -f docker-compose.apis.yml stop
+	@docker-compose -f docker-compose.apis.yml rm --force
 	@docker-compose -f docker-compose.clients.yml stop
 	@docker-compose -f docker-compose.clients.yml rm --force
+	@docker-compose -f docker-compose.common.yml stop
+	@docker-compose -f docker-compose.common.yml rm --force
 	@docker-compose -f docker-compose.cronjob.yml stop
 	@docker-compose -f docker-compose.cronjob.yml rm --force
-	@docker-compose -f docker-compose.depreacted.yml stop
-	@docker-compose -f docker-compose.depreacted.yml rm --force
-	@docker-compose -f docker-compose.dispatchers.yml stop
-	@docker-compose -f docker-compose.dispatchers.yml rm --force
+	@docker-compose -f docker-compose.listeners.yml stop
+	@docker-compose -f docker-compose.listeners.yml rm --force
 	@docker-compose -f docker-compose.webhooks.yml stop
 	@docker-compose -f docker-compose.webhooks.yml rm --force
 	@docker-compose -f docker-compose.workers.yml stop
 	@docker-compose -f docker-compose.workers.yml rm --force
-	@docker-compose -f docker-compose.common.yml stop
-	@docker-compose -f docker-compose.common.yml rm --force
+
 status:
 	@docker-compose ps
+	@docker-compose -f docker-compose.apis.yml ps
 	@docker-compose -f docker-compose.clients.yml ps
+	@docker-compose -f docker-compose.common.yml ps
 	@docker-compose -f docker-compose.cronjob.yml ps
-	@docker-compose -f docker-compose.depreacted.yml ps
-	@docker-compose -f docker-compose.dispatchers.yml ps
+	@docker-compose -f docker-compose.listeners.yml ps
 	@docker-compose -f docker-compose.webhooks.yml ps
 	@docker-compose -f docker-compose.workers.yml ps
-	@docker-compose -f docker-compose.common.yml ps
 
 clean:
 	@docker-compose down -v --remove-orphans
+	@docker-compose -f docker-compose.apis.yml down -v --remove-orphans
 	@docker-compose -f docker-compose.clients.yml down -v --remove-orphans
+	@docker-compose -f docker-compose.common.yml down -v --remove-orphans
 	@docker-compose -f docker-compose.cronjob.yml down -v --remove-orphans
-	@docker-compose -f docker-compose.depreacted.yml down -v --remove-orphans
-	@docker-compose -f docker-compose.dispatchers.yml down -v --remove-orphans
+	@docker-compose -f docker-compose.listeners.yml down -v --remove-orphans
 	@docker-compose -f docker-compose.webhooks.yml down -v --remove-orphans
 	@docker-compose -f docker-compose.workers.yml down -v --remove-orphans
-	@docker-compose -f docker-compose.common.yml down -v --remove-orphans
 
 logs:
 	@docker-compose logs -f
+	@docker-compose -f docker-compose.apis.yml logs -f
 	@docker-compose -f docker-compose.clients.yml logs -f
+	@docker-compose -f docker-compose.common.yml logs -f
 	@docker-compose -f docker-compose.cronjob.yml logs -f
-	@docker-compose -f docker-compose.depreacted.yml logs -f
-	@docker-compose -f docker-compose.dispatchers.yml logs -f
+	@docker-compose -f docker-compose.listeners.yml logs -f
 	@docker-compose -f docker-compose.webhooks.yml logs -f
 	@docker-compose -f docker-compose.workers.yml logs -f
-	@docker-compose -f docker-compose.common.yml logs -f
-
 
 restart: stop start
 

@@ -118,8 +118,6 @@ services:
       - "traefik.http.routers.elk.rule=Host(`kibana.bonde.devel`)"
       - "traefik.http.services.elk.loadbalancer.server.port=5601"
 
-  # sudo sysctl -w vm.max_map_count=262144
-
   pgadmin4:
     image: dpage/pgadmin4
     environment:

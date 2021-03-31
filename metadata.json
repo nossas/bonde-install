@@ -1541,12 +1541,6 @@
     {
       "table": {
         "schema": "public",
-        "name": "notify_mail"
-      }
-    },
-    {
-      "table": {
-        "schema": "public",
         "name": "pressure_targets"
       },
       "object_relationships": [

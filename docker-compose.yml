@@ -23,6 +23,11 @@ services:
     extends:
       file: docker-compose.common.yml
       service: traefik
+  
+  cross-storage:
+    extends:
+      file: docker-compose.clients.yml
+      service: cross-storage
 
   pgmaster:
     extends:

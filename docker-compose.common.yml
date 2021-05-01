@@ -107,6 +107,9 @@ services:
 
   elk:
     image: sebp/elk
+    environment:
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "discovery.type=single-node"
     ports:
       - "5601:5601"
       - "9200:9200"
@@ -131,18 +134,18 @@ services:
       - traefik.enable=true
       - "traefik.http.routers.pgadmin4.rule=Host(`pgadmin.bonde.devel`)"
 
-  # filebeat:
-  #   image: docker.elastic.co/beats/filebeat:7.10.0
-  #   environment:
-  #     setup.kibana.host: elk:5601
-  #     output.elasticsearch.hosts: elk:9200
-  #   user: root
-  #   volumes:
-  #     - "./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro"
-  #     - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
-  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
-  #   depends_on:
-  #     - elk
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.12.0
+    environment:
+      setup.kibana.host: elk:5601
+      output.elasticsearch.hosts: elk:9200
+    user: root
+    volumes:
+      - "./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro"
+      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    depends_on:
+      - elk
 
   # metricbeat:
   #   image: docker.elastic.co/beats/metricbeat:7.10.0

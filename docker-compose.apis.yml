@@ -102,7 +102,7 @@ services:
     image: nossas/bonde-apis:0.0.7
     # build: ../server/api-graphql
     environment:
-      GRAPHQL_HTTP_URL: http://api-graphql.bonde.devel/v1/graphql
+      GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
       HASURA_SECRET: segredo123
       HOST: 0.0.0.0
       JWT_SECRET: segredo123
@@ -117,7 +117,7 @@ services:
   api-payments:
     image: nossas/bonde-apis:0.0.7
     environment:
-      GRAPHQL_HTTP_URL: http://api-graphql.bonde.devel/v1/graphql
+      GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
       HASURA_SECRET: segredo123
       HOST: 0.0.0.0
       JWT_SECRET: segredo123
@@ -162,7 +162,7 @@ services:
   api-activists:
     image: nossas/bonde-apis:0.0.7
     environment:
-      GRAPHQL_HTTP_URL: http://api-graphql.bonde.devel/v1/graphql
+      GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
       HASURA_SECRET: segredo123
       HOST: 0.0.0.0
       PORT: '3000'

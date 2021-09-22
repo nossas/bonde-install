@@ -1,4 +1,4 @@
-version: '2'
+version: "2"
 
 volumes:
   redis_data:
@@ -14,13 +14,13 @@ services:
   redis:
     image: redis:3
     volumes:
-    - redis_data:/var/lib/redis
+      - redis_data:/var/lib/redis
     ports:
-    - 6379:6379/tcp
+      - 6379:6379/tcp
     command:
-    - redis-server
-    - --appendonly
-    - 'yes'
+      - redis-server
+      - --appendonly
+      - "yes"
 
   s3:
     image: minio/minio
@@ -28,12 +28,12 @@ services:
       MINIO_ACCESS_KEY: admin
       MINIO_SECRET_KEY: password
     volumes:
-    - s3_data:/data
+      - s3_data:/data
     ports:
-    - 9000:9000/tcp
+      - 9000:9000/tcp
     command:
-    - server
-    - /data
+      - server
+      - /data
     labels:
       - traefik.enable=true
       - traefik.http.routers.s3.rule=Host(`s3.bonde.devel`)
@@ -43,8 +43,8 @@ services:
     environment:
       MH_HOSTNAME: smtp.bonde.devel
     ports:
-    - 1025:1025/tcp
-    - 8025:8025/tcp
+      - 1025:1025/tcp
+      - 8025:8025/tcp
     labels:
       - traefik.enable=true
       - traefik.http.routers.smtp.rule=Host(`smtp.bonde.devel`)
@@ -76,31 +76,31 @@ services:
       - traefik.http.services.traefik.loadbalancer.server.port=8080
 
   pgmaster:
-    image: postgres:10
+    image: postgres:12
     environment:
       POSTGRES_DB: monkey_db
       POSTGRES_PASSWORD: monkey_pass
       POSTGRES_USER: monkey_user
     volumes:
-    - pgmaster_data:/var/lib/postgresql/data
-    - ./backups:/backups
+      - pgmaster_data:/var/lib/postgresql/data
+      - ./backups:/backups
     ports:
-    - 5432/tcp
+      - 5432:5432/tcp
 
   assets-images:
     image: h2non/imaginary
     environment:
-      PORT: '9009'
+      PORT: "9009"
     stdin_open: true
     tty: true
     ports:
-    - 9009:9000/tcp
+      - 9009:9000/tcp
     command:
-    - -cors
-    - -gzip
-    - -concurrency
-    - '10'
-    - -enable-url-source
+      - -cors
+      - -gzip
+      - -concurrency
+      - "10"
+      - -enable-url-source
     labels:
       - traefik.enable=true
       - "traefik.http.routers.assets-images.rule=Host(`img.bonde.devel`)"
@@ -190,6 +190,6 @@ services:
   redis-commander:
     image: rediscommander/redis-commander:latest
     environment:
-    - REDIS_HOSTS=local:redis:6379
+      - REDIS_HOSTS=local:redis:6379
     ports:
-    - "8081:8081"
+      - "8081:8081"

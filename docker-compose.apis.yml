@@ -78,7 +78,7 @@ services:
     image: hasura/graphql-engine:v2.0.7
     restart: always
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde2
+      HASURA_GRAPHQL_DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
       HASURA_GRAPHQL_ADMIN_SECRET: "segredo123"
       HASURA_GRAPHQL_AUTH_HOOK: http://webhook-accounts:4001/hasura

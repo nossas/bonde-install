@@ -30,9 +30,9 @@ migrate:
 		do sleep 1; printf ".";\
 	done && printf "\n";
 	@docker-compose exec -T pgmaster psql -Umonkey_user monkey_db -c "create database bonde;"
-	# @docker-compose exec -T pgmaster psql -Umonkey_user monkey_db -c "create role postgraphql login password '3x4mpl3'; create role anonymous; create role common_user; create role admin; create role postgres; create role microservices;"
-	@docker-compose build migrations
-	@docker-compose up -d migrations
+	# @docker-compose exec -T pgmaster psql -Umonkey_user monkey_db -c "create role postgraphql login password '3x4mpl3'; create role reboo; create role anonymous; create role common_user; create role admin; create role postgres; create role microservices;"
+	# @docker-compose build migrations
+	# @docker-compose up -d migrations
 
 seeds:
 	@sleep 10;

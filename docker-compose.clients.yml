@@ -1,25 +1,98 @@
 version: '2'
 services:
 
-  public:
-    image: nossas/bonde-public-ts:0.3.4
-    # build: ../server/webpage
+  public-ts:
+    image: nossas/bonde-public-ts:hotfix-plip
     environment:
-      GOOGLE_FONTS_API_KEY: A
-      NODE_ENV: production
+      ACTION_SECRET_KEY: segredo123
+      NODE_ENV: development
       PORT: '3000'
       REACT_APP_API_GRAPHQL_SECRET: segredo123
       REACT_APP_DOMAIN_API_ACTIVISTS: http://api-graphql:8080/v1/graphql
       REACT_APP_DOMAIN_API_GRAPHQL: http://api-graphql:8080/v1/graphql
-      REACT_APP_DOMAIN_API_REST: http://api-rest:3000
+      REACT_APP_DOMAIN_API_REST: http://api-rest.bonde.devel/
       REACT_APP_DOMAIN_PUBLIC: bonde.devel
-      REACT_APP_PAGARME_KEY: ak_test
-      WEB_CONCURRENCY: '1'
-      WEB_MEMORY: '256'
+      REACT_APP_PAGARME_KEY: ek_test_PYsS1XrZsCCF7wynC67YEi5RW3lSCV
     command:
-    - yarn
+    - npm
+    - run
     - start
     labels:
       - traefik.enable=true
-      - traefik.http.routers.public.rule=hostregexp(`{host:.+}`)
-      - traefik.http.services.public.loadbalancer.server.port=5001
+      - traefik.http.routers.public-ts.rule=hostregexp(`{host:.+}`)
+      - traefik.http.services.public-ts.loadbalancer.server.port=3000
+
+  communities:
+    image: nossas/bonde:hotfix-move-admin
+    stdin_open: true
+    tty: true
+    command:
+    - yarn
+    - pnpm
+    - m
+    - run
+    - start
+    - --filter
+    - canary-client
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.admin-canary.rule=Host(`admin-canary.bonde.devel`)
+      - traefik.http.services.admin-canary.loadbalancer.server.port=3000
+
+  mobilizations:
+    image: nossas/bonde:hotfix-move-admin
+    stdin_open: true
+    external_links:
+    - webservers/api-rest:api-v1.staging.bonde.org
+    - webservers/api-v2:api-v2.staging.bonde.org
+    - common/s3:s3
+    tty: true
+    command:
+    - yarn
+    - pnpm
+    - m
+    - run
+    - start
+    - --filter
+    - admin-client
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.app.rule=Host(`app.bonde.devel`)
+      - traefik.http.services.app.loadbalancer.server.port=3000
+  
+  redes:
+    image: nossas/bonde:hotfix-move-admin
+    environment:
+      PORT: '3000'
+    stdin_open: true
+    tty: true
+    command:
+    - yarn
+    - pnpm
+    - m
+    - run
+    - start
+    - --filter
+    - redes-client
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.redes.rule=Host(`redes.bonde.devel`)
+      - traefik.http.services.redes.loadbalancer.server.port=3000
+  
+  accounts:
+    image: nossas/bonde:hotfix-move-admin
+    stdin_open: true
+    tty: true
+    command:
+    - yarn
+    - pnpm
+    - m
+    - run
+    - start
+    - --filter
+    - accounts-client
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.accounts.rule=Host(`accounts.bonde.devel`)
+      - traefik.http.services.accounts.loadbalancer.server.port=3000
+

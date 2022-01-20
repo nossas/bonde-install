@@ -36,21 +36,22 @@ migrate:
 
 seeds:
 	@sleep 10;
-	@docker-compose -f docker-compose.workers.yml up -d templates-email
+	#@docker-compose -f docker-compose.workers.yml up -d templates-email
 
 start-dev:
 	@docker-compose up -d
 	@docker-compose -f docker-compose.apis.yml up -d
-
-start:
-	@docker-compose up -d
-	@docker-compose -f docker-compose.apis.yml up -d
 	@docker-compose -f docker-compose.clients.yml up -d
-	@docker-compose -f docker-compose.common.yml up -d
-	@docker-compose -f docker-compose.cronjob.yml up -d
-	@docker-compose -f docker-compose.listeners.yml up -d
-	@docker-compose -f docker-compose.webhooks.yml up -d
-	@docker-compose -f docker-compose.workers.yml up -d
+
+# start:
+# 	@docker-compose up -d
+# 	@docker-compose -f docker-compose.apis.yml up -d
+# 	@docker-compose -f docker-compose.clients.yml up -d
+# 	@docker-compose -f docker-compose.common.yml up -d
+# 	@docker-compose -f docker-compose.cronjob.yml up -d
+# 	@docker-compose -f docker-compose.listeners.yml up -d
+# 	@docker-compose -f docker-compose.webhooks.yml up -d
+# 	@docker-compose -f docker-compose.workers.yml up -d
 
 stop:
 	@docker-compose stop
@@ -102,8 +103,9 @@ logs:
 
 restart: stop start
 
-frontend-rebuild:
-	@docker-compose -f docker-compose.clients.yml exec -T public npm run build
+clients-rebuild:
+	@docker-compose -f docker-compose.clients.yml exec -T clients pnpm m run build --filter {libs}
+	@docker-compose -f docker-compose.clients.yml exec -T clients pnpm m run build --filter {packages}
 
 extras:
 	@docker-compose -f docker-compose.common.yml up -d

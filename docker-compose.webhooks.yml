@@ -27,7 +27,7 @@ services:
       - traefik.http.services.webhook-phone.loadbalancer.server.port=5000
 
   webhook-accounts:
-    image: nossas/bonde-accounts:0.3.3
+    image: nossas/bonde-accounts:feature-cookie-auth-support
     environment:
       DEBUG: bonde-accounts-webhook
       GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql

@@ -5,47 +5,6 @@ volumes:
     driver: local
 
 services:
-  migrations:
-    # image: nossas/bonde-migrations
-    build: ../workers/migrations
-    environment:
-      AWS_ACCESS_KEY_ID: admin
-      AWS_BUCKET: bonde
-      AWS_ID: admin
-      AWS_ROUTE53_REGION: sa-east-1
-      AWS_ROUTE53_SYNC: force
-      AWS_ROUTE_IP: 127.0.0.1
-      AWS_SECRET: password
-      AWS_SECRET_ACCESS_KEY: password
-      CLIENT_APP_NAME: hub-client
-      CLIENT_HOST: bonde.devel
-      DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
-      JWT_SECRET: segredo123
-      JWT_TYPE: postgraphql.jwt_token
-      MAILCHIMP_API_KEY: 1111111-us6
-      MAILCHIMP_GROUP_ID: '111'
-      MAILCHIMP_LIST_ID: 111111ac
-      NEW_RELIC_LICENSE_KEY: 1111111111
-      NEW_RELIC_LOG: stdout
-      NO_VHOST: '0'
-      ORG_RECIPIENT_ID: xxxxxxxx
-      PAGARME_API_KEY: xxxxxxxx
-      PORT: '3000'
-      RAILS_ENV: staging
-      RAILS_SERVE_STATIC_FILES: enabled
-      REDIS_URL: redis://redis:6379
-      SECRET_KEY_BASE: xxxxxxxxx
-      SMTP_PASSWORD: xxxxx
-      SMTP_USERNAME: xxxxx
-      SMTP_HOST: smtp
-      SMTP_PORT: 1025
-      SENTRY_DSN: https://xxxxxx:xxxxxx@sentry.io/121379
-      WEB_CONCURRENCY: '1'
-      WEB_MEMORY: '256'
-    command:
-    - diesel
-    - migration
-    - run
 
   chatbot-worker:
     image: nossas/bonde-bot:develop
@@ -135,12 +94,12 @@ services:
       cron.schedule: 0 0 0 * * *
 
 
-  documents:
-    build: ../workers/documents
-    command: npm start brew tea
-    environment:
-      REDIS_URL: redis://redis:6379
-      ELK_HOST: http://elk:9200
+  # documents:
+  #   build: ../workers/documents
+  #   command: npm start brew tea
+  #   environment:
+  #     REDIS_URL: redis://redis:6379
+  #     ELK_HOST: http://elk:9200
   elk:
     extends:
       file: docker-compose.common.yml

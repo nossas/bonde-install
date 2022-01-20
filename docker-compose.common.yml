@@ -51,7 +51,7 @@ services:
       - traefik.http.services.smtp.loadbalancer.server.port=8025
 
   traefik:
-    image: "traefik:v2.3"
+    image: "traefik:v2.5"
     container_name: "traefik"
     command:
       #- "--log.level=DEBUG"

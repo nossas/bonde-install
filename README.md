@@ -40,6 +40,14 @@ If you want to test mail, s3 and elasticsearch integrations used by our modules,
 
 `sudo sysctl -w vm.max_map_count=262144` to enable elastic watch more files than default set in kernel.
 
+## Access Third-party services
+
+Add to `/etc/hosts` the following line:
+
+```
+127.0.0.1 admin-canary.bonde.devel app.bonde.devel redes.bonde.devel accounts.bonde.devel traefik.bonde.devel s3.bonde.devel smtp.bonde.devel pgadmin.bonde.devel kibana.bonde.devel api-rest.bonde.devel api-graphql-deprecated.bonde.devel api-graphql.bonde.devel api-payments.bonde.devel api-domains.bonde.devel api-activists.bonde.devel api-redes.bonde.devel api-accounts.bonde.devel api-notifications.bonde.devel teste-de-widgets.bonde.devel api-v2.bonde.devel
+```
+
 And `make extras` to load services to be used at:
 
 - http://s3.bonde.devel
@@ -54,29 +62,10 @@ Go to the client admin url: http://app.bonde.devel
 
 When the login form finishes loading, you'll still need to follow some steps to create your own local access to the admin panel.
 
-1. Access **api-graphql.bonde.devel** and import metadata
+1. Access **api-graphql.bonde.devel** and import basic data
 
 - Click on the settings icon that's located at the right corner of the screen
 - Click on the button _Import metadata_
-- Select the file **metadata.json** that's located in this repo
-
-2. Access the database (http://pgadmin.bonde.devel/) and insert `public.configurations` in database with `JWT_SECRET` environment on graphql-auth service:
-
-- Click on [database name] > Databases > bonde
-- Click on the Dropdown item in the menu called _Tools_, then, _Query tool_
-- Paste this code in the _Query Editor_
-
-```sql
-  -- USED TO CRYPTO RGISTER AND AUTHENTICATE GRAPHQL
-  insert into configurations(name, value, created_at, updated_at) values('jwt_secret', 'segredo123', now(), now());
-
-  -- USED TO TAGGED USER WHEN OPEN http://admin-canary.bonde.devel:5002
-  insert into tags ("name", "label") values ('user_meio-ambiente', 'Meio Ambiente'), ('user_direitos-humanos', 'Direitos Humanos'),
-  ('user_segurança-publica', 'Segurança pública'), ('user_mobilidade', 'Mobilidade'), ('user_direito-das-mulheres', 'Direito das Mulheres'),
-  ('user_feminismo', 'Feminismo'), ('user_participacao-social', 'Participação Social'), ('user_educacao', 'Educação'),
-  ('user_transparencia', 'Transparência'), ('user_direito-lgbtqi+', 'Direito LGBTQI+'), ('user_direito-a-moradia', 'Direito à Moradia'),
-  ('user_combate-a-corrupção', 'Combate à Corrupção'), ('user_combate-ao-racismo', 'Combate ao Racismo'), ('user_saude-publica', 'Saúde Pública');
-```
 
 3. Restart the api-graphql container
 
@@ -145,6 +134,10 @@ mutation InsertCommunityUsers {
 }
 ```
 
+And last but not least, we must rebuild client and api with the following command:
+
+`make clients-rebuild && make apis-rebuild`
+
 If it all went well, go back to **admin-canary.bonde.devel** where you now have a login. Use "admin_foo@bar.com" as e-mail and "foobar!!" as password. After login, you can create mobilizations or play around with all the other features the app offers.
 
 To more detailed documentation about technical decisions, or how to contribute, access http://docs.bonde.org or run `make docs`.
@@ -173,9 +166,7 @@ If you check the "docker-compose.commom.yml", there are two setups that configur
 
 ### How to Modify
 
-Commands to create new migrations:
-
-`docker-compose run --rm migrations diesel migration generate initial_chatbot`
+Commands to create new migrations are related to hasura-cli and we recommend use `hasura console` to generate new migrations
 
 ### How to Seed from sql files
 

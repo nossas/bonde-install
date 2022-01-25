@@ -104,8 +104,15 @@ logs:
 restart: stop start
 
 clients-rebuild:
-	@docker-compose -f docker-compose.clients.yml exec -T clients pnpm m run build --filter {libs}
-	@docker-compose -f docker-compose.clients.yml exec -T clients pnpm m run build --filter {packages}
+	@docker-compose -f docker-compose.clients.yml exec -T mobilizations pnpm i
+	@docker-compose -f docker-compose.clients.yml exec -T mobilizations pnpm m run build --filter {libs}
+	@docker-compose -f docker-compose.clients.yml exec -T mobilizations pnpm m run build --filter {packages}
+	@docker-compose -f docker-compose.clients.yml restart
+
+apis-rebuild:
+	@docker-compose -f docker-compose.apis.yml exec -T api-accounts pnpm i
+	@docker-compose -f docker-compose.apis.yml exec -T api-accounts pnpm m run build
+	@docker-compose -f docker-compose.apis.yml restart
 
 extras:
 	@docker-compose -f docker-compose.common.yml up -d

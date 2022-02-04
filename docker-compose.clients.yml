@@ -1,25 +1,126 @@
 version: '2'
 services:
 
-  public:
-    image: nossas/bonde-public-ts:0.3.4
-    # build: ../server/webpage
-    environment:
-      GOOGLE_FONTS_API_KEY: A
-      NODE_ENV: production
-      PORT: '3000'
-      REACT_APP_API_GRAPHQL_SECRET: segredo123
-      REACT_APP_DOMAIN_API_ACTIVISTS: http://api-graphql:8080/v1/graphql
-      REACT_APP_DOMAIN_API_GRAPHQL: http://api-graphql:8080/v1/graphql
-      REACT_APP_DOMAIN_API_REST: http://api-rest:3000
-      REACT_APP_DOMAIN_PUBLIC: bonde.devel
-      REACT_APP_PAGARME_KEY: ak_test
-      WEB_CONCURRENCY: '1'
-      WEB_MEMORY: '256'
+  communities:
+    extends:
+      file: docker-compose.clients.yml
+      service: clients
     command:
-    - yarn
+    - pnpm
+    - m
+    - run
+    - start
+    - --filter
+    - canary-client
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.communities.rule=Host(`admin-canary.bonde.devel`)
+      - traefik.http.services.communities.loadbalancer.server.port=5000
+
+  clients:
+    # image: nossas/bonde:hotfix-move-admin
+    build:
+      context: ../clients/
+      dockerfile: Dockerfile-dev
+    volumes:
+      - ../clients:/code
+    environment:
+      SKIP_PREFLIGHT_CHECK: 'true'
+      REACT_APP_ENVIRONMENT: staging
+      REACT_APP_DOMAIN_ADMIN: http://app.bonde.devel
+      REACT_APP_DOMAIN_ADMIN_CANARY: http://admin-canary.bonde.devel
+      REACT_APP_DOMAIN_PUBLIC: bonde.devel
+      REACT_APP_DOMAIN_API_REST: htt://api-rest.bonde.devel
+      REACT_APP_DOMAIN_API_GRAPHQL: http://api-graphql.bonde.devel/v1/graphql
+      REACT_APP_DOMAIN_BOT: http://chatbot.bonde.devel
+      REACT_APP_DOMAIN_BETA: http://beta.bonde.devel
+      REACT_APP_AWS_BUCKET: bonde-assets-staging
+      REACT_APP_LOGIN_URL: http://accounts.bonde.devel/login
+      REACT_APP_DOMAIN_REDES: http://redes.bonde.devel
+      REACT_APP_PAGARME_KEY: fdsafdsafdsa
+      REACT_APP_DOMAIN_ACCOUNTS: http://accounts.bonde.devel
+      REACT_APP_HASURA_API_URL: http://api-graphql.bonde.devel/v1/graphql
+      REACT_APP_UPLOADS_URL: http://api-rest.bonde.devel/uploads
+      REACT_APP_ZENDESK_ORGANIZATIONS: '{"lawyer":360269610652,"individual":360273031591,"therapist":360282119532}'
+      REACT_APP_AWS_ROUTE_IP: fdsafdsafdsa
+      REACT_APP_HOTJAR_ID: fdsafdsafdsa
+      REACT_APP_HOTJAR_SV: fdsafdsafdsa
+
+  mobilizations:
+    extends:
+      file: docker-compose.clients.yml
+      service: clients
+    command:
+    - pnpm
+    - m
+    - run
+    - start
+    - --filter
+    - admin-client
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mobilizations.rule=Host(`app.bonde.devel`)
+      - traefik.http.services.mobilizations.loadbalancer.server.port=5000
+  
+  redes:
+    extends:
+      file: docker-compose.clients.yml
+      service: clients
+    environment:
+      PORT: '3000'
+      REACT_APP_GOOGLE_CLIENT_KEY: fdsafdsa
+      REACT_APP_ENVIRONMENT: staging
+      REACT_APP_HASURA_API_URL: http://api-graphql.bonde.devel/v1/graphql
+      REACT_APP_ADMIN_URL: http://admin-canary.bonde.devel
+      REACT_APP_REDES_URL: http://redes.bonde.devel
+    stdin_open: true
+    tty: true
+    command:
+    - pnpm
+    - m
+    - run
+    - start
+    - --filter
+    - redes-client
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.redes.rule=Host(`redes.bonde.devel`)
+      - traefik.http.services.redes.loadbalancer.server.port=3000
+  
+  accounts:
+    extends:
+      file: docker-compose.clients.yml
+      service: clients
+    command:
+    - pnpm
+    - m
+    - run
+    - start
+    - --filter
+    - accounts-client
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.accounts.rule=Host(`accounts.bonde.devel`)
+      - traefik.http.services.accounts.loadbalancer.server.port=5000
+
+  public-ts:
+    image: nossas/bonde-public-ts:hotfix-plip
+    environment:
+      ACTION_SECRET_KEY: segredo123
+      NODE_ENV: development
+      PORT: '3000'
+      API_GRAPHQL_SECRET: segredo123
+      DOMAIN_API_ACTIVISTS: http://api-graphql:8080/v1/graphql
+      DOMAIN_API_GRAPHQL: http://api-graphql:8080/v1/graphql
+      DOMAIN_API_REST: http://api-rest.bonde.devel/
+      DOMAIN_PUBLIC: bonde.devel
+      PAGARME_KEY: ek_test_
+    command:
+    - npm
+    - run
     - start
     labels:
       - traefik.enable=true
-      - traefik.http.routers.public.rule=hostregexp(`{host:.+}`)
-      - traefik.http.services.public.loadbalancer.server.port=5001
+      - traefik.priority=0
+      - traefik.http.routers.public-ts.rule=hostregexp(`{host:.+}`)
+      - traefik.http.services.public-ts.loadbalancer.server.port=3000

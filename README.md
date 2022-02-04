@@ -6,30 +6,31 @@ Our development enviroment can be setup in two different ways, using vagrant or 
 
 If you only want to start containers locally:
 
-* Docker ( required 17.10.0-ce or later ) - https://docs.docker.com/install/
-* Docker Compose ( required: 1.20.1 ) - https://docs.docker.com/compose/install/
-* Make ( optional: 3.81 ) - https://www.gnu.org/software/make/
-  * If you don't have `make` installed, just run:
+- Docker ( required 17.10.0-ce or later ) - https://docs.docker.com/install/
+- Docker Compose ( required: 1.20.1 ) - https://docs.docker.com/compose/install/
+- Make ( optional: 3.81 ) - https://www.gnu.org/software/make/
 
-    ``` bash
+  - If you don't have `make` installed, just run:
+
+    ```bash
       sudo apt-get update
       sudo apt-get install build-essentials
     ```
 
 To provision services using VirtualBox and Vagrant, we recomend the following versions:
 
-* VirtualBox ( required: 5.2.8 r121009 ) - https://www.virtualbox.org/wiki/Downloads
-* Vagrant ( required: 2.0.3 ) - https://www.vagrantup.com/downloads.html
+- VirtualBox ( required: 5.2.8 r121009 ) - https://www.virtualbox.org/wiki/Downloads
+- Vagrant ( required: 2.0.3 ) - https://www.vagrantup.com/downloads.html
 
 It's not recommended to have any other programs running in network ports, considering the possible conflict errors with BONDE's apps.
 
 If there's any error related to ports already in use, check your computer's port status via command line:
 
-``` bash
+```bash
 sudo lsof -i -P -n | grep LISTEN
 ```
 
-On that note, it's also good to reinforce that all of BONDE's apps run via docker-compose files. They setup all the infrastructure for the backend/database to run, so you don't have to worry about configurations for postegres, pgAdmi4, server, etc, *it does it all for you*.
+On that note, it's also good to reinforce that all of BONDE's apps run via docker-compose files. They setup all the infrastructure for the backend/database to run, so you don't have to worry about configurations for postegres, pgAdmi4, server, etc, _it does it all for you_.
 
 On windows, we recommend that you use virtual box and vagrant.
 
@@ -37,52 +38,42 @@ On windows, we recommend that you use virtual box and vagrant.
 
 If you want to test mail, s3 and elasticsearch integrations used by our modules, you should run:
 
-```sudo sysctl -w vm.max_map_count=262144``` to enable elastic watch more files than default set in kernel.
+`sudo sysctl -w vm.max_map_count=262144` to enable elastic watch more files than default set in kernel.
 
-And ```make extras``` to load services to be used at:
+## Access Third-party services
 
-* http://s3.bonde.devel
-* http://smtp.bonde.devel
-* http://traefik.bonde.devel
-* http://pgadmin.bonde.devel
-* http://kibana.bonde.devel
+Add to `/etc/hosts` the following line:
+
+```
+127.0.0.1 admin-canary.bonde.devel app.bonde.devel redes.bonde.devel accounts.bonde.devel traefik.bonde.devel s3.bonde.devel smtp.bonde.devel pgadmin.bonde.devel kibana.bonde.devel api-rest.bonde.devel api-graphql-deprecated.bonde.devel api-graphql.bonde.devel api-payments.bonde.devel api-domains.bonde.devel api-activists.bonde.devel api-redes.bonde.devel api-accounts.bonde.devel api-notifications.bonde.devel teste-de-widgets.bonde.devel api-v2.bonde.devel
+```
+
+And `make extras` to load services to be used at:
+
+- http://s3.bonde.devel
+- http://smtp.bonde.devel
+- http://traefik.bonde.devel
+- http://pgadmin.bonde.devel
+- http://kibana.bonde.devel
 
 ## Configure First Access
 
-Go to the local admin v2 url: http://admin-canary.bonde.devel (follow README instructions from the repo to get it running)
+Go to the client admin url: http://app.bonde.devel
 
 When the login form finishes loading, you'll still need to follow some steps to create your own local access to the admin panel.
 
-1. Access **api-graphql.bonde.devel** and import metadata
+1. Access **api-graphql.bonde.devel** and import basic data
 
-* Click on the settings icon that's located at the right corner of the screen
-* Click on the button *Import metadata*
-* Select the file **metadata.json** that's located in this repo
-
-2. Access the database (http://pgadmin.bonde.devel/) and insert `public.configurations`  in database with `JWT_SECRET` environment on graphql-auth service:
-
-* Click on [database name] > Databases > bonde
-* Click on the Dropdown item in the menu called *Tools*, then, *Query tool*
-* Paste this code in the *Query Editor*
-
-``` sql
-  -- USED TO CRYPTO RGISTER AND AUTHENTICATE GRAPHQL
-  insert into configurations(name, value, created_at, updated_at) values('jwt_secret', 'segredo123', now(), now());
-
-  -- USED TO TAGGED USER WHEN OPEN http://admin-canary.bonde.devel:5002
-  insert into tags ("name", "label") values ('user_meio-ambiente', 'Meio Ambiente'), ('user_direitos-humanos', 'Direitos Humanos'),
-  ('user_segurança-publica', 'Segurança pública'), ('user_mobilidade', 'Mobilidade'), ('user_direito-das-mulheres', 'Direito das Mulheres'),
-  ('user_feminismo', 'Feminismo'), ('user_participacao-social', 'Participação Social'), ('user_educacao', 'Educação'),
-  ('user_transparencia', 'Transparência'), ('user_direito-lgbtqi+', 'Direito LGBTQI+'), ('user_direito-a-moradia', 'Direito à Moradia'),
-  ('user_combate-a-corrupção', 'Combate à Corrupção'), ('user_combate-ao-racismo', 'Combate ao Racismo'), ('user_saude-publica', 'Saúde Pública');
-```
+- Click on the settings icon that's located at the right corner of the screen
+- Click on the button _Import metadata_
 
 3. Restart the api-graphql container
-  * On terminal, run: `docker-compose restart api-graphql`
+
+- On terminal, run: `docker-compose restart api-graphql`
 
 4. Reload the **api-graphql.bonde.devel** page:
 
-* Create a new Communities on console:
+- Create a new Communities on console:
 
 ```
 mutation InsertCommunity {
@@ -103,7 +94,7 @@ mutation InsertCommunity {
 }
 ```
 
-* Register a new Users on console
+- Register a new Users on console
 
 ```
 mutation MyMutation2 {
@@ -119,7 +110,7 @@ mutation MyMutation3 {
 }
 ```
 
-* Create relationship CommunityUsers on console
+- Create relationship CommunityUsers on console
 
 ```
 mutation InsertCommunityUsers {
@@ -143,9 +134,13 @@ mutation InsertCommunityUsers {
 }
 ```
 
+And last but not least, we must rebuild client and api with the following command:
+
+`make clients-rebuild && make apis-rebuild`
+
 If it all went well, go back to **admin-canary.bonde.devel** where you now have a login. Use "admin_foo@bar.com" as e-mail and "foobar!!" as password. After login, you can create mobilizations or play around with all the other features the app offers.
 
-To more detailed documentation about technical decisions, or how to contribute, access http://docs.bonde.org or run ```make docs```.
+To more detailed documentation about technical decisions, or how to contribute, access http://docs.bonde.org or run `make docs`.
 
 ## Database
 
@@ -153,37 +148,35 @@ To more detailed documentation about technical decisions, or how to contribute, 
 
 If you check the "docker-compose.commom.yml", there are two setups that configure the database: pgmaster and pgadmin4. To run the database visualization (pgAdmin4), do the following:
 
-* Run the pgAdmin4 enviroment
+- Run the pgAdmin4 enviroment
   `docker-compose -f docker-compose.common.yml up -d pgadmin4`
-* Check to see if it went well
+- Check to see if it went well
   `docker-compose -f docker-compose.common.yml logs -f pgadmin4`
-* Then, access the database via (setup by traefik) **pgadmin.bonde.devel**
-* When the page loads, access the database with e-mail and login provided by the docker-compose *common* file, then, go to pgadmin4 and you'll find the credentials
-* When it loads, click in **Add new server**
-* Give any name you'd like to the server (general tab)
-* Now go to the **Connection** tab
-  * host name/address: pgmaster
-  * port: *default port*
-  * maintance database: bonde
-  * username: monkey_user
-  * password: monkey_pass
-* Hit **save** and you're ready to go!
+- Then, access the database via (setup by traefik) **pgadmin.bonde.devel**
+- When the page loads, access the database with e-mail and login provided by the docker-compose _common_ file, then, go to pgadmin4 and you'll find the credentials
+- When it loads, click in **Add new server**
+- Give any name you'd like to the server (general tab)
+- Now go to the **Connection** tab
+  - host name/address: pgmaster
+  - port: _default port_
+  - maintance database: bonde
+  - username: monkey_user
+  - password: monkey_pass
+- Hit **save** and you're ready to go!
 
 ### How to Modify
 
-Commands to create new migrations:
-
-``docker-compose run --rm migrations diesel migration generate initial_chatbot``
+Commands to create new migrations are related to hasura-cli and we recommend use `hasura console` to generate new migrations
 
 ### How to Seed from sql files
 
-Copy sql file to ```backups/``` folder, before start.
+Copy sql file to `backups/` folder, before start.
 
 ```
 docker-compose exec pgmaster sh
 # psql -hlocalhost -Umonkey_user -W bonde < /backups/local.txt
- ```
+```
 
- ## Check Services Health
+## Check Services Health
 
-Congratulations, when command finished of running, you could check if everything are ok running ```make status```, you should see a table like the following:
+Congratulations, when command finished of running, you could check if everything are ok running `make status`, you should see a table like the following:

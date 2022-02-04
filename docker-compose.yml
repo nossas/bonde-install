@@ -33,19 +33,3 @@ services:
     extends:
       file: docker-compose.common.yml
       service: redis
-
-  # migrations:
-  #   extends:
-  #     file: docker-compose.workers.yml
-  #     service: migrations
-  #   depends_on:
-  #   - pgmaster
-  #   environment:
-  #     DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster/bonde
-  #   volumes:
-  #   - ../workers/migrations:/volumes
-
-  webhook-accounts:
-    extends:
-      file: docker-compose.webhooks.yml
-      service: webhook-accounts

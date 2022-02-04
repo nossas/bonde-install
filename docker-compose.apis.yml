@@ -15,7 +15,7 @@ services:
       CLIENT_APP_NAME: hub-client
       CLIENT_HOST: bonde.devel
       DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster/bonde
-      JWT_SECRET: segredo123
+      JWT_SECRET: segredo1234567891011121314151617181920
       JWT_TYPE: postgraphql.jwt_token
       MAILCHIMP_API_KEY: 111111-us6
       MAILCHIMP_GROUP_ID: "11"
@@ -49,11 +49,11 @@ services:
       - traefik.http.services.api-graphql-deprecated.loadbalancer.server.port=3000
 
   api-graphql-deprecated:
-    # image: nossas/bonde-graphql:develop
-    build: ../apis/api-graphql-deprecated/
+    image:  nossas/bonde-graphql:feature-upgrade-postgraphile
+    # build: ../apis/api-graphql-deprecated/
     environment:
       DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster/bonde
-      JWT_SECRET: segredo123
+      JWT_SECRET: segredo1234567891011121314151617181920
       JWT_TYPE: postgraphql.jwt_token
       NEW_RELIC_ENABLED: "false"
       PG_DEFAULT_ROLE: anonymous
@@ -62,52 +62,63 @@ services:
       SENTRY_DSN: https://xxxxx:xxxxx@sentry.io/142717
       WEB_CONCURRENCY: "1"
       WEB_MEMORY: "256"
-      DEBUG: "graphile-build:warn"
-    command: 
-      - npm
-      - run 
-      - dev
-    ports:
-      - 3002:3002/tcp
+      DEBUG: "graphile-build:warn "
+    # command: 
+    #   - npm
+    #   - run 
+    #   - dev
     labels:
       - traefik.enable=true
       - traefik.http.routers.api-graphql-deprecated.rule=Host(`api-graphql-deprecated.bonde.devel`)
       - traefik.http.services.api-graphql-deprecated.loadbalancer.server.port=3002
 
   api-graphql:
-    image: hasura/graphql-engine:v2.0.7
+    # image: hasura/graphql-engine:v2.1.1
+    # Start Hasura after applying the migrations and metadata present in the Hasura project
+    image: hasura/graphql-engine:v2.1.1.cli-migrations-v3
     restart: always
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://monkey_user:monkey_pass@pgmaster:5432/bonde
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
       HASURA_GRAPHQL_ADMIN_SECRET: "segredo123"
-      HASURA_GRAPHQL_AUTH_HOOK: http://webhook-accounts:4001/hasura
-      HASURA_GRAPHQL_AUTH_HOOK_MODE: GET
       WEBHOOK_MAIL_URL: http://webhook-mail/webhook
       WEBHOOK_ACTIVISTS_PRESSURE_URL: http://webhook-activists:3000/webhook/pressure
       SCHEMA_API_V2_URL: http://api-graphql-deprecated:3002/graphql
-      SCHEMA_API_AUTH_URL: http://api-accounts:4001/graphql
+      SCHEMA_API_AUTH_URL: http://api-accounts:3000/graphql
       WEBHOOK_INVITATIONS_URL: http://webhook-accounts:3000/invitations
       SCHEMA_API_ACTIVISTS_URL: http://api-activists:3000/graphql
       SCHEMA_API_NOTIFICATIONS_URL: http://api-notifications:3000/graphql
       SCHEMA_API_DOMAINS_URL: http://api-domains:3000/graphql
       SCHEMA_API_PAYMENTS_URL: http://api-payments:3000/graphql
       SCHEMA_API_REDES_URL: http://api-redes:3000/graphql
+      GHCRTS: -I0
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: 'startup, query-log, http-log, webhook-log, websocket-log'
+      HASURA_GRAPHQL_JWT_SECRET: "{ \"type\": \"HS256\", \"key\": \"segredo1234567891011121314151617181920\", \"claims_format\": \"json\", \"header\": {\"type\": \"Cookie\", \"name\": \"session\" } }"
+      HASURA_GRAPHQL_LOG_LEVEL: DEBUG
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
+      PORT: 8080
+    volumes:
+       - ../apis/api-graphql/migrations/migrations:/hasura-migrations
+       - ../apis/api-graphql/migrations/metadata:/hasura-metadata
     labels:
       - traefik.enable=true
       - traefik.http.routers.api-graphql.rule=Host(`api-graphql.bonde.devel`)
       - traefik.http.services.api-graphql.loadbalancer.server.port=8080
 
   api-graphql-custom:
-    image: nossas/bonde-apis:0.0.7
-    # build: ../server/api-graphql
-    environment:
-      GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
-      HASURA_SECRET: segredo123
-      HOST: 0.0.0.0
-      JWT_SECRET: segredo123
-      PAGARME_API_KEY: ak_test_
-      PORT: "3000"
+    # image: nossas/bonde-apis:0.0.12
+    build:
+      context: ../apis/api-graphql
+      dockerfile: Dockerfile-dev
+    volumes:
+      - "../apis/api-graphql:/code"
+    # environment:
+    #   GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
+    #   HASURA_SECRET: segredo123
+    #   HOST: 0.0.0.0
+    #   JWT_SECRET: segredo123
+    #   PAGARME_API_KEY: ak_test_
+    #   PORT: "3000"
     # command: pnpm m run start
     # labels:
     #   - traefik.enable=true
@@ -115,7 +126,9 @@ services:
     #   - traefik.http.services.api-graphql-custom.loadbalancer.server.port=3002
 
   api-payments:
-    image: nossas/bonde-apis:0.0.7
+    # image: nossas/bonde-apis:0.0.12
+    extends:
+      service: api-graphql-custom
     environment:
       GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
       HASURA_SECRET: segredo123
@@ -136,7 +149,9 @@ services:
       - traefik.http.services.api-payments.loadbalancer.server.port=3000
 
   api-domains:
-    image: nossas/bonde-apis:0.0.7
+    # image: nossas/bonde-apis:0.0.12
+    extends:
+      service: api-graphql-custom
     environment:
       AWS_ACCESS_KEY: A
       AWS_ROUTE53_REGION: sa-east-1
@@ -160,7 +175,9 @@ services:
       - traefik.http.services.api-domains.loadbalancer.server.port=3000
 
   api-activists:
-    image: nossas/bonde-apis:0.0.7
+    # image: nossas/bonde-apis:0.0.12
+    extends:
+      service: api-graphql-custom
     environment:
       GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
       HASURA_SECRET: segredo123
@@ -179,7 +196,9 @@ services:
       - traefik.http.services.api-activists.loadbalancer.server.port=3000
 
   api-redes:
-    image: nossas/bonde-apis:0.0.7
+    # image: nossas/bonde-apis:0.0.12
+    extends:
+      service: api-graphql-custom
     environment:
       GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
       HASURA_SECRET: segredo123
@@ -203,15 +222,17 @@ services:
       - traefik.http.services.api-redes.loadbalancer.server.port=3000
 
   api-accounts:
-    image: nossas/bonde-apis:0.0.7
+    # image: nossas/bonde-apis:0.0.12
+    extends:
+      service: api-graphql-custom
     environment:
       ACCOUNTS_REGISTER_URL: http://accounts.bonde.devel/register
       GRAPHQL_HTTP_URL: http://api-graphql:8080/v1/graphql
       HASURA_SECRET: segredo123
       HOST: 0.0.0.0
-      JWT_SECRET: segredo123
+      JWT_SECRET: segredo1234567891011121314151617181920
       LOG_LEVEL: debug
-      PORT: "4001"
+      PORT: "3000"
     command:
       - pnpm
       - m
@@ -230,15 +251,26 @@ services:
     environment:
       HOST: 0.0.0.0
       PORT: "3000"
-      SENDGRID_API_KEY: SG
+      ELASTICSEARCH_CLOUD_ID: 'admin:admin'
+      ELASTICSEARCH_PASSWORD: '5'
+      ELASTIC_APM_SECRET_TOKEN: 'U'
+      ELASTIC_APM_SERVER_URL: 'https://421.apm.us-east-1.aws.cloud.es.io:443'
+      ELASTIC_APM_SERVICE_NAME: 'notifications'
+      SENDGRID_API_KEY: 'SG.'
+      SENDGRID_WEBHOOK_KEY: '+Q+A2GXotQ=='
     command:
       - pnpm
       - m
       - run
       - start
       - --filter
-      - notifications-api
+      - notifications
     labels:
       - traefik.enable=true
       - traefik.http.routers.api-notifications.rule=Host(`api-notifications.bonde.devel`)
       - traefik.http.services.api-notifications.loadbalancer.server.port=3000
+
+  webhook-accounts:
+    extends:
+      file: docker-compose.webhooks.yml
+      service: webhook-accounts

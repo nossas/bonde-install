@@ -2,30 +2,30 @@ version: '2'
 
 services:
 
-  traefik:
-    image: "traefik:v2.5"
-    container_name: "traefik"
-    command:
-      #- "--log.level=DEBUG"
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-    # - --configfile=/traefik.toml
-    ports:
-      - "80:80"
-      - "8080:8080"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      # - "./traefik.toml:/traefik.toml"
-    environment:
-      AWS_ACCESS_KEY_ID: xxxxxxx
-      AWS_SECRET_ACCESS_KEY: xxxxxx
-      AWS_REGION: us-east-1
-    labels:
-      - traefik.enable=true
-      - "traefik.http.routers.traefik.rule=Host(`traefik-plip.bonde.devel`)"
-      - traefik.http.services.traefik.loadbalancer.server.port=8080
+  # traefik:
+  #   image: "traefik:v2.5"
+  #   container_name: "traefik"
+  #   command:
+  #     #- "--log.level=DEBUG"
+  #     - "--api.insecure=true"
+  #     - "--providers.docker=true"
+  #     - "--providers.docker.exposedbydefault=false"
+  #     - "--entrypoints.web.address=:80"
+  #   # - --configfile=/traefik.toml
+  #   ports:
+  #     - "80:80"
+  #     - "8080:8080"
+  #   volumes:
+  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  #     # - "./traefik.toml:/traefik.toml"
+  #   environment:
+  #     AWS_ACCESS_KEY_ID: xxxxxxx
+  #     AWS_SECRET_ACCESS_KEY: xxxxxx
+  #     AWS_REGION: us-east-1
+  #   labels:
+  #     - traefik.enable=true
+  #     - "traefik.http.routers.traefik.rule=Host(`traefik-plip.bonde.devel`)"
+  #     - traefik.http.services.traefik.loadbalancer.server.port=8080
 
   postgres:
     image: postgres:11
@@ -36,8 +36,8 @@ services:
       - POSTGRES_DB=n8ndb
       - POSTGRES_NON_ROOT_USER=user
       - POSTGRES_NON_ROOT_PASSWORD=1234
-    volumes:
-      - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
+    # volumes:
+    #   - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
 
   n8n:
     image: n8nio/n8n
@@ -52,18 +52,18 @@ services:
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=user
       - N8N_BASIC_AUTH_PASSWORD=1234
-    ports:
-      - 5678:5678
+
     links:
       - postgres
     volumes:
-      - ~/.n8n:/home/node/.n8n
+      - /home/node/.n8n
     # Wait 5 seconds to start n8n to make sure that PostgreSQL is ready
     # when n8n tries to connect to it
     command: /bin/sh -c "sleep 5; n8n start"
     labels:
       - traefik.enable=true
       - "traefik.http.routers.n8n.rule=Host(`n8n-plip.bonde.devel`)"
+      - traefik.http.services.traefik.loadbalancer.server.port=5678
 
   mauticdb:
     restart: always
@@ -75,8 +75,8 @@ services:
       - MYSQL_ROOT_PASSWORD=mysecret
     command:
       --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
-    networks:
-      - mautic-net
+    # networks:
+    #   - mautic-net
 
   mautic:
     restart: always
@@ -86,8 +86,6 @@ services:
       - mauticdb:mysql
     depends_on:
       - mauticdb
-    ports:
-      - 3000:80
     volumes:
       - mautic_data:/var/www/html
     environment:
@@ -97,17 +95,18 @@ services:
       - MAUTIC_DB_PASSWORD=mysecret
       - MAUTIC_DB_NAME=mautic
       - MAUTIC_RUN_CRON_JOBS=true
-    networks:
-      - mautic-net
+    # networks:
+    #   - mautic-net
     labels:
       - traefik.enable=true
       - "traefik.http.routers.mautic.rule=Host(`mautic-plip.bonde.devel`)"
+      - traefik.http.services.traefik.loadbalancer.server.port=80
 
 volumes:
   mysql_data:
     driver: local
   mautic_data:
     driver: local
-networks:
-  mautic-net:
-    driver: bridge
+# networks:
+#   mautic-net:
+#     driver: bridge

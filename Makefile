@@ -121,3 +121,6 @@ pull:
 	@docker-compose pull
 
 .PHONY: start stop status restart clean setup migrate seeds serverless logs start-logger start-monitor tail
+
+plip:
+	@@docker-compose -f docker-compose.plip.yml up -d

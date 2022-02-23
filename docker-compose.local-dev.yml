@@ -9,17 +9,26 @@ volumes:
     driver: local
   pgmaster_data:
     driver: local
+  portainer_data:
+    driver: local
+  portainer_agent_data:
+    driver: local
 
 services:
   traefik:
     image: "traefik:v2.5"
     container_name: "traefik"
+    depends_on:
+      - redis
     command:
       #- "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--providers.redis=true"
+      - "--providers.redis.endpoints=redis:6379"
+      - "--providers.redis.rootkey=traefik"
     # - --configfile=/traefik.toml
     ports:
       - "80:80"
@@ -33,11 +42,11 @@ services:
       AWS_REGION: us-east-1
     labels:
       - traefik.enable=true
-      - "traefik.http.routers.traefik.rule=Host(`traefik.bonde.devel`)"
+      - traefik.http.routers.traefik.rule=Host(`traefik.bonde.devel`)
       - traefik.http.services.traefik.loadbalancer.server.port=8080
 
   api-graphql:
-    image: hasura/graphql-engine:v2.2.0.cli-migrations-v3
+    image: hasura/graphql-engine:v2.2.0
     restart: always
     environment:
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
@@ -57,11 +66,74 @@ services:
       SCHEMA_API_V2_URL: ${SCHEMA_API_V2_URL}
       HASURA_GRAPHQL_INFER_FUNCTION_PERMISSIONS: "false"
       HASURA_GRAPHQL_JWT_SECRET: ${HASURA_GRAPHQL_JWT_SECRET}
+      ACTION_BASE_URL: ${ACTION_BASE_URL}
+      WEBHOOK_PLIP_MAUTIC_URL: ${WEBHOOK_PLIP_MAUTIC_URL}
+      WEBHOOK_GENERATE_CERTIFICATE: ${WEBHOOK_GENERATE_CERTIFICATE}
       PORT: 8080
     volumes:
-       - ../apis/api-graphql/migrations/migrations:/hasura-migrations
-       - ../apis/api-graphql/migrations/metadata:/hasura-metadata
+      - ../bonde-apis/migrations/migrations:/hasura-migrations
+      - ../bonde-apis/migrations/metadata:/hasura-metadata
     labels:
       - traefik.enable=true
       - traefik.http.routers.api-graphql.rule=Host(`api-graphql.bonde.devel`)
       - traefik.http.services.api-graphql.loadbalancer.server.port=8080
+
+  redis:
+    image: docker.io/bitnami/redis:6.2
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis_data:/bitnami/redis/data'
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.api-graphql.rule=Host(`redis-commander.bonde.devel`)
+    #   - traefik.http.services.api-graphql.loadbalancer.server.port=8081
+
+  portainer_edge_agent:
+    image: portainer/agent
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    volumes:
+      - /:/host
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_agent_data:/data
+    environment:
+      - CAP_HOST_MANAGEMENT=1
+      - EDGE=1
+      - EDGE_ID=${EDGE_ID}
+      - EDGE_KEY=${EDGE_KEY}
+
+  portainer:
+    image: portainer/portainer-ce
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.portainer.rule=Host(`portainer.bonde.devel`)
+      - traefik.http.services.portainer.loadbalancer.server.port=9000
+      - traefik.http.routers.portainer.service=portainer
+
+      - traefik.http.routers.edge.rule=Host(`edge.bonde.devel`)
+      - traefik.http.services.edge.loadbalancer.server.port=8000
+      - traefik.http.routers.edge.service=portainer
+
+  generate-certificate:
+    image: nossas/bonde-apis-depo
+    build: ../bonde-workers/packages/certs/
+    ports:
+      - 8000

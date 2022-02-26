@@ -1,0 +1,93 @@
+services:
+  s3:
+    image: minio/minio
+    environment:
+      MINIO_ACCESS_KEY: admin
+      MINIO_SECRET_KEY: password
+    volumes:
+    - s3_data:/data
+    ports:
+    - "9000"
+    command:
+    - server
+    - /data
+    labels:
+      traefik.frontend.rule: Host:fake-s3.pentest.bonde.org
+      traefik.port: '9000'
+      traefik.enable: 'true'
+      traefik.alias: fake-s3
+      traefik.acme: 'true'
+
+  smtp:
+    image: mailhog/mailhog
+    environment:
+      MH_HOSTNAME: smtp
+    ports:
+    - "1025"
+    - "8025"
+    labels:
+      traefik.frontend.rule: Host:fake-smtp.pentest.bonde.org
+      traefik.port: '8025'
+      traefik.enable: 'true'
+      traefik.alias: fake-smtp
+      traefik.acme: 'true'
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: tech@nossas.org
+      PGADMIN_DEFAULT_PASSWORD: 3dcf09dk
+      PGADMIN_LISTEN_PORT: '5433'
+    ports:
+    - "5433"
+    labels:
+      traefik.frontend.rule: Host:pgadmin.pentest.bonde.org
+      traefik.enable: 'true'
+      traefik.alias: pgadmin
+      traefik.port: '5433'
+      io.rancher.container.pull_image: always
+      traefik.acme: 'true'
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.api-graphql.rule=Host(`redis-commander.bonde.devel`)
+      - traefik.http.services.api-graphql.loadbalancer.server.port=8081
+volumes:
+  s3_data:
+  # portainer_edge_agent:
+  #   image: portainer/agent
+  #   command: -H unix:///var/run/docker.sock
+  #   restart: always
+  #   volumes:
+  #     - /:/host
+  #     - /var/lib/docker/volumes:/var/lib/docker/volumes
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - portainer_agent_data:/data
+  #   environment:
+  #     - CAP_HOST_MANAGEMENT=1
+  #     - EDGE=1
+  #     - EDGE_ID=${EDGE_ID}
+  #     - EDGE_KEY=${EDGE_KEY}
+
+  # portainer:
+  #   image: portainer/portainer-ce
+  #   command: -H unix:///var/run/docker.sock
+  #   restart: always
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - portainer_data:/data
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.routers.portainer.rule=Host(`portainer.bonde.devel`)
+  #     - traefik.http.services.portainer.loadbalancer.server.port=9000
+  #     - traefik.http.routers.portainer.service=portainer
+
+  #     - traefik.http.routers.edge.rule=Host(`edge.bonde.devel`)
+  #     - traefik.http.services.edge.loadbalancer.server.port=8000
+  #     - traefik.http.routers.edge.service=portainer

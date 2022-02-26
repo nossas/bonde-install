@@ -115,25 +115,35 @@ services:
       - EDGE_ID=${EDGE_ID}
       - EDGE_KEY=${EDGE_KEY}
 
-  portainer:
-    image: portainer/portainer-ce
-    command: -H unix:///var/run/docker.sock
+  # portainer:
+  #   image: portainer/portainer-ce
+  #   command: -H unix:///var/run/docker.sock
+  #   restart: always
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - portainer_data:/data
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.routers.portainer.rule=Host(`portainer.bonde.devel`)
+  #     - traefik.http.services.portainer.loadbalancer.server.port=9000
+  #     - traefik.http.routers.portainer.service=portainer
+
+  #     - traefik.http.routers.edge.rule=Host(`edge.bonde.devel`)
+  #     - traefik.http.services.edge.loadbalancer.server.port=8000
+  #     - traefik.http.routers.edge.service=portainer
+
+  # generate-certificate:
+  #   image: nossas/bonde-apis-depo
+  #   build: ../bonde-workers/packages/certs/
+  #   ports:
+  #     - 8000
+
+  elastic-agent:
+    image: docker.elastic.co/beats/elastic-agent:8
+    container_name: elastic-agent
     restart: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.portainer.rule=Host(`portainer.bonde.devel`)
-      - traefik.http.services.portainer.loadbalancer.server.port=9000
-      - traefik.http.routers.portainer.service=portainer
-
-      - traefik.http.routers.edge.rule=Host(`edge.bonde.devel`)
-      - traefik.http.services.edge.loadbalancer.server.port=8000
-      - traefik.http.routers.edge.service=portainer
-
-  generate-certificate:
-    image: nossas/bonde-apis-depo
-    build: ../bonde-workers/packages/certs/
-    ports:
-      - 8000
+    user: root # note, synthetic browser monitors require this set to `elastic-agent`
+    environment:
+      - FLEET_ENROLLMENT_TOKEN={enrollment-token}
+      - FLEET_ENROLL=1
+      - FLEET_URL={fleet-server-url}

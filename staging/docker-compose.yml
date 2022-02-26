@@ -33,7 +33,7 @@ services:
       - traefik.http.services.traefik.loadbalancer.server.port=8080
 
   elastic-agent:
-    image: docker.elastic.co/beats/elastic-agent:8
+    image: docker.elastic.co/beats/elastic-agent:8.0.0
     container_name: elastic-agent
     restart: always
     user: root # note, synthetic browser monitors require this set to `elastic-agent`

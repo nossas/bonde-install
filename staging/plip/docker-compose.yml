@@ -1,0 +1,92 @@
+services:
+  mautic-plip:
+    image: mautic/mautic:latest
+    environment:
+      MAUTIC_DB_HOST: mauticdb
+      MAUTIC_DB_NAME: mautic
+      MAUTIC_DB_PASSWORD: mysecret
+      MAUTIC_DB_USER: root
+      MAUTIC_RUN_CRON_JOBS: 'true'
+      MYSQL_PORT_3306_TCP: '3306'
+    depends_on:
+      - mauticdb
+    volumes:
+    - mautic_data:/var/www/html
+    # ports:
+    # - 3000:80/tcp
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-curl localhost:80}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
+    labels:
+      traefik.http.services.traefik.loadbalancer.server.port: '80'
+      # traefik.http.routers.mautic.rule: Host(`mautic-plip.bonde.devel`)
+      traefik.port: '80'
+      traefik.acme: 'true'
+
+  mauticdb:
+    image: percona/percona-server:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: mysecret
+    volumes:
+    - mysql_data:/var/lib/mysql
+    command:
+    - --character-set-server=utf8mb4
+    - --collation-server=utf8mb4_general_ci
+
+  n8n-plip:
+    image: n8nio/n8n
+    depends_on:
+      - postgres
+    environment:
+      DB_POSTGRESDB_DATABASE: n8ndb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PASSWORD: '1234'
+      DB_POSTGRESDB_PORT: '5432'
+      DB_POSTGRESDB_USER: n8n
+      DB_TYPE: postgresdb
+      N8N_BASIC_AUTH_ACTIVE: 'true'
+      N8N_BASIC_AUTH_PASSWORD: '1234'
+      N8N_BASIC_AUTH_USER: user
+      WEBHOOK_URL: https://n8n-plip.pentest.bonde.org
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-curl localhost:5678}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
+    volumes:
+    - local-n8n:/home/node/.n8n
+    links:
+    - postgres:postgres
+    # ports:
+    # - 5678:5678/tcp
+    command:
+    - /bin/sh
+    - -c
+    - sleep 5; n8n start
+    labels:
+      traefik.frontend.rule: Host:n8n-plip.pentest.bonde.org
+      traefik.port: '5678'
+      traefik.enable: 'true'
+      traefik.http.routers.n8n.rule: Host(`n8n-plip.bonde.devel`)
+      traefik.acme: 'true'
+
+  postgres:
+    image: postgres:11
+    environment:
+      POSTGRES_DB: n8ndb
+      POSTGRES_NON_ROOT_PASSWORD: '1234'
+      POSTGRES_NON_ROOT_USER: user
+      POSTGRES_PASSWORD: '1234'
+      POSTGRES_USER: n8n
+
+volumes:
+  mautic_data:
+    driver: local
+  mysql_data:
+    driver: local
+  local-n8n:
+    driver: local

@@ -2,7 +2,7 @@ backups
 node_modules
 .DS_Store
 *debug.log
-*.env*
+.env
 .vagrant
 db-dumps
 concourse/keys/*

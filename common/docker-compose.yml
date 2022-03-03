@@ -1,0 +1,104 @@
+# This script is meant for quick & easy install via:
+#   $ curl -fsSL https://get.docker.com -o get-docker.sh
+#   $ sh get-docker.sh
+# /etc/hosts 127.0.0.1 api-graphql.bonde.devel traefik.bonde.devel bonde.devel
+services:
+  traefik:
+    image: "traefik:v2.5"
+    depends_on:
+      - redis
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--providers.docker.defaultRule=Host(`{{ normalize .Name }}${DEFAULT_DOMAIN_RULE:-.bonde.devel}`)"
+      - "--providers.redis=true"
+      - "--providers.redis.endpoints=redis:6379"
+      - "--providers.redis.rootkey=traefik"
+    # - --configfile=/traefik.toml
+    ports:
+      - "80:80"
+      # - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      # - "./traefik.toml:/traefik.toml"
+    environment:
+      AWS_ACCESS_KEY_ID: xxxxxxx
+      AWS_SECRET_ACCESS_KEY: xxxxxx
+      AWS_REGION: us-east-1
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.traefik.loadbalancer.server.port=8080
+
+  redis:
+    image: docker.io/bitnami/redis:6.2
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '6379'
+    volumes:
+      - 'redis-data:/bitnami/redis/data'
+
+  n8n:
+    image: n8nio/n8n
+    depends_on:
+      - postgres
+    environment:
+      - DB_POSTGRESDB_DATABASE=${DB_POSTGRESDB_DATABASE:-n8ndb}
+      - DB_POSTGRESDB_HOST=${DB_POSTGRESDB_HOST:-postgres}
+      - DB_POSTGRESDB_PASSWORD=${DB_POSTGRESDB_PASSWORD:-1234}
+      - DB_POSTGRESDB_PORT=${DB_POSTGRESDB_PORT:-5432}
+      - DB_POSTGRESDB_USER=${DB_POSTGRESDB_USER:-n8n}
+      - DB_TYPE=${DB_TYPE:-postgresdb}
+      - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE:-true}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD:-1234}
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER:-user}
+      - WEBHOOK_URL=${WEBHOOK_URL:-http://n8n.bonde.devel}
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-curl localhost:5678}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
+    volumes:
+    - local-n8n:/home/node/.n8n
+    links:
+    - postgres:postgres
+    # ports:
+    # - 5678:5678/tcp
+    command:
+    - /bin/sh
+    - -c
+    - sleep 5; n8n start
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.n8n.loadbalancer.server.port=5678
+
+  postgres:
+    image: postgres:11
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-n8ndb}
+      - POSTGRES_NON_ROOT_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD:-1234}
+      - POSTGRES_NON_ROOT_USER=${POSTGRES_NON_ROOT_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-1234}
+      - POSTGRES_USER=${POSTGRES_USER:-n8n}
+
+  elastic-agent:
+    image: docker.elastic.co/beats/elastic-agent:8.0.0
+    container_name: elastic-agent
+    restart: always
+    user: root # note, synthetic browser monitors require this set to `elastic-agent`
+    environment:
+      - FLEET_ENROLLMENT_TOKEN=${FLEET_ENROLLMENT_TOKEN}
+      - FLEET_ENROLL=${FLEET_ENROLL:-1}
+      - FLEET_URL=${FLEET_URL}
+
+volumes:
+  local-n8n:
+    driver: local
+  redis-data:
+    driver: local

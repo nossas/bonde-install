@@ -1,4 +1,3 @@
-version: "3.6"
 # This script is meant for quick & easy install via:
 #   $ curl -fsSL https://get.docker.com -o get-docker.sh
 #   $ sh get-docker.sh
@@ -22,7 +21,7 @@ services:
       - "--providers.redis.rootkey=traefik"
     # - --configfile=/traefik.toml
     healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget localhost:8080/ping}"
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:8080/ping}"
       interval: "60s"
       timeout: "3s"
       start_period: "5s"
@@ -69,7 +68,7 @@ services:
       - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER:-user}
       - WEBHOOK_URL=${WEBHOOK_URL:-http://n8n.bonde.devel}
     healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget localhost:5678/healthz}"
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:5678/healthz}"
       interval: "60s"
       timeout: "3s"
       start_period: "5s"

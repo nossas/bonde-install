@@ -1,0 +1,24 @@
+# Install
+
+## Requeriments
+
+- Docker > 19
+- Docker Compose > 2
+
+## Install
+
+How to install docker on Linux
+
+```
+$ curl -fsSL https://get.docker.com -o get-docker.sh
+$ sh get-docker.sh
+```
+
+[How to install docker compose on Linux](https://docs.docker.com/compose/cli-command/#install-on-linux)
+
+```
+DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+mkdir -p $DOCKER_CONFIG/cli-plugins
+curl -SL https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+```

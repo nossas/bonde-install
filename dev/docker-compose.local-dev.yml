@@ -32,7 +32,7 @@ services:
     # - --configfile=/traefik.toml
     ports:
       - "80:80"
-      - "8080:8080"
+    #   - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       # - "./traefik.toml:/traefik.toml"
@@ -89,31 +89,31 @@ services:
     volumes:
       - 'redis_data:/bitnami/redis/data'
 
-  redis-commander:
-    image: rediscommander/redis-commander:latest
-    environment:
-      - REDIS_HOSTS=local:redis:6379
-    ports:
-      - "8081:8081"
+  # redis-commander:
+  #   image: rediscommander/redis-commander:latest
+  #   environment:
+  #     - REDIS_HOSTS=local:redis:6379
+  #   ports:
+  #     - "8081:8081"
     # labels:
     #   - traefik.enable=true
     #   - traefik.http.routers.api-graphql.rule=Host(`redis-commander.bonde.devel`)
     #   - traefik.http.services.api-graphql.loadbalancer.server.port=8081
 
-  portainer_edge_agent:
-    image: portainer/agent
-    command: -H unix:///var/run/docker.sock
-    restart: always
-    volumes:
-      - /:/host
-      - /var/lib/docker/volumes:/var/lib/docker/volumes
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_agent_data:/data
-    environment:
-      - CAP_HOST_MANAGEMENT=1
-      - EDGE=1
-      - EDGE_ID=${EDGE_ID}
-      - EDGE_KEY=${EDGE_KEY}
+  # portainer_edge_agent:
+  #   image: portainer/agent
+  #   command: -H unix:///var/run/docker.sock
+  #   restart: always
+  #   volumes:
+  #     - /:/host
+  #     - /var/lib/docker/volumes:/var/lib/docker/volumes
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - portainer_agent_data:/data
+  #   environment:
+  #     - CAP_HOST_MANAGEMENT=1
+  #     - EDGE=1
+  #     - EDGE_ID=${EDGE_ID}
+  #     - EDGE_KEY=${EDGE_KEY}
 
   # portainer:
   #   image: portainer/portainer-ce
@@ -138,12 +138,12 @@ services:
   #   ports:
   #     - 8000
 
-  elastic-agent:
-    image: docker.elastic.co/beats/elastic-agent:8
-    container_name: elastic-agent
-    restart: always
-    user: root # note, synthetic browser monitors require this set to `elastic-agent`
-    environment:
-      - FLEET_ENROLLMENT_TOKEN={enrollment-token}
-      - FLEET_ENROLL=1
-      - FLEET_URL={fleet-server-url}
+  # elastic-agent:
+  #   image: docker.elastic.co/beats/elastic-agent:8
+  #   container_name: elastic-agent
+  #   restart: always
+  #   user: root # note, synthetic browser monitors require this set to `elastic-agent`
+  #   environment:
+  #     - FLEET_ENROLLMENT_TOKEN={enrollment-token}
+  #     - FLEET_ENROLL=1
+  #     - FLEET_URL={fleet-server-url}

@@ -3,7 +3,7 @@ services:
     image: nossas/bonde-clients:${DOCKER_IMAGE:-main}
     command: yarn pnpm m run start --filter accounts-client
     healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-curl localhost:3000}"
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
       interval: "60s"
       timeout: "3s"
       start_period: "5s"
@@ -16,7 +16,7 @@ services:
     image: nossas/bonde-clients:${DOCKER_IMAGE:-main}
     command: yarn pnpm m run start --filter admin-client
     healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-curl localhost:5000}"
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:5000}"
       interval: "60s"
       timeout: "3s"
       start_period: "5s"
@@ -29,7 +29,7 @@ services:
     image: nossas/bonde-clients:${DOCKER_IMAGE:-main}
     command: yarn pnpm m run start --filter canary-client
     healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-curl localhost:3000}"
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
       interval: "60s"
       timeout: "3s"
       start_period: "5s"
@@ -42,7 +42,7 @@ services:
     image: nossas/bonde-clients:${DOCKER_IMAGE:-main}
     command: yarn pnpm m run start --filter redes-client
     healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-curl localhost:3000}"
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
       interval: "60s"
       timeout: "3s"
       start_period: "5s"
@@ -65,7 +65,7 @@ services:
       - REACT_APP_DOMAIN_API_REST=${PUBLIC_REST_API:-http://api-rest.bonde.devel}
       - REACT_APP_DOMAIN_PUBLIC=${DEFAULT_DOMAIN_RULE:-bonde.devel}
     healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-curl localhost:3000}"
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
       interval: "60s"
       timeout: "3s"
       start_period: "5s"

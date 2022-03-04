@@ -8,6 +8,7 @@ services:
       - MAUTIC_DB_USER=${MAUTIC_DB_USER:-root}
       - MAUTIC_RUN_CRON_JOBS=${MAUTIC_RUN_CRON_JOBS:-true}
       - MYSQL_PORT_3306_TCP=${MYSQL_PORT_3306_TCP:-3306}
+      - MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
     depends_on:
       - mauticdb
     volumes:
@@ -21,7 +22,7 @@ services:
       start_period: "5s"
       retries: 3
     labels:
-      traefik.http.services.mautic-plip.loadbalancer.server.port: '80'
+      traefik.http.services.mautic.loadbalancer.server.port: '80'
       traefik.enable: 'true'
 
   mauticdb:

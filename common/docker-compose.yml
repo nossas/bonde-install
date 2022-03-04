@@ -5,10 +5,11 @@
 services:
   traefik:
     image: "traefik:v2.5"
+    container_name: traefik
     depends_on:
       - redis
     command:
-      #- "--log.level=DEBUG"
+      - "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -45,6 +46,7 @@ services:
 
   n8n:
     image: n8nio/n8n
+    container_name: n8n
     depends_on:
       - postgres
     environment:
@@ -59,7 +61,7 @@ services:
       - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER:-user}
       - WEBHOOK_URL=${WEBHOOK_URL:-http://n8n.bonde.devel}
     healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-curl localhost:5678}"
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget localhost:5678/healthz}"
       interval: "60s"
       timeout: "3s"
       start_period: "5s"

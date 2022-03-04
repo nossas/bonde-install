@@ -22,9 +22,10 @@ services:
       start_period: "5s"
       retries: 3
     labels:
-      traefik.http.services.mautic.loadbalancer.server.port: '80'
-      traefik.enable: 'true'
-
+      - traefik.http.services.mautic.loadbalancer.server.port=80
+      - traefik.enable=true
+      - traefik.http.routers.mautic.tls=true
+      - traefik.http.routers.mautic.tls.certresolver=myresolver
   mauticdb:
     image: percona/percona-server:5.7
     environment:

@@ -1,3 +1,4 @@
+version: "3.6"
 # This script is meant for quick & easy install via:
 #   $ curl -fsSL https://get.docker.com -o get-docker.sh
 #   $ sh get-docker.sh
@@ -15,7 +16,7 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
-      - "--providers.docker.defaultRule=Host(`{{ .Name }}.${DEFAULT_DOMAIN_RULE:-bonde.devel}`)"
+      - "--providers.docker.defaultRule=Host(`{{ index .Labels \"com.docker.compose.service\"}}.${DEFAULT_DOMAIN_RULE:-bonde.devel}`)"
       - "--providers.redis=true"
       - "--providers.redis.endpoints=redis:6379"
       - "--providers.redis.rootkey=traefik"

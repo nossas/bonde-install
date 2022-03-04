@@ -10,6 +10,7 @@ services:
       - redis
     command:
       - "--log.level=DEBUG"
+      - "--ping"
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -19,6 +20,12 @@ services:
       - "--providers.redis.endpoints=redis:6379"
       - "--providers.redis.rootkey=traefik"
     # - --configfile=/traefik.toml
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget localhost:8080/ping}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
     ports:
       - "80:80"
       # - "8080:8080"

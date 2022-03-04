@@ -73,3 +73,8 @@ services:
     labels:
       traefik.http.services.public.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
+
+networks:
+  default:
+    external:
+      name: bonde

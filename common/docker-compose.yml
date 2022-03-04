@@ -4,8 +4,7 @@
 # /etc/hosts 127.0.0.1 api-graphql.bonde.devel traefik.bonde.devel bonde.devel
 services:
   traefik:
-    image: "traefik:v2.5"
-    container_name: traefik
+    image: "traefik:v2.6"
     depends_on:
       - redis
     command:
@@ -14,12 +13,19 @@ services:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
       - "--providers.docker.defaultRule=Host(`{{ index .Labels \"com.docker.compose.service\"}}.${DEFAULT_DOMAIN_RULE:-bonde.devel}`)"
       - "--providers.redis=true"
       - "--providers.redis.endpoints=redis:6379"
       - "--providers.redis.rootkey=traefik"
-    # - --configfile=/traefik.toml
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=tech+plip@nossas.org"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:8080/ping}"
       interval: "60s"
@@ -28,10 +34,11 @@ services:
       retries: 3
     ports:
       - "80:80"
+      - "443:443"
       # - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      # - "./traefik.toml:/traefik.toml"
+      - "letsencrypt:/letsencrypt"
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-xxxxxxx}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-xxxxxx}
@@ -53,7 +60,6 @@ services:
 
   n8n:
     image: n8nio/n8n
-    container_name: n8n
     depends_on:
       - postgres
     environment:
@@ -110,4 +116,6 @@ volumes:
   local-n8n:
     driver: local
   redis-data:
+    driver: local
+  letsencrypt:
     driver: local

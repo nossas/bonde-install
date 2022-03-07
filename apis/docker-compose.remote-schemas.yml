@@ -16,12 +16,6 @@ services:
       - start
       - --filter
       - payments-api
-    healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
-      interval: "60s"
-      timeout: "3s"
-      start_period: "5s"
-      retries: 3
     labels:
       traefik.http.services.api-payments.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
@@ -47,12 +41,6 @@ services:
       - start
       - --filter
       - domains-api
-    healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
-      interval: "60s"
-      timeout: "3s"
-      start_period: "5s"
-      retries: 3
     labels:
       traefik.http.services.api-domains.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
@@ -74,12 +62,6 @@ services:
       - start
       - --filter
       - activists-api
-    healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
-      interval: "60s"
-      timeout: "3s"
-      start_period: "5s"
-      retries: 3
     labels:
       traefik.http.services.activists.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
@@ -105,12 +87,6 @@ services:
       - start
       - --filter
       - redes-api
-    healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
-      interval: "60s"
-      timeout: "3s"
-      start_period: "5s"
-      retries: 3
     labels:
       traefik.http.services.api-redes.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
@@ -159,12 +135,6 @@ services:
       - start
       - --filter
       - notifications
-    healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
-      interval: "60s"
-      timeout: "3s"
-      start_period: "5s"
-      retries: 3
     labels:
       traefik.http.services.notifications.loadbalancer.server.port: '3000'
       traefik.enable: 'true'

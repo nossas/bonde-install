@@ -10,7 +10,12 @@ services:
       PAGARME_API_KEY: ${PAGARME_KEY}
       PORT: '3000'
     command:
-      - pnpm m run start --filter payments-api
+      - pnpm
+      - m
+      - run
+      - start
+      - --filter
+      - payments-api
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
       interval: "60s"
@@ -36,7 +41,12 @@ services:
       JWT_SECRET: ${JWT_SECRET:-segredo123}
       PORT: '3000'
     command:
-      - pnpm m run start --filter domains-api
+      - pnpm
+      - m
+      - run
+      - start
+      - --filter
+      - domains-api
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
       interval: "60s"
@@ -58,7 +68,12 @@ services:
       HOST: 0.0.0.0
       PORT: '3000'
     command:
-      - pnpm m run start --filter activists-api
+      - pnpm
+      - m
+      - run
+      - start
+      - --filter
+      - activists-api
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
       interval: "60s"
@@ -84,7 +99,12 @@ services:
       ZENDESK_API_USER: ${ZENDESK_API_USER}
       ZENDESK_ORGANIZATIONS: ${ZENDESK_ORGANIZATIONS}
     command:
-      - pnpm m run start --filter redes-api
+      - pnpm
+      - m
+      - run
+      - start
+      - --filter
+      - redes-api
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
       interval: "60s"
@@ -108,7 +128,12 @@ services:
       LOG_LEVEL: debug
       PORT: '4001'
     command:
-      - pnpm m run start --filter accounts-api
+      - pnpm
+      - m
+      - run
+      - start
+      - --filter
+      - accounts-api
     labels:
       traefik.http.services.api-accounts.loadbalancer.server.port: '4001'
       traefik.enable: 'true'
@@ -128,7 +153,12 @@ services:
       SENDGRID_API_KEY: ${SENDGRID_API_KEY}
       SENDGRID_WEBHOOK_KEY: ${SENDGRID_WEBHOOK_KEY}
     command:
-      - pnpm m run start --filter notifications
+      - pnpm
+      - m
+      - run
+      - start
+      - --filter
+      - notifications
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
       interval: "60s"

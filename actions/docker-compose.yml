@@ -1,0 +1,25 @@
+services:
+
+  action-mailchimp-resync:
+    image: nossas/bonde-workers:0.0.6
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgres://user:pass@postgres:5432/bonde}
+      - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-segredo123}
+      - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-https://apm.us-east-1.aws.cloud.es.io:443}
+      - ELASTIC_APM_SERVICE_NAME=${ELASTIC_APM_SERVICE_NAME:-bonde-action-mailchimp-resync}
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${PORT:-80}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - ELASTICSEARCH_CLOUD_ID=${ELASTICSEARCH_CLOUD_ID:-bonde:11111}
+      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD:-1111111}
+    command:
+      - pnpm m run start --filter resync-mailchimp
+    labels:
+      - traefik.http.services.action-mailchimp-resync.loadbalancer.server.port=80
+      - traefik.enable=true
+      - traefik.http.routers.action-mailchimp-resync.tls=true
+      - traefik.http.routers.action-mailchimp-resync.tls.certresolver=myresolver
+
+networks:
+  default:
+    name: bonde

@@ -11,6 +11,8 @@ services:
     labels:
       traefik.http.services.accounts.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
+      traefik.http.routers.accounts.tls: true
+      traefik.http.routers.accounts.tls.certresolver: myresolver
   
   app:
     image: nossas/bonde-clients:${DOCKER_IMAGE:-main}
@@ -24,6 +26,8 @@ services:
     labels:
       traefik.http.services.app.loadbalancer.server.port: '5000'
       traefik.enable: 'true'
+      traefik.http.routers.app.tls: true
+      traefik.http.routers.app.tls.certresolver: myresolver
 
   admin-canary:
     image: nossas/bonde-clients:${DOCKER_IMAGE:-main}
@@ -37,6 +41,8 @@ services:
     labels:
       traefik.http.services.admin-canary.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
+      traefik.http.routers.admin-canary.tls: true
+      traefik.http.routers.admin-canary.tls.certresolver: myresolver
 
   redes:
     image: nossas/bonde-clients:${DOCKER_IMAGE:-main}
@@ -50,6 +56,8 @@ services:
     labels:
       traefik.http.services.redes.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
+      traefik.http.routers.redes.tls: true
+      traefik.http.routers.redes.tls.certresolver: myresolver
 
   public:
     image: nossas/bonde-clients:${DOCKER_IMAGE:-main}
@@ -73,6 +81,8 @@ services:
     labels:
       traefik.http.services.public.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
+      traefik.http.routers.public.tls: true
+      traefik.http.routers.public.tls.certresolver: myresolver
 
 networks:
   default:

@@ -140,3 +140,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.notifications.tls: true
       traefik.http.routers.notifications.tls.certresolver: myresolver
+
+networks:
+  default:
+    name: bonde

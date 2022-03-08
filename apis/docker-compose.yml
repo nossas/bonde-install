@@ -74,3 +74,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.api-graphql.tls=true
       - traefik.http.routers.api-graphql.tls.certresolver=myresolver
+
+networks:
+  default:
+    name: bonde

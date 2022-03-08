@@ -19,7 +19,7 @@ services:
       - PORT=${PORT:-'3000'}
     labels:
       - traefik.enable=true
-      - traefik.http.routers.my-container.rule=Host(`nossas-org.staging.bonde.org`)
+      - traefik.http.routers.nossas-org.rule=Host(`nossas-org.staging.bonde.org`)
       - traefik.http.services.nossas-org.loadbalancer.server.port=3003
       - traefik.http.routers.nossas-org.tls=true
       - traefik.http.routers.nossas-org.tls.certresolver=myresolver

@@ -83,8 +83,6 @@ services:
       retries: 3
     volumes:
     - local-n8n:/home/node/.n8n
-    links:
-    - postgres:postgres
     # ports:
     # - 5678:5678/tcp
     command:
@@ -107,7 +105,6 @@ services:
 
   elastic-agent:
     image: docker.elastic.co/beats/elastic-agent:8.0.0
-    container_name: elastic-agent
     restart: always
     user: root # note, synthetic browser monitors require this set to `elastic-agent`
     environment:
@@ -125,5 +122,4 @@ volumes:
 
 networks:
   default:
-    external:
-      name: bonde
+    name: bonde

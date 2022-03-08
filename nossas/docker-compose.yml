@@ -23,3 +23,8 @@ services:
       - traefik.http.services.nossas-org.loadbalancer.server.port=3003
       - traefik.http.routers.nossas-org.tls=true
       - traefik.http.routers.nossas-org.tls.certresolver=myresolver
+
+networks:
+  default:
+    external:
+      name: bonde

@@ -91,3 +91,91 @@ volumes:
   #     - traefik.http.routers.edge.rule=Host(`edge.bonde.devel`)
   #     - traefik.http.services.edge.loadbalancer.server.port=8000
   #     - traefik.http.routers.edge.service=portainer
+
+
+  # assets-images:
+  #   image: h2non/imaginary
+  #   environment:
+  #     PORT: "9009"
+  #   stdin_open: true
+  #   tty: true
+  #   ports:
+  #     - 9009:9000/tcp
+  #   command:
+  #     - -cors
+  #     - -gzip
+  #     - -concurrency
+  #     - "10"
+  #     - -enable-url-source
+  #   labels:
+  #     - traefik.enable=true
+  #     - "traefik.http.routers.assets-images.rule=Host(`img.bonde.devel`)"
+
+  # elk:
+  #   image: sebp/elk
+  #   environment:
+  #     - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+  #     - "discovery.type=single-node"
+  #   ports:
+  #     - "5601:5601"
+  #     - "9200:9200"
+  #     - "5044:5044"
+  #   volumes:
+  #     - elk_data:/var/lib/elasticsearch
+  #   labels:
+  #     - traefik.enable=true
+  #     - "traefik.http.routers.elk.rule=Host(`kibana.bonde.devel`)"
+  #     - "traefik.http.services.elk.loadbalancer.server.port=5601"
+
+  # filebeat:
+  #   image: docker.elastic.co/beats/filebeat:7.12.0
+  #   environment:
+  #     setup.kibana.host: elk:5601
+  #     output.elasticsearch.hosts: elk:9200
+  #   user: root
+  #   volumes:
+  #     - "./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro"
+  #     - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  #   depends_on:
+  #     - elk
+
+  # metricbeat:
+  #   image: docker.elastic.co/beats/metricbeat:7.10.0
+  #   environment:
+  #     setup.kibana.host: elk:5601
+  #     output.elasticsearch.hosts: elk:9200
+  #   user: root
+  #   volumes:
+  #     - "./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro"
+  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  #     - "/sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro"
+  #     - "/proc:/hostfs/proc:ro"
+  #     - "/:/hostfs:ro"
+  #   depends_on:
+  #     - elk
+
+  # heartbeat:
+  #   image: docker.elastic.co/beats/heartbeat:7.10.0
+  #   environment:
+  #     setup.kibana.host: elk:5601
+  #     output.elasticsearch.hosts: elk:9200
+  #   user: root
+  #   volumes:
+  #     - "./heartbeat.yml:/usr/share/heartbeat/heartbeat.yml:ro"
+  #     - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  #   depends_on:
+  #     - elk
+
+  # scope:
+  #   image: weaveworks/scope:1.11.4
+  #   network_mode: "host"
+  #   pid: "host"
+  #   privileged: true
+  #   labels:
+  #     - "works.weave.role=system"
+  #   volumes:
+  #     - "/var/run/docker.sock:/var/run/docker.sock:rw"
+  #   command:
+  #     - "--probe.docker=true"

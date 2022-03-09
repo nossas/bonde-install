@@ -1,0 +1,182 @@
+x-api-rest: &api-rest
+  image: nossas/bonde-server:0.10.9
+  environment:
+    - DATABASE_URL=${DATABASE_URL:-postgres://user:password@postgres:5432/bonde}
+    - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-111111}
+    - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-https://1111.apm.us-east-1.aws.cloud.es.io:443}
+    - ELASTIC_APM_SERVICE_NAME=${ELASTIC_APM_SERVICE_NAME:-workers-rest-mailchimp}
+    - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+    - AWS_ID=${AWS_ID:-a111111}
+    - AWS_SECRET=${AWS_SECRET:-a11111}
+    - ELASTIC_APM_ACTIVE=${ELASTIC_APM_ACTIVE:-'false'}
+    - PORT=${PORT:-3000}
+    - RAILS_ENV=${RAILS_ENV:-production}
+    - SMTP_HOST=${SMTP_HOST:-smtp}
+    - SMTP_PASSWORD=${SMTP_PASSWORD:-a1}
+    - SMTP_PORT=${SMTP_PORT:-587}
+    - SMTP_USERNAME=${SMTP_USERNAME:-apikey}
+    - MAILCHIMP_API_KEY=${MAILCHIMP_API_KEY:-111-us6}
+    - MAILCHIMP_GROUP_ID=${MAILCHIMP_GROUP_ID:-22}
+    - MAILCHIMP_LIST_ID=${MAILCHIMP_LIST_ID:-c123213}
+    - WEB_CONCURRENCY=${WEB_CONCURRENCY:-1}
+    - WEB_MEMORY=${WEB_MEMORY:-256}
+    - ORG_RECIPIENT_ID=${ORG_RECIPIENT_ID:-a1111}
+    - PAGARME_API_KEY=${PAGARME_API_KEY:-a1111}
+
+x-payments: &payments
+  image: nossas/bonde-payments:develop
+  environment:
+    - PAGARME_API_KEY=${PAGARME_API_KEY:-a111}
+    - DATABASE_URL=${DATABASE_URL:-postgres://user:pass@postgres:5432/bonde}
+    - RUBY_ENV=${RUBY_ENV:-production}
+    - NODE_ENV=${NODE_ENV:-production}
+    - RAILS_ENV=${RAILS_ENV:-production}
+    - AMOUNT=${AMOUNT:-100}
+
+x-cli-zendesk: &cli-zendesk
+  image: nossas/mapa-do-acolhimento:1.7.1
+  environment:
+    - COMMUNITY_ID=${COMMUNITY_ID:-1111}
+    - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-a1111}
+    - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-https://1111111.apm.us-east-1.aws.found.io}
+    - ELASTIC_APM_SERVICE_NAME=${ELASTIC_APM_SERVICE_NAME:-cli-zendesk}
+    - GEOCODING_API_KEY=${GEOCODING_API_KEY:-a1111}
+    - GRAPHQL_URL=${GRAPHQL_URL:-http://api-graphql.bonde.devel/v1/graphql}
+    - HASURA_SECRET=${HASURA_SECRET:-a11111}
+    - LAWYER_WIDGET_IDS=${LAWYER_WIDGET_IDS:-a1111}
+    - MAUTIC_API_URL=${MAUTIC_API_URL:-http://mautic.bonde.devel/api}
+    - MAUTIC_PASSWORD=${MAUTIC_PASSWORD:-a1111}
+    - MAUTIC_USERNAME=${MAUTIC_USERNAME:-email@host}
+    - NODE_ENV=${NODE_ENV:-production}
+    - THERAPIST_WIDGET_IDS=${THERAPIST_WIDGET_IDS:-a1111}
+    - WS_GRAPHQL_URL=${WS_GRAPHQL_URL:-ws://api-graphql.bonde.devel/v1/graphql}
+    - ZENDESK_API_TOKEN=${ZENDESK_API_TOKEN:-a1111}
+    - ZENDESK_API_URL=${ZENDESK_API_URL:-https://aaa.zendesk.com/api/v2/}
+    - ZENDESK_API_USER=${ZENDESK_API_USER:-email@host}
+    - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS:-{}}
+    - BRASIL_API_KEY=${BRASIL_API_KEY:-a11111}
+    - GEOCODING_API_KEY=${GEOCODING_API_KEY:-a11111}
+    - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY-a11111}
+    - DEBUG=${DEBUG:-cli-zendesk*}
+    - ELASTIC_APM_ACTIVE=${ELASTIC_APM_ACTIVE:-false}
+    - HASURA_API_URL=${HASURA_API_URL:-http://api-graphql.bonde.devel/v1/graphql}
+    - X_HASURA_ADMIN_SECRET=${X_HASURA_ADMIN_SECRET:-segredo123}
+    # - WIDGET_IDS='{"ADVOGADA": 17633, "PSICÓLOGA": 17628, "MSR": 16850}'
+
+services:
+  cli-zendesk-ticket:
+    <<: *cli-zendesk
+    command:
+    - pnpm
+    - --filter
+    - bonde-cli-zendesk
+    - run
+    - start:ticket
+    labels:
+      cron.restart_timeout: '86400'
+      cron.schedule: 0 0 0 * * *
+
+  cli-zendesk-user:
+    <<: *cli-zendesk
+    command:
+    - pnpm
+    - --filter
+    - bonde-cli-zendesk
+    - run
+    - start:user
+    labels:
+      cron.restart_timeout: '86400'
+      cron.schedule: 0 0 0 * * *
+
+  donations-recovery-from-metadata:
+    <<: *api-rest
+    command:
+    - bundle
+    - exec
+    - rake
+    - payments:recovery_from_metadata
+    labels:
+      cron.restart_timeout: '86400'
+      cron.schedule: 0 0 0 * * *
+
+  payments-transferred:
+    <<: *payments
+    command:
+    - ruby
+    - -I
+    - .
+    - -r
+    - app/main
+    - -e
+    - Main.new.sync_recipients 'transferred'
+    labels:
+      cron.restart_timeout: '86400'
+      cron.schedule: 0 0 0 * * *
+  donations:
+    <<: *api-rest
+    command:
+    - bundle
+    - exec
+    - rake
+    - payments:sync_donations
+    labels:
+      cron.restart_timeout: '86400'
+      cron.schedule: 0 0 0 * * *
+
+  payments:
+    <<: *payments
+    command:
+    - ruby
+    - -I
+    - .
+    - -r
+    - app/main
+    - -e
+    - Main.new.sync_recipients 'available'
+    labels:
+      cron.restart_timeout: '86400'
+      cron.schedule: 0 0 0 * * *
+  donations-schedule-charges:
+    <<: *api-rest
+    command:
+    - bundle
+    - exec
+    - rake
+    - subscriptions:schedule_charges
+    labels:
+      cron.restart_timeout: '86400'
+      cron.schedule: 0 0 0 * * *
+  donations-sync-gateway-transactions:
+    <<: *api-rest
+    command:
+    - bundle
+    - exec
+    - rake
+    - payments:sync_gateway_transactions
+    labels:
+      cron.restart_timeout: '86400'
+      cron.schedule: 0 0 0 * * *
+
+  payments-waiting-funds:
+    <<: *payments
+    command:
+    - ruby
+    - -I
+    - .
+    - -r
+    - app/main
+    - -e
+    - Main.new.sync_recipients 'waiting_funds'
+    labels:
+      cron.restart_timeout: '86400'
+      cron.schedule: 0 0 0 * * *
+
+  # https://github.com/rancher/container-crontab
+  container-crontab:
+   image: rancher/container-crontab:v0.5.0
+   volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+networks:
+  default:
+    name: bonde

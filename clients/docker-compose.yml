@@ -83,6 +83,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.public.tls: true
       traefik.http.routers.public.tls.certresolver: myresolver
+      traefik.http.routers.public.rule: HostRegexp(`{host:.+}`)
 
 networks:
   default:

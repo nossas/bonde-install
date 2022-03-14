@@ -24,8 +24,9 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.myresolver.acme.email=tech+plip@nossas.org"
+      - "--certificatesresolvers.myresolver.acme.email=${DEFAULT_EMAIL_ACME:-tech@bonde.devel}"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=route53"
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:8080/ping}"
       interval: "60s"
@@ -45,6 +46,43 @@ services:
       AWS_REGION: ${AWS_REGION:-us-east-1}
     labels:
       - traefik.enable=true
+      # https://www.rockyourcode.com/traefik-2-docker-swarm-setup-with-docker-socket-proxy-and-more/
+      # Global redirection: HTTP to HTTPS
+      - traefik.http.routers.http-redirects.entrypoints=web
+      - traefik.http.routers.http-redirects.rule=hostregexp(`{host:(www\.)?.+}`)
+      - traefik.http.routers.http-redirects.middlewares=traefik-ratelimit,redirect-to-non-www-https
+
+      # Global redirection: HTTPS www to HTTPS non-www
+      - traefik.http.routers.www-redirects.entrypoints=websecure
+      - traefik.http.routers.www-redirects.rule=hostregexp(`{host:(www\.).+}`)
+      - traefik.http.routers.www-redirects.tls=true
+      - traefik.http.routers.www-redirects.middlewares=traefik-ratelimit,redirect-to-non-www-https
+      - traefik.http.routers.www-redirects.tls.certresolver=myresolver
+
+      # Middleware to redirect to bare https
+      - traefik.http.middlewares.redirect-to-non-www-https.redirectregex.regex=^https?://(?:www\.)?(.+)
+      - traefik.http.middlewares.redirect-to-non-www-https.redirectregex.replacement=https://$${1}
+      - traefik.http.middlewares.redirect-to-non-www-https.redirectregex.permanent=true
+
+      # Dashboard on port 8000
+      # - traefik.http.routers.api.entrypoints=api
+      # - traefik.http.routers.api.rule=Host(`${DOMAIN?Variable not set}`)
+      # - traefik.http.routers.api.service=api@internal
+      # - traefik.http.routers.api.tls=true
+      # - traefik.http.routers.api.tls.options=default
+      # - traefik.http.routers.api.tls.certresolver=letsencrypt
+      # middlewares: use IP whitelisting, ratelimit and basic authentication
+      # - traefik.http.routers.api.middlewares=api-ipwhitelist,traefik-ratelimit,api-auth
+      # - traefik.http.middlewares.api-auth.basicauth.users=${TRAEFIK_ADMINS?Variable not set}
+      # whitelist your public ip, see https://icanhazip.com
+      # replace with _your IP_
+      # - traefik.http.middlewares.api-ipwhitelist.ipwhitelist.sourcerange=${WHITELIST_IP?Variable not set}
+      # - traefik.http.services.api.loadbalancer.server.port=8000
+
+      # Extra middleware (ratelimit, ip whitelisting)
+      - traefik.http.middlewares.traefik-ratelimit.ratelimit.average=100
+      - traefik.http.middlewares.traefik-ratelimit.ratelimit.burst=50
+      # use host mode for network ports for ip whitelisting
       - traefik.http.services.traefik.loadbalancer.server.port=8080
       - traefik.http.routers.traefik.tls=true
       - traefik.http.routers.traefik.tls.certresolver=myresolver

@@ -8,7 +8,18 @@ services:
     depends_on:
       - redis
     command:
-      - "--log.level=DEBUG"
+      - "--accesslog.filepath=/logs/access.log"
+      - "--accesslog.format=json"
+      - "--log.filepath=/logs/traefik.log"
+      - "--log.format=json"
+      - "--log.level=${TRAEFIK_LOG_LEVEL:-ERROR}"
+      - "--metrics.prometheus"
+      - "--entrypoints.websecure.http.middlewares=compress@file${TRAEFIK_PLUGINS:-}"
+      - "--experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban"
+      - "--experimental.plugins.fail2ban.version=v0.6.0"
+      - "--global.checknewversion=${TRAEFIK_CHECK_NEW_VERSION:-false}"
+      - "--global.sendanonymoususage=${TRAEFIK_SEND_ANONYMOUS_USAGE:-false}"
+      - "--pilot.token=${TRAEFIK_PILOT_TOKEN:-}"
       - "--ping"
       - "--api.insecure=true"
       - "--providers.docker=true"
@@ -26,12 +37,13 @@ services:
       #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.myresolver.acme.email=tech+plip@nossas.org"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=route53"
+    restart: always
     healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:8080/ping}"
-      interval: "60s"
-      timeout: "3s"
-      start_period: "5s"
-      retries: 3
+      test: ['CMD', 'traefik', 'healthcheck', '--ping']
+      interval: 10s
+      timeout: 10s
+      retries: 5
     ports:
       - "80:80"
       - "443:443"
@@ -45,6 +57,19 @@ services:
       AWS_REGION: ${AWS_REGION:-us-east-1}
     labels:
       - traefik.enable=true
+
+      # global redirection: https (www.) to https
+      - "traefik.http.routers.wwwsecure-catchall.rule=HostRegexp(`{host:(www\\.).+}`)"
+      - "traefik.http.routers.wwwsecure-catchall.entrypoints=websecure"
+      - "traefik.http.routers.wwwsecure-catchall.tls=true"
+      - "traefik.http.routers.wwwsecure-catchall.middlewares=wwwtohttps"
+
+      # middleware: http(s)://(www.) to  https://
+      - "traefik.http.middlewares.wwwtohttps.redirectregex.regex=^https?://(?:www\\.)?(.+)"
+      - "traefik.http.middlewares.wwwtohttps.redirectregex.replacement=https://$${1}"
+      - "traefik.http.middlewares.wwwtohttps.redirectregex.permanent=true"
+
+      # export traefik dashboard
       - traefik.http.services.traefik.loadbalancer.server.port=8080
       - traefik.http.routers.traefik.tls=true
       - traefik.http.routers.traefik.tls.certresolver=myresolver

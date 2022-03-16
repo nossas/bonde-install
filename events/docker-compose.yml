@@ -1,0 +1,130 @@
+services:
+
+  phone:
+    image: nossas/bonde-phone:1.1.0
+    environment:
+      - AMOUNT=${AMOUNT:-100}
+      - APP_DOMAIN=${APP_DOMAIN:-http://phone.bonde.devel}
+      - DATABASE_URL=${DATABASE_URL:-postgres://user:pass@postgres:5432/bonde}
+      - DEBUG=${DEBUG:-1}
+      - ENABLE_TWILIO_CALL=${ENABLE_TWILIO_CALL:-1}
+      - PORT=5000
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID:-aaa1}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN:-aaa1}
+      - TWILIO_NUMBER=${TWILIO_NUMBER:-'+551111111111'}
+      - WEB_CONCURRENCY=${WEB_CONCURRENCY:-1}
+      - WEB_MEMORY=${WEB_MEMORY:-256}
+    command:
+    - yarn
+    - run
+    - dev
+    labels:
+      - traefik.http.services.phone.loadbalancer.server.port=5000
+      - traefik.enable=true
+      - traefik.http.routers.phone.tls=true
+      - traefik.http.routers.phone.tls.certresolver=myresolver
+
+  beta:
+    image: nossas/bonde-bot-beta:3.1.8
+    environment:
+      - API_URL=${API_URL:-http://api-v1.bonde.devel}
+      - APP_DOMAIN=${APP_DOMAIN:-http://beta.bonde.devel}
+      - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-aaaa1}
+      - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-https://aaaaa1.apm.us-east-1.aws.cloud.es.io:443}
+      - ELASTIC_APM_SERVICE_NAME=${ELASTIC_APM_SERVICE_NAME:-Bonde Bot Beta}
+      - FORM_MOBILIZATION_ID=${FORM_MOBILIZATION_ID:-'1305'}
+      - FORM_WIDGET_ID=${FORM_WIDGET_ID:-'23416'}
+      - GRAPHQL_URL=${GRAPHQL_URL:-http://api-v2.bonde.devel/graphql}
+      - JWT_TOKEN=${JWT_TOKEN:-aaaa1}
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${PORT:-'5000'}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - SPEECH_VERSION=${SPEECH_VERSION:-v2}
+      - WIT_SERVER_ACCESS_TOKEN=${WIT_SERVER_ACCESS_TOKEN:-aaaa1}
+      - ELASTIC_APM_ACTIVE=${ELASTIC_APM_ACTIVE:-false}
+    labels:
+      - traefik.http.services.beta.loadbalancer.server.port=5000
+      - traefik.enable=true
+      - traefik.http.routers.beta.tls=true
+      - traefik.http.routers.beta.tls.certresolver=myresolver
+
+  redirect:
+    image: nossas/bonde-redirect:0.3.2
+    environment:
+      - GIN_MODE=${GIN_MODE:-debug}
+      - PORT=${PORT:-'3007'}
+    labels:
+      - traefik.http.services.redirect.loadbalancer.server.port=3007
+      - traefik.enable=true
+      - traefik.http.routers.redirect.tls=true
+      - traefik.http.routers.redirect.tls.certresolver=myresolver
+
+  solidarity-count:
+    image: nossas/mapa-do-acolhimento:1.7.1
+    environment:
+      - COMMUNITY_ID=${COMMUNITY_ID:-1}
+      - DEBUG=${DEBUG:-events-solidarity-count*}
+      - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-aaaa1}
+      - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-https://aaaa1.apm.us-east-1.aws.found.io}
+      - GEOCODING_API_KEY=${GEOCODING_API_KEY:-aaaa1}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-aaaa1}
+      - HASURA_API_URL=${HASURA_API_URL:-http://api-graphql.bonde.devel/v1/graphql}
+      - MAUTIC_API_URL=${MAUTIC_API_URL:-http://mautic.nossas.devel/api}
+      - MAUTIC_PASSWORD=${MAUTIC_PASSWORD:-aaaa1}
+      - MAUTIC_USERNAME=${MAUTIC_USERNAME:-email@host}
+      - NODE_ENV=production
+      - PORT=80
+      - X_HASURA_ADMIN_SECRET=${X_HASURA_ADMIN_SECRET:-aaaa1}
+      - ZENDESK_API_TOKEN=${ZENDESK_API_TOKEN:-aaaa1}
+      - ZENDESK_API_URL=${ZENDESK_API_URL:-https://aaaa1.zendesk.com/api/v2/}
+      - ZENDESK_API_USER=${ZENDESK_API_USER:-email@host/token}
+      - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS:-{}}
+      - WIDGET_IDS=${WIDGET_IDS:-aaaa1}
+    command:
+    - pnpm
+    - --filter
+    - bonde-webhooks-solidarity-count
+    - run
+    - start
+    labels:
+      - traefik.http.services.solidarity-count.loadbalancer.server.port=80
+      - traefik.enable=true
+      - traefik.http.routers.solidarity-count.tls=true
+      - traefik.http.routers.solidarity-count.tls.certresolver=myresolver
+
+  mautic-zendesk:
+    image: nossas/mapa-do-acolhimento:1.7.1
+    environment:
+      - COMMUNITY_ID=${COMMUNITY_ID:-1}
+      - DEBUG=${DEBUG:-events-solidarity-count*}
+      - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-aaaa1}
+      - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-https://aaaa1.apm.us-east-1.aws.found.io}
+      - GEOCODING_API_KEY=${GEOCODING_API_KEY:-aaaa1}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-aaaa1}
+      - HASURA_API_URL=${HASURA_API_URL:-http://api-graphql.bonde.devel/v1/graphql}
+      - MAUTIC_API_URL=${MAUTIC_API_URL:-http://mautic.nossas.devel/api}
+      - MAUTIC_PASSWORD=${MAUTIC_PASSWORD:-aaaa1}
+      - MAUTIC_USERNAME=${MAUTIC_USERNAME:-email@host}
+      - NODE_ENV=production
+      - PORT=80
+      - X_HASURA_ADMIN_SECRET=${X_HASURA_ADMIN_SECRET:-aaaa1}
+      - ZENDESK_API_TOKEN=${ZENDESK_API_TOKEN:-aaaa1}
+      - ZENDESK_API_URL=${ZENDESK_API_URL:-https://aaaa1.zendesk.com/api/v2/}
+      - ZENDESK_API_USER=${ZENDESK_API_USER:-email@host/token}
+      - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS:-{}}
+      - WIDGET_IDS=${WIDGET_IDS:-aaaa1}
+    command:
+    - pnpm
+    - --filter
+    - bonde-webhooks-mautic-zendesk
+    - run
+    - start
+    labels:
+      - traefik.http.services.mautic-zendesk.loadbalancer.server.port=80
+      - traefik.enable=true
+      - traefik.http.routers.mautic-zendesk.tls=true
+      - traefik.http.routers.mautic-zendesk.tls.certresolver=myresolver
+
+networks:
+  default:
+    name: bonde

@@ -116,6 +116,30 @@ services:
       traefik.http.routers.api-accounts.tls: true
       traefik.http.routers.api-accounts.tls.certresolver: myresolver
 
+  api-accounts-local:
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:main}
+    environment:
+      ACCOUNTS_REGISTER_URL: https://accounts.${DEFAULT_DOMAIN_RULE}/register
+      GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
+      HASURA_SECRET: ${HASURA_SECRET}
+      HOST: 0.0.0.0
+      JWT_SECRET: ${JWT_SECRET:-segredo123}
+      LOG_LEVEL: debug
+      PORT: '4001'
+      NODE_ENV: 'development'
+    command:
+      - pnpm
+      - m
+      - run
+      - start
+      - --filter
+      - accounts-api
+    labels:
+      traefik.http.services.api-accounts-local.loadbalancer.server.port: '4001'
+      traefik.enable: 'true'
+      traefik.http.routers.api-accounts-local.tls: true
+      traefik.http.routers.api-accounts-local.tls.certresolver: myresolver
+
   notifications:
     image: ${DOCKER_IMAGE:-nossas/bonde-apis:main}
     environment:

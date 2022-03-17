@@ -62,11 +62,11 @@ services:
       - HASURA_GRAPHQL_UNAUTHORIZED_ROLE=${HASURA_GRAPHQL_UNAUTHORIZED_ROLE:-anonymous}
       - HASURA_GRAPHQL_ENABLED_LOG_TYPES=${HASURA_GRAPHQL_ENABLED_LOG_TYPES:-startup, query-log, http-log, webhook-log, websocket-log}
       - HASURA_GRAPHQL_INFER_FUNCTION_PERMISSIONS=false
-      - API_ACCOUNTS_URL=${SCHEMA_API_AUTH_URL:-http://api-accounts.bonde.devel}
-      - API_ACTIVISTS_URL=${SCHEMA_API_ACTIVISTS_URL:-http://activists.bonde.devel}
-      - API_DOMAINS_URL=${SCHEMA_API_DOMAINS_URL:-http://api-domains.bonde.devel}
-      - API_NOTIFICATIONS_URL=${SCHEMA_API_NOTIFICATIONS_URL:-http://notifications.bonde.devel}
-      - API_PAYMENTS_URL=${SCHEMA_API_PAYMENTS_URL:-http://api-payments.bonde.devel}
+      - API_ACCOUNTS_URL=${API_ACCOUNTS_URL:-http://api-accounts.bonde.devel}
+      - API_ACTIVISTS_URL=${API_ACTIVISTS_URL:-http://activists.bonde.devel}
+      - API_DOMAINS_URL=${API_DOMAINS_URL:-http://api-domains.bonde.devel}
+      - API_NOTIFICATIONS_URL=${API_NOTIFICATIONS_URL:-http://notifications.bonde.devel}
+      - API_PAYMENTS_URL=${API_PAYMENTS_URL:-http://api-payments.bonde.devel}
       - API_REDES_URL=${API_REDES_URL:-http://api-redes.bonde.devel}
       - WEBHOOK_INVITATIONS_URL=${WEBHOOK_INVITATIONS_URL:-http://webhook-accounts.bonde.devel/invitations}
       - WEBHOOK_PLIP_MAUTIC_URL=${WEBHOOK_PLIP_MAUTIC_URL:-http://n8n.bonde.devel/webhook/plip-mautic}

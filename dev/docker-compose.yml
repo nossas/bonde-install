@@ -1,5 +1,3 @@
-version: '2'
-
 # /etc/hosts 127.0.0.1 api-graphql.bonde.devel traefik.bonde.devel bonde.devel
 
 volumes:
@@ -16,8 +14,7 @@ volumes:
 
 services:
   traefik:
-    image: "traefik:v2.5"
-    container_name: "traefik"
+    image: "traefik"
     depends_on:
       - redis
     command:
@@ -49,27 +46,24 @@ services:
     image: hasura/graphql-engine:v2.3.0
     restart: always
     environment:
-      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
-      HASURA_GRAPHQL_ENABLED_LOG_TYPES: 'startup, query-log, http-log, webhook-log, websocket-log'
-      HASURA_GRAPHQL_LOG_LEVEL: DEBUG
-      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
-      WEBHOOK_ACTIVISTS_PRESSURE_URL: ${WEBHOOK_ACTIVISTS_PRESSURE_URL}
-      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
-      HASURA_GRAPHQL_DATABASE_URL: ${HASURA_GRAPHQL_DATABASE_URL}
-      SCHEMA_API_ACTIVISTS_URL: ${SCHEMA_API_ACTIVISTS_URL}
-      SCHEMA_API_AUTH_URL: ${SCHEMA_API_AUTH_URL}
-      SCHEMA_API_DOMAINS_URL: ${SCHEMA_API_DOMAINS_URL}
-      SCHEMA_API_NOTIFICATIONS_URL: ${SCHEMA_API_NOTIFICATIONS_URL}
-      SCHEMA_API_PAYMENTS_URL: ${SCHEMA_API_PAYMENTS_URL}
-      SCHEMA_API_REDES_URL: ${SCHEMA_API_REDES_URL}
-      WEBHOOK_INVITATIONS_URL: ${WEBHOOK_INVITATIONS_URL}
-      SCHEMA_API_V2_URL: ${SCHEMA_API_V2_URL}
-      HASURA_GRAPHQL_INFER_FUNCTION_PERMISSIONS: "false"
-      HASURA_GRAPHQL_JWT_SECRET: ${HASURA_GRAPHQL_JWT_SECRET}
-      ACTION_BASE_URL: ${ACTION_BASE_URL}
-      WEBHOOK_PLIP_MAUTIC_URL: ${WEBHOOK_PLIP_MAUTIC_URL}
-      WEBHOOK_GENERATE_CERTIFICATE: ${WEBHOOK_GENERATE_CERTIFICATE}
-      PORT: 8080
+      - HASURA_GRAPHQL_DATABASE_URL=${HASURA_GRAPHQL_DATABASE_URL:-postgres://user:pass@postgres:5432/bonde}
+      - HASURA_GRAPHQL_ENABLE_CONSOLE=${HASURA_GRAPHQL_ENABLE_CONSOLE:-'false'}
+      - HASURA_GRAPHQL_ADMIN_SECRET=${HASURA_GRAPHQL_ADMIN_SECRET:-segredo123}
+      - HASURA_GRAPHQL_JWT_SECRET=${HASURA_GRAPHQL_JWT_SECRET}
+      - HASURA_GRAPHQL_UNAUTHORIZED_ROLE=${HASURA_GRAPHQL_UNAUTHORIZED_ROLE:-anonymous}
+      - HASURA_GRAPHQL_ENABLED_LOG_TYPES=${HASURA_GRAPHQL_ENABLED_LOG_TYPES:-startup, query-log, http-log, webhook-log, websocket-log}
+      - HASURA_GRAPHQL_INFER_FUNCTION_PERMISSIONS=false
+      - API_ACCOUNTS_URL=${API_ACCOUNTS_URL:-http://api-accounts.bonde.devel}
+      - API_ACTIVISTS_URL=${API_ACTIVISTS_URL:-http://activists.bonde.devel}
+      - API_DOMAINS_URL=${API_DOMAINS_URL:-http://api-domains.bonde.devel}
+      - API_NOTIFICATIONS_URL=${API_NOTIFICATIONS_URL:-http://notifications.bonde.devel}
+      - API_PAYMENTS_URL=${API_PAYMENTS_URL:-http://api-payments.bonde.devel}
+      - API_REDES_URL=${API_REDES_URL:-http://api-redes.bonde.devel}
+      - WEBHOOK_INVITATIONS_URL=${WEBHOOK_INVITATIONS_URL:-http://webhook-accounts.bonde.devel/invitations}
+      - WEBHOOK_PLIP_MAUTIC_URL=${WEBHOOK_PLIP_MAUTIC_URL:-http://n8n.bonde.devel/webhook/plip-mautic}
+      - WEBHOOK_ACTIVISTS_PRESSURE_URL=${WEBHOOK_ACTIVISTS_PRESSURE_URL:-http://webhook-activists.bonde.devel/webhook/pressure}
+      - ACTION_BASE_URL=${ACTION_BASE_URL:-http://mailchimp-resync.bonde.devel}
+      - PORT=8080
     volumes:
       - ../bonde-apis/migrations/migrations:/hasura-migrations
       - ../bonde-apis/migrations/metadata:/hasura-metadata

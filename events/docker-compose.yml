@@ -37,7 +37,7 @@ services:
       - GRAPHQL_URL=${GRAPHQL_URL:-http://api-v2.bonde.devel/graphql}
       - JWT_TOKEN=${JWT_TOKEN:-aaaa1}
       - NODE_ENV=${NODE_ENV:-production}
-      - PORT=${PORT:-'5000'}
+      - PORT=${PORT:-5000}
       - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - SPEECH_VERSION=${SPEECH_VERSION:-v2}
       - WIT_SERVER_ACCESS_TOKEN=${WIT_SERVER_ACCESS_TOKEN:-aaaa1}
@@ -52,7 +52,7 @@ services:
     image: nossas/bonde-redirect:0.3.2
     environment:
       - GIN_MODE=${GIN_MODE:-debug}
-      - PORT=${PORT:-'3007'}
+      - PORT=${PORT:-3007}
     labels:
       - traefik.http.services.redirect.loadbalancer.server.port=3007
       - traefik.enable=true
@@ -72,7 +72,7 @@ services:
       - MAUTIC_API_URL=${MAUTIC_API_URL:-http://mautic.nossas.devel/api}
       - MAUTIC_PASSWORD=${MAUTIC_PASSWORD:-aaaa1}
       - MAUTIC_USERNAME=${MAUTIC_USERNAME:-email@host}
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV:-production}
       - PORT=80
       - X_HASURA_ADMIN_SECRET=${X_HASURA_ADMIN_SECRET:-aaaa1}
       - ZENDESK_API_TOKEN=${ZENDESK_API_TOKEN:-aaaa1}
@@ -105,7 +105,7 @@ services:
       - MAUTIC_API_URL=${MAUTIC_API_URL:-http://mautic.nossas.devel/api}
       - MAUTIC_PASSWORD=${MAUTIC_PASSWORD:-aaaa1}
       - MAUTIC_USERNAME=${MAUTIC_USERNAME:-email@host}
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV:-production}
       - PORT=80
       - X_HASURA_ADMIN_SECRET=${X_HASURA_ADMIN_SECRET:-aaaa1}
       - ZENDESK_API_TOKEN=${ZENDESK_API_TOKEN:-aaaa1}

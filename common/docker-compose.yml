@@ -80,10 +80,14 @@ services:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-    ports:
-      - '6379'
+      - REDIS_PORT_NUMBER=6379
     volumes:
       - 'redis-data:/bitnami/redis/data'
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.redis.loadbalancer.server.port=6379
+      - traefik.http.routers.redis.tls=true
+      - traefik.http.routers.redis.tls.certresolver=myresolver
 
   n8n:
     image: n8nio/n8n

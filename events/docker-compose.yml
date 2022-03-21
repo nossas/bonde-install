@@ -23,6 +23,12 @@ services:
       - traefik.enable=true
       - traefik.http.routers.phone.tls=true
       - traefik.http.routers.phone.tls.certresolver=myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:5000}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
   beta:
     image: nossas/bonde-bot-beta:3.1.8
@@ -47,6 +53,12 @@ services:
       - traefik.enable=true
       - traefik.http.routers.beta.tls=true
       - traefik.http.routers.beta.tls.certresolver=myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:5000}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
   redirect:
     image: nossas/bonde-redirect:0.3.2
@@ -58,6 +70,12 @@ services:
       - traefik.enable=true
       - traefik.http.routers.redirect.tls=true
       - traefik.http.routers.redirect.tls.certresolver=myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3007}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
   solidarity-count:
     image: nossas/mapa-do-acolhimento:1.7.1
@@ -124,6 +142,12 @@ services:
       - traefik.enable=true
       - traefik.http.routers.mautic-zendesk.tls=true
       - traefik.http.routers.mautic-zendesk.tls.certresolver=myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
 networks:
   default:

@@ -29,8 +29,9 @@ services:
       AWS_ROUTE53_REGION: ${AWS_ROUTE53_REGION}
       AWS_ROUTE_IP: ${AWS_ROUTE_IP}
       AWS_SECRET_KEY: ${AWS_SECRET_KEY}
-      GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
       HASURA_SECRET: ${HASURA_SECRET}
+      GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
+      REDIS_URL: ${REDIS_URL:-redis://localhost:6379}
       HOST: 0.0.0.0
       JWT_SECRET: ${JWT_SECRET:-segredo123}
       PORT: '3000'

@@ -48,7 +48,7 @@ x-cli-zendesk: &cli-zendesk
     - MAUTIC_PASSWORD=${MAUTIC_PASSWORD:-a1111}
     - MAUTIC_USERNAME=${MAUTIC_USERNAME:-email@host}
     - NODE_ENV=${NODE_ENV:-production}
-    - THERAPIST_WIDGET_IDS=${THERAPIST_WIDGET_IDS:-a1111}
+    - WIDGET_IDS=${WIDGET_IDS:-a1111}
     - WS_GRAPHQL_URL=${WS_GRAPHQL_URL:-ws://api-graphql.bonde.devel/v1/graphql}
     - ZENDESK_API_TOKEN=${ZENDESK_API_TOKEN:-a1111}
     - ZENDESK_API_URL=${ZENDESK_API_URL:-https://aaa.zendesk.com/api/v2/}

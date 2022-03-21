@@ -4,7 +4,7 @@ services:
     image: nossas/bonde-phone:1.1.0
     environment:
       - AMOUNT=${AMOUNT:-100}
-      - APP_DOMAIN=${APP_DOMAIN:-http://phone.bonde.devel}
+      - APP_DOMAIN=${PHONE_APP_DOMAIN:-http://phone.bonde.devel}
       - DATABASE_URL=${DATABASE_URL:-postgres://user:pass@postgres:5432/bonde}
       - DEBUG=${DEBUG:-1}
       - ENABLE_TWILIO_CALL=${ENABLE_TWILIO_CALL:-1}
@@ -34,7 +34,7 @@ services:
     image: nossas/bonde-bot-beta:3.1.8
     environment:
       - API_URL=${API_URL:-http://api-v1.bonde.devel}
-      - APP_DOMAIN=${APP_DOMAIN:-http://beta.bonde.devel}
+      - APP_DOMAIN=${BETA_APP_DOMAIN:-http://beta.bonde.devel}
       - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-aaaa1}
       - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-https://aaaaa1.apm.us-east-1.aws.cloud.es.io:443}
       - ELASTIC_APM_SERVICE_NAME=${ELASTIC_APM_SERVICE_NAME:-Bonde Bot Beta}

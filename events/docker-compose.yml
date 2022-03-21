@@ -4,7 +4,7 @@ services:
     image: nossas/bonde-phone:1.1.0
     environment:
       - AMOUNT=${AMOUNT:-100}
-      - APP_DOMAIN=${APP_DOMAIN:-http://phone.bonde.devel}
+      - APP_DOMAIN=${PHONE_APP_DOMAIN:-http://phone.bonde.devel}
       - DATABASE_URL=${DATABASE_URL:-postgres://user:pass@postgres:5432/bonde}
       - DEBUG=${DEBUG:-1}
       - ENABLE_TWILIO_CALL=${ENABLE_TWILIO_CALL:-1}
@@ -23,12 +23,18 @@ services:
       - traefik.enable=true
       - traefik.http.routers.phone.tls=true
       - traefik.http.routers.phone.tls.certresolver=myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:5000}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
   beta:
     image: nossas/bonde-bot-beta:3.1.8
     environment:
       - API_URL=${API_URL:-http://api-v1.bonde.devel}
-      - APP_DOMAIN=${APP_DOMAIN:-http://beta.bonde.devel}
+      - APP_DOMAIN=${BETA_APP_DOMAIN:-http://beta.bonde.devel}
       - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-aaaa1}
       - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-https://aaaaa1.apm.us-east-1.aws.cloud.es.io:443}
       - ELASTIC_APM_SERVICE_NAME=${ELASTIC_APM_SERVICE_NAME:-Bonde Bot Beta}
@@ -37,7 +43,7 @@ services:
       - GRAPHQL_URL=${GRAPHQL_URL:-http://api-v2.bonde.devel/graphql}
       - JWT_TOKEN=${JWT_TOKEN:-aaaa1}
       - NODE_ENV=${NODE_ENV:-production}
-      - PORT=${PORT:-'5000'}
+      - PORT=${PORT:-5000}
       - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - SPEECH_VERSION=${SPEECH_VERSION:-v2}
       - WIT_SERVER_ACCESS_TOKEN=${WIT_SERVER_ACCESS_TOKEN:-aaaa1}
@@ -47,17 +53,29 @@ services:
       - traefik.enable=true
       - traefik.http.routers.beta.tls=true
       - traefik.http.routers.beta.tls.certresolver=myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:5000}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
   redirect:
     image: nossas/bonde-redirect:0.3.2
     environment:
       - GIN_MODE=${GIN_MODE:-debug}
-      - PORT=${PORT:-'3007'}
+      - PORT=${PORT:-3007}
     labels:
       - traefik.http.services.redirect.loadbalancer.server.port=3007
       - traefik.enable=true
       - traefik.http.routers.redirect.tls=true
       - traefik.http.routers.redirect.tls.certresolver=myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3007}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
   solidarity-count:
     image: nossas/mapa-do-acolhimento:1.7.1
@@ -72,14 +90,14 @@ services:
       - MAUTIC_API_URL=${MAUTIC_API_URL:-http://mautic.nossas.devel/api}
       - MAUTIC_PASSWORD=${MAUTIC_PASSWORD:-aaaa1}
       - MAUTIC_USERNAME=${MAUTIC_USERNAME:-email@host}
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV:-production}
       - PORT=80
       - X_HASURA_ADMIN_SECRET=${X_HASURA_ADMIN_SECRET:-aaaa1}
       - ZENDESK_API_TOKEN=${ZENDESK_API_TOKEN:-aaaa1}
       - ZENDESK_API_URL=${ZENDESK_API_URL:-https://aaaa1.zendesk.com/api/v2/}
       - ZENDESK_API_USER=${ZENDESK_API_USER:-email@host/token}
-      - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS:-{}}
-      - WIDGET_IDS=${WIDGET_IDS:-aaaa1}
+      - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS}
+      - WIDGET_IDS=${WIDGET_IDS_SOLIDARITY_COUNT:-aaaa1}
     command:
     - pnpm
     - --filter
@@ -105,13 +123,13 @@ services:
       - MAUTIC_API_URL=${MAUTIC_API_URL:-http://mautic.nossas.devel/api}
       - MAUTIC_PASSWORD=${MAUTIC_PASSWORD:-aaaa1}
       - MAUTIC_USERNAME=${MAUTIC_USERNAME:-email@host}
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV:-production}
       - PORT=80
       - X_HASURA_ADMIN_SECRET=${X_HASURA_ADMIN_SECRET:-aaaa1}
       - ZENDESK_API_TOKEN=${ZENDESK_API_TOKEN:-aaaa1}
       - ZENDESK_API_URL=${ZENDESK_API_URL:-https://aaaa1.zendesk.com/api/v2/}
       - ZENDESK_API_USER=${ZENDESK_API_USER:-email@host/token}
-      - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS:-{}}
+      - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS}
       - WIDGET_IDS=${WIDGET_IDS:-aaaa1}
     command:
     - pnpm
@@ -124,6 +142,12 @@ services:
       - traefik.enable=true
       - traefik.http.routers.mautic-zendesk.tls=true
       - traefik.http.routers.mautic-zendesk.tls.certresolver=myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
 networks:
   default:

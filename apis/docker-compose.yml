@@ -51,6 +51,12 @@ services:
       - traefik.enable=true
       - traefik.http.routers.api-rest.tls=true
       - traefik.http.routers.api-rest.tls.certresolver=myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
   api-graphql:
     image: hasura/graphql-engine:v2.3.0
@@ -78,6 +84,12 @@ services:
       - traefik.enable=true
       - traefik.http.routers.api-graphql.tls=true
       - traefik.http.routers.api-graphql.tls.certresolver=myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:8080}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
 networks:
   default:

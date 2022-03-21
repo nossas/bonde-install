@@ -136,6 +136,8 @@ services:
     image: docker.elastic.co/beats/elastic-agent:8.0.0
     restart: always
     user: root # note, synthetic browser monitors require this set to `elastic-agent`
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
     environment:
       - FLEET_ENROLLMENT_TOKEN=${FLEET_ENROLLMENT_TOKEN}
       - FLEET_ENROLL=${FLEET_ENROLL:-1}

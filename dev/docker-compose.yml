@@ -63,6 +63,7 @@ services:
       - WEBHOOK_PLIP_MAUTIC_URL=${WEBHOOK_PLIP_MAUTIC_URL:-http://n8n.bonde.devel/webhook/plip-mautic}
       - WEBHOOK_ACTIVISTS_PRESSURE_URL=${WEBHOOK_ACTIVISTS_PRESSURE_URL:-http://webhook-activists.bonde.devel/webhook/pressure}
       - ACTION_BASE_URL=${ACTION_BASE_URL:-http://mailchimp-resync.bonde.devel}
+      - WEBHOOK_PLIP_SIGNATURES_MAUTIC_URL=${WEBHOOK_PLIP_SIGNATURES_MAUTIC_URL:-http://bonde.devel}
       - PORT=8080
     volumes:
       - ../bonde-apis/migrations/migrations:/hasura-migrations
@@ -82,6 +83,9 @@ services:
       - '6379:6379'
     volumes:
       - 'redis_data:/bitnami/redis/data'
+networks:
+  default:
+    name: bonde
 
   # redis-commander:
   #   image: rediscommander/redis-commander:latest

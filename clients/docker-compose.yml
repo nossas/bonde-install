@@ -1,6 +1,6 @@
 services:
   accounts:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:main}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.2}
     command: yarn pnpm m run start --filter accounts-client
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
@@ -15,7 +15,7 @@ services:
       traefik.http.routers.accounts.tls.certresolver: myresolver
   
   app:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:main}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.2}
     command: yarn pnpm m run start --filter admin-client
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:5000}"
@@ -30,7 +30,7 @@ services:
       traefik.http.routers.app.tls.certresolver: myresolver
 
   admin-canary:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:main}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.2}
     command: yarn pnpm m run start --filter canary-client
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
@@ -45,7 +45,7 @@ services:
       traefik.http.routers.admin-canary.tls.certresolver: myresolver
 
   redes:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:main}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.2}
     command: yarn pnpm m run start --filter redes-client
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
@@ -60,7 +60,7 @@ services:
       traefik.http.routers.redes.tls.certresolver: myresolver
 
   public:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:main}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.2}
     command: yarn pnpm m run start --filter webpage-client
     environment:
       - PORT=3000

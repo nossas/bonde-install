@@ -1,7 +1,7 @@
 services:
 
   api-payments:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:main}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:1.0.3}
     environment:
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
       HASURA_SECRET: ${HASURA_SECRET}
@@ -23,7 +23,7 @@ services:
       traefik.http.routers.api-payments.tls.certresolver: myresolver
 
   api-domains:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:main}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:1.0.3}
     environment:
       AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
       AWS_ROUTE53_REGION: ${AWS_ROUTE53_REGION}
@@ -49,7 +49,7 @@ services:
       traefik.http.routers.api-domains.tls.certresolver: myresolver
 
   activists:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:main}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:1.0.3}
     environment:
       ACTION_SECRET_KEY: ${ACTION_SECRET_KEY}
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
@@ -70,7 +70,7 @@ services:
       traefik.http.routers.activists.tls.certresolver: myresolver
 
   api-redes:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:main}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:1.0.3}
     environment:
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
       HASURA_SECRET: ${HASURA_SECRET}
@@ -95,7 +95,7 @@ services:
       traefik.http.routers.api-redes.tls.certresolver: myresolver
 
   api-accounts:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:main}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:1.0.3}
     environment:
       ACCOUNTS_REGISTER_URL: https://accounts.${DEFAULT_DOMAIN_RULE}/register
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
@@ -118,7 +118,7 @@ services:
       traefik.http.routers.api-accounts.tls.certresolver: myresolver
 
   api-accounts-local:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:main}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:1.0.3}
     environment:
       ACCOUNTS_REGISTER_URL: https://accounts.${DEFAULT_DOMAIN_RULE}/register
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
@@ -142,7 +142,7 @@ services:
       traefik.http.routers.api-accounts-local.tls.certresolver: myresolver
 
   notifications:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:main}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:1.0.3}
     environment:
       ELASTICSEARCH_CLOUD_ID: ${ELASTICSEARCH_CLOUD_ID}
       ELASTICSEARCH_PASSWORD: ${ELASTICSEARCH_PASSWORD}

@@ -16,6 +16,8 @@ services:
       - start
       - --filter
       - payments-api
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       traefik.http.services.api-payments.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
@@ -48,6 +50,8 @@ services:
       - start
       - --filter
       - domains-api
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       traefik.http.services.api-domains.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
@@ -75,6 +79,8 @@ services:
       - start
       - --filter
       - activists-api
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       traefik.http.services.activists.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
@@ -106,6 +112,8 @@ services:
       - start
       - --filter
       - redes-api
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       traefik.http.services.api-redes.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
@@ -136,6 +144,8 @@ services:
       - start
       - --filter
       - accounts-api
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       traefik.http.services.api-accounts.loadbalancer.server.port: '4001'
       traefik.enable: 'true'
@@ -166,6 +176,8 @@ services:
       - start
       - --filter
       - accounts-api
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       traefik.http.services.api-accounts-local.loadbalancer.server.port: '4001'
       traefik.enable: 'true'
@@ -197,6 +209,8 @@ services:
       - start
       - --filter
       - notifications
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       traefik.http.services.notifications.loadbalancer.server.port: '3000'
       traefik.enable: 'true'

@@ -76,6 +76,7 @@ services:
 
   redis:
     image: docker.io/bitnami/redis:6.2
+    restart: always
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
       - ALLOW_EMPTY_PASSWORD=yes
@@ -83,11 +84,6 @@ services:
       - REDIS_PORT_NUMBER=6379
     volumes:
       - 'redis-data:/bitnami/redis/data'
-    labels:
-      - traefik.enable=true
-      - traefik.http.services.redis.loadbalancer.server.port=6379
-      - traefik.http.routers.redis.tls=true
-      - traefik.http.routers.redis.tls.certresolver=myresolver
 
   n8n:
     image: n8nio/n8n
@@ -118,6 +114,7 @@ services:
     - /bin/sh
     - -c
     - sleep 5; n8n start
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     labels:
       - traefik.enable=true
       - traefik.http.services.n8n.loadbalancer.server.port=5678
@@ -125,6 +122,7 @@ services:
       - traefik.http.routers.n8n.tls.certresolver=myresolver
   postgres:
     image: postgres:11
+    restart: always
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-n8ndb}
       - POSTGRES_NON_ROOT_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD:-1234}

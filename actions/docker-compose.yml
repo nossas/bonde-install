@@ -19,6 +19,8 @@ services:
       - start 
       - --filter 
       - resync-mailchimp
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       - traefik.http.services.action-mailchimp-resync.loadbalancer.server.port=80
       - traefik.enable=true

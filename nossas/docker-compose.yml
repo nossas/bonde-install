@@ -2,7 +2,7 @@ services:
   nossas-org:
     image: nossas/nossas-org:hotfix-adjustments
     environment:
-      - ELASTIC_APM_ACTIVE=${ELASTIC_APM_ACTIVE:-'false'}
+      - ELASTIC_APM_ACTIVE=${ELASTIC_APM_ACTIVE:-false}
       - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-'1111'}
       - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-http://localhost:9200}
       - ELASTIC_APM_SERVICE_NAME=${ELASTIC_APM_SERVICE_NAME:-nossas-org}
@@ -16,13 +16,19 @@ services:
       - NEXT_PUBLIC_NEWSLETTER_EN_WIDGET_ID=${NEXT_PUBLIC_NEWSLETTER_EN_WIDGET_ID:-'11111'}
       - NEXT_PUBLIC_NEWSLETTER_WIDGET_ID=${NEXT_PUBLIC_NEWSLETTER_WIDGET_ID:-'11111'}
       - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:-pk_test_}
-      - PORT=${PORT:-'3000'}
+      - PORT=${PORT:-3003}
     labels:
       - traefik.enable=true
 #       - traefik.http.routers.nossas-org.rule=Host(`nossas-org.staging.bonde.org`)
       - traefik.http.services.nossas-org.loadbalancer.server.port=3003
       - traefik.http.routers.nossas-org.tls=true
       - traefik.http.routers.nossas-org.tls.certresolver=myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3003}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
 networks:
   default:

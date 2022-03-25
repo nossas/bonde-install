@@ -74,7 +74,8 @@ services:
       - traefik.http.services.api-graphql.loadbalancer.server.port=8080
 
   redis:
-    image: docker.io/bitnami/redis:6.2
+    image: redislabs/redismod
+    # image: docker.io/bitnami/redis:6.2
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
       - ALLOW_EMPTY_PASSWORD=yes

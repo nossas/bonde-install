@@ -16,11 +16,19 @@ services:
       - start
       - --filter
       - payments-api
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       traefik.http.services.api-payments.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
       traefik.http.routers.api-payments.tls: true
       traefik.http.routers.api-payments.tls.certresolver: myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
   api-domains:
     image: ${DOCKER_IMAGE:-nossas/bonde-apis:1.0.3}
@@ -42,11 +50,19 @@ services:
       - start
       - --filter
       - domains-api
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       traefik.http.services.api-domains.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
       traefik.http.routers.api-domains.tls: true
       traefik.http.routers.api-domains.tls.certresolver: myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
   activists:
     image: ${DOCKER_IMAGE:-nossas/bonde-apis:1.0.3}
@@ -63,11 +79,19 @@ services:
       - start
       - --filter
       - activists-api
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       traefik.http.services.activists.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
       traefik.http.routers.activists.tls: true
       traefik.http.routers.activists.tls.certresolver: myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
   api-redes:
     image: ${DOCKER_IMAGE:-nossas/bonde-apis:1.0.3}
@@ -88,11 +112,19 @@ services:
       - start
       - --filter
       - redes-api
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       traefik.http.services.api-redes.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
       traefik.http.routers.api-redes.tls: true
       traefik.http.routers.api-redes.tls.certresolver: myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
   api-accounts:
     image: ${DOCKER_IMAGE:-nossas/bonde-apis:1.0.3}
@@ -112,11 +144,19 @@ services:
       - start
       - --filter
       - accounts-api
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       traefik.http.services.api-accounts.loadbalancer.server.port: '4001'
       traefik.enable: 'true'
       traefik.http.routers.api-accounts.tls: true
       traefik.http.routers.api-accounts.tls.certresolver: myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:4001}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
   api-accounts-local:
     image: ${DOCKER_IMAGE:-nossas/bonde-apis:1.0.3}
@@ -136,11 +176,19 @@ services:
       - start
       - --filter
       - accounts-api
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       traefik.http.services.api-accounts-local.loadbalancer.server.port: '4001'
       traefik.enable: 'true'
       traefik.http.routers.api-accounts-local.tls: true
       traefik.http.routers.api-accounts-local.tls.certresolver: myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:4001}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
   notifications:
     image: ${DOCKER_IMAGE:-nossas/bonde-apis:1.0.3}
@@ -161,11 +209,19 @@ services:
       - start
       - --filter
       - notifications
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     labels:
       traefik.http.services.notifications.loadbalancer.server.port: '3000'
       traefik.enable: 'true'
       traefik.http.routers.notifications.tls: true
       traefik.http.routers.notifications.tls.certresolver: myresolver
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
 networks:
   default:

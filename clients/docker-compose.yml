@@ -2,6 +2,8 @@ services:
   accounts:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.2}
     command: yarn pnpm m run start --filter accounts-client
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
       interval: "60s"
@@ -17,6 +19,8 @@ services:
   app:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.2}
     command: yarn pnpm m run start --filter admin-client
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:5000}"
       interval: "60s"
@@ -32,6 +36,8 @@ services:
   admin-canary:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.2}
     command: yarn pnpm m run start --filter canary-client
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
       interval: "60s"
@@ -47,6 +53,8 @@ services:
   redes:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.2}
     command: yarn pnpm m run start --filter redes-client
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
       interval: "60s"
@@ -62,6 +70,8 @@ services:
   public:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.2}
     command: yarn pnpm m run start --filter webpage-client
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
     environment:
       - PORT=3000
       - NODE_ENV=${PUBLIC_NODE_ENV:-development}
@@ -72,16 +82,16 @@ services:
       - REACT_APP_DOMAIN_API_GRAPHQL=${PUBLIC_HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
       - REACT_APP_DOMAIN_API_REST=${PUBLIC_REST_API:-http://api-rest.bonde.devel}
       - REACT_APP_DOMAIN_PUBLIC=${DEFAULT_DOMAIN_RULE:-bonde.devel}
-    # healthcheck:
-    #   test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
-    #   interval: "60s"
-    #   timeout: "3s"
-    #   start_period: "50s"
-    #   retries: 3
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "50s"
+      retries: 3
     labels:
       - traefik.http.services.public.loadbalancer.server.port=3000
       - traefik.enable=true
-      - traefik.http.routers.public.tls=false
+      - traefik.http.routers.public.tls=true
       - traefik.http.routers.public.tls.certresolver=myresolver
       - traefik.http.routers.public.rule=HostRegexp(`{host:.+}`)
       - traefik.http.routers.public.tls.domains[0].main=${DEFAULT_DOMAIN_RULE:-bonde.devel}

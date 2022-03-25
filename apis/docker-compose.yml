@@ -76,6 +76,12 @@ services:
       - API_NOTIFICATIONS_URL=${API_NOTIFICATIONS_URL:-http://notifications.bonde.devel}
       - API_PAYMENTS_URL=${API_PAYMENTS_URL:-http://api-payments.bonde.devel}
       - API_REDES_URL=${API_REDES_URL:-http://api-redes.bonde.devel}
+      - SCHEMA_API_ACCOUNTS_URL=${API_ACCOUNTS_URL:-http://api-accounts.bonde.devel}
+      - SCHEMA_API_ACTIVISTS_URL=${API_ACTIVISTS_URL:-http://activists.bonde.devel}
+      - SCHEMA_API_DOMAINS_URL=${API_DOMAINS_URL:-http://api-domains.bonde.devel}
+      - SCHEMA_API_NOTIFICATIONS_URL=${API_NOTIFICATIONS_URL:-http://notifications.bonde.devel}
+      - SCHEMA_API_PAYMENTS_URL=${API_PAYMENTS_URL:-http://api-payments.bonde.devel}
+      - SCHEMA_API_REDES_URL=${API_REDES_URL:-http://api-redes.bonde.devel}
       - WEBHOOK_INVITATIONS_URL=${WEBHOOK_INVITATIONS_URL:-http://webhook-accounts.bonde.devel/invitations}
       - WEBHOOK_PLIP_MAUTIC_URL=${WEBHOOK_PLIP_MAUTIC_URL:-http://n8n.bonde.devel/webhook/plip-mautic}
       - WEBHOOK_ACTIVISTS_PRESSURE_URL=${WEBHOOK_ACTIVISTS_PRESSURE_URL:-http://webhook-activists.bonde.devel/webhook/pressure}
@@ -88,12 +94,12 @@ services:
       - traefik.http.routers.api-graphql.tls.certresolver=myresolver
     restart: always
     pull_policy: always
-    healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:8080}"
-      interval: "60s"
-      timeout: "3s"
-      start_period: "5s"
-      retries: 3
+    # healthcheck:
+    #   test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:8080}"
+    #   interval: "60s"
+    #   timeout: "3s"
+    #   start_period: "5s"
+    #   retries: 3
 
 networks:
   default:

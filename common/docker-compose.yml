@@ -100,12 +100,6 @@ services:
       - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD:-1234}
       - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER:-user}
       - WEBHOOK_URL=${WEBHOOK_URL:-http://n8n.bonde.devel}
-    healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:5678/healthz}"
-      interval: "60s"
-      timeout: "3s"
-      start_period: "5s"
-      retries: 3
     volumes:
     - local-n8n:/home/node/.n8n
     # ports:

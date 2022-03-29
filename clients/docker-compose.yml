@@ -30,6 +30,7 @@ services:
     labels:
       traefik.http.services.app.loadbalancer.server.port: '5000'
       traefik.enable: 'true'
+      traefik.http.routers.app.priority: 1
       traefik.http.routers.app.tls: true
       traefik.http.routers.app.tls.certresolver: myresolver
 

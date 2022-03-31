@@ -36,7 +36,7 @@ services:
     volumes:
       - nocodb-data:/usr/app/data
     environment:
-      - NC_DB=pg://postgres:5432?u=${DATABASE_USER}&p=${DATABASE_PW}&d=${DATABASE_NAME}
+      - NC_DB=pg://postgres-nocodb:5432?u=${DATABASE_USER}&p=${DATABASE_PW}&d=${DATABASE_NAME}
       - NC_PUBLIC_URL=https://nocodb.${DEFAULT_DOMAIN_RULE}
       - NC_DISABLE_TELE=true
     labels:
@@ -45,9 +45,9 @@ services:
       - traefik.http.routers.nocodb.tls=true
       - traefik.http.routers.nocodb.tls.certresolver=myresolver
     depends_on:
-      - postgres
+      - postgres-nocodb
 
-  postgres:
+  postgres-nocodb:
     image: postgres:12.1-alpine
     restart: always
     environment:

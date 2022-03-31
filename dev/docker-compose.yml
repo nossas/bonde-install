@@ -60,10 +60,9 @@ services:
       - API_PAYMENTS_URL=${API_PAYMENTS_URL:-http://api-payments.bonde.devel}
       - API_REDES_URL=${API_REDES_URL:-http://api-redes.bonde.devel}
       - WEBHOOK_INVITATIONS_URL=${WEBHOOK_INVITATIONS_URL:-http://webhook-accounts.bonde.devel/invitations}
-      - WEBHOOK_PLIP_MAUTIC_URL=${WEBHOOK_PLIP_MAUTIC_URL:-http://n8n.bonde.devel/webhook/plip-mautic}
       - WEBHOOK_ACTIVISTS_PRESSURE_URL=${WEBHOOK_ACTIVISTS_PRESSURE_URL:-http://webhook-activists.bonde.devel/webhook/pressure}
       - ACTION_BASE_URL=${ACTION_BASE_URL:-http://mailchimp-resync.bonde.devel}
-      - WEBHOOK_PLIP_SIGNATURES_MAUTIC_URL=${WEBHOOK_PLIP_SIGNATURES_MAUTIC_URL:-http://bonde.devel}
+      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL:-http://n8n.bonde.devel/webhook}
       - PORT=8080
     volumes:
       - ../bonde-apis/migrations/migrations:/hasura-migrations

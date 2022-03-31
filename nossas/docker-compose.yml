@@ -71,4 +71,4 @@ volumes:
 networks:
   default:
     external:
-      name: nossas
+      name: bonde

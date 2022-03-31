@@ -55,12 +55,18 @@ services:
         POSTGRES_PASSWORD: ${DATABASE_PW}
         POSTGRES_DB: ${DATABASE_NAME}
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}
       interval: 10s
       timeout: 2s
       retries: 10
+
+volumes:
+  nocodb-data:
+    driver: local
+  postgres-data:
+    driver: local
 
 networks:
   default:

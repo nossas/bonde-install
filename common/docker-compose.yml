@@ -75,15 +75,11 @@ services:
       - traefik.http.routers.traefik.tls.certresolver=myresolver
 
   redis:
-    image: docker.io/bitnami/redis:6.2
+    image: redislabs/redismod
     restart: always
-    environment:
-      # ALLOW_EMPTY_PASSWORD is recommended only for development.
-      - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-      - REDIS_PORT_NUMBER=6379
-    volumes:
-      - 'redis-data:/bitnami/redis/data'
+    # command: redis-server --save
+    # volumes:
+    #   - 'redis-data:/bitnami/redis/data'
 
   n8n:
     image: n8nio/n8n
@@ -137,8 +133,6 @@ services:
 
 volumes:
   local-n8n:
-    driver: local
-  redis-data:
     driver: local
   letsencrypt:
     driver: local

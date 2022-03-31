@@ -94,11 +94,12 @@ services:
       - traefik.http.routers.api-graphql.tls.certresolver=myresolver
     restart: always
     pull_policy: always
+    # disabled due a non-existence of wget or curl inside docker image
     # healthcheck:
-    #   test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:8080}"
+    #   test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:8080/healthz}"
     #   interval: "60s"
-    #   timeout: "3s"
-    #   start_period: "5s"
+    #   timeout: "5s"
+    #   start_period: "15s"
     #   retries: 3
 
 networks:

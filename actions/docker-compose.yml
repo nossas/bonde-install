@@ -26,12 +26,6 @@ services:
       - traefik.enable=true
       - traefik.http.routers.action-mailchimp-resync.tls=true
       - traefik.http.routers.action-mailchimp-resync.tls.certresolver=myresolver
-    healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost}"
-      interval: "60s"
-      timeout: "3s"
-      start_period: "5s"
-      retries: 3
 
 networks:
   default:

@@ -163,6 +163,7 @@ services:
     environment:
       ACCOUNTS_REGISTER_URL: https://accounts.${DEFAULT_DOMAIN_RULE}/register
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
+      APP_DOMAIN: ${DEFAULT_DOMAIN_RULE}
       HASURA_SECRET: ${HASURA_SECRET}
       HOST: 0.0.0.0
       JWT_SECRET: ${JWT_SECRET:-segredo123}

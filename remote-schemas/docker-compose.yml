@@ -169,6 +169,7 @@ services:
       LOG_LEVEL: debug
       PORT: '4001'
       NODE_ENV: 'development'
+      APP_DOMAIN: '.bonde.devel'
     command:
       - pnpm
       - m

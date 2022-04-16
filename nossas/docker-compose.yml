@@ -41,6 +41,8 @@ services:
       - NC_DB=pg://postgres-nocodb:5432?u=${DATABASE_USER}&p=${DATABASE_PW}&d=${DATABASE_NAME}
       - NC_PUBLIC_URL=https://nocodb.${DEFAULT_DOMAIN_RULE}
       - NC_DISABLE_TELE=true
+      - DB_QUERY_LIMIT_MAX=10000
+      - DB_QUERY_LIMIT_DEFAULT=100
     labels:
       - traefik.enable=true
       - traefik.http.services.nocodb.loadbalancer.server.port=8080

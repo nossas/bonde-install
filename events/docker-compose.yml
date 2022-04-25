@@ -15,9 +15,9 @@ services:
       - WEB_CONCURRENCY=${WEB_CONCURRENCY:-1}
       - WEB_MEMORY=${WEB_MEMORY:-256}
     command:
-    - yarn
-    - run
-    - dev
+      - yarn
+      - run
+      - dev
     labels:
       - traefik.http.services.phone.loadbalancer.server.port=5000
       - traefik.enable=true
@@ -61,7 +61,7 @@ services:
       retries: 3
 
   redirect:
-    image: nossas/bonde-redirect:0.3.2
+    image: nossas/bonde-redirect:0.4.5
     environment:
       - GIN_MODE=${GIN_MODE:-debug}
       - PORT=${PORT:-3007}
@@ -99,11 +99,11 @@ services:
       - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS}
       - WIDGET_IDS=${WIDGET_IDS_SOLIDARITY_COUNT:-aaaa1}
     command:
-    - pnpm
-    - --filter
-    - bonde-webhooks-solidarity-count
-    - run
-    - start
+      - pnpm
+      - --filter
+      - bonde-webhooks-solidarity-count
+      - run
+      - start
     labels:
       - traefik.http.services.solidarity-count.loadbalancer.server.port=80
       - traefik.enable=true
@@ -132,11 +132,11 @@ services:
       - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS}
       - WIDGET_IDS=${WIDGET_IDS:-aaaa1}
     command:
-    - pnpm
-    - --filter
-    - bonde-webhooks-mautic-zendesk
-    - run
-    - start
+      - pnpm
+      - --filter
+      - bonde-webhooks-mautic-zendesk
+      - run
+      - start
     labels:
       - traefik.http.services.mautic-zendesk.loadbalancer.server.port=80
       - traefik.enable=true

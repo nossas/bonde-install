@@ -61,7 +61,7 @@ services:
       retries: 3
 
   redirect:
-    image: nossas/bonde-redirect:0.4.5
+    image: nossas/bonde-redirect:0.4.6
     environment:
       - GIN_MODE=${GIN_MODE:-debug}
       - PORT=${PORT:-3007}
@@ -114,7 +114,7 @@ services:
     image: nossas/mapa-do-acolhimento:1.7.1
     environment:
       - COMMUNITY_ID=${COMMUNITY_ID:-1}
-      - DEBUG=${DEBUG:-events-solidarity-count*}
+      - DEBUG=${DEBUG:-events-mautic-zendesk*}
       - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-aaaa1}
       - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-https://aaaa1.apm.us-east-1.aws.found.io}
       - GEOCODING_API_KEY=${GEOCODING_API_KEY:-aaaa1}

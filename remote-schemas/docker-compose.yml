@@ -11,11 +11,9 @@ services:
       PORT: '3000'
     command:
       - pnpm
-      - m
-      - run
-      - start
       - --filter
       - payments-api
+      - start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     labels:
@@ -45,11 +43,9 @@ services:
       PORT: '3000'
     command:
       - pnpm
-      - m
-      - run
-      - start
       - --filter
       - domains-api
+      - start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     labels:
@@ -74,11 +70,9 @@ services:
       PORT: '3000'
     command:
       - pnpm
-      - m
-      - run
-      - start
       - --filter
       - activists-api
+      - start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     labels:
@@ -107,11 +101,9 @@ services:
       ZENDESK_ORGANIZATIONS: ${ZENDESK_ORGANIZATIONS}
     command:
       - pnpm
-      - m
-      - run
-      - start
       - --filter
       - redes-api
+      - start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     labels:
@@ -139,11 +131,9 @@ services:
       PORT: '4001'
     command:
       - pnpm
-      - m
-      - run
-      - start
       - --filter
       - accounts-api
+      - start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     labels:
@@ -171,11 +161,9 @@ services:
       NODE_ENV: 'development'
     command:
       - pnpm
-      - m
-      - run
-      - start
       - --filter
       - accounts-api
+      - start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     labels:
@@ -204,11 +192,9 @@ services:
       SENDGRID_WEBHOOK_KEY: ${SENDGRID_WEBHOOK_KEY}
     command:
       - pnpm
-      - m
-      - run
-      - start
       - --filter
       - notifications
+      - start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     labels:

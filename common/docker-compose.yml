@@ -83,6 +83,13 @@ services:
       - 2379:2379
       - 2380:2380
 
+  redis:
+    image: redislabs/redismod
+    restart: always
+    # command: redis-server --save
+    # volumes:
+    #   - 'redis-data:/bitnami/redis/data'
+
   n8n:
     image: n8nio/n8n
     depends_on:

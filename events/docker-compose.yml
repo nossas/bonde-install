@@ -24,7 +24,7 @@ services:
       - traefik.http.routers.phone.tls=true
       - traefik.http.routers.phone.tls.certresolver=myresolver
     healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:5000}"
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:5000/ping}"
       interval: "60s"
       timeout: "3s"
       start_period: "5s"

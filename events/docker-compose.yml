@@ -78,7 +78,7 @@ services:
       retries: 3
 
   solidarity-count:
-    image: nossas/mapa-do-acolhimento:1.7.1
+    image: nossas/mapa-do-acolhimento:1.7.2
     environment:
       - COMMUNITY_ID=${COMMUNITY_ID:-1}
       - DEBUG=${DEBUG:-events-solidarity-count*}
@@ -96,7 +96,7 @@ services:
       - ZENDESK_API_TOKEN=${ZENDESK_API_TOKEN:-aaaa1}
       - ZENDESK_API_URL=${ZENDESK_API_URL:-https://aaaa1.zendesk.com/api/v2/}
       - ZENDESK_API_USER=${ZENDESK_API_USER:-email@host/token}
-      - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS}
+      - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS_SOLIDARITY_COUNT}
       - WIDGET_IDS=${WIDGET_IDS_SOLIDARITY_COUNT:-aaaa1}
     command:
       - pnpm
@@ -111,7 +111,7 @@ services:
       - traefik.http.routers.solidarity-count.tls.certresolver=myresolver
 
   mautic-zendesk:
-    image: nossas/mapa-do-acolhimento:1.7.1
+    image: nossas/mapa-do-acolhimento:1.7.2
     environment:
       - COMMUNITY_ID=${COMMUNITY_ID:-1}
       - DEBUG=${DEBUG:-events-mautic-zendesk*}

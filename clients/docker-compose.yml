@@ -1,7 +1,7 @@
 services:
   accounts:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.6}
-    command: yarn pnpm m run start --filter accounts-client
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.7}
+    command: yarn pnpm --filter accounts-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     healthcheck:
@@ -17,8 +17,8 @@ services:
       traefik.http.routers.accounts.tls.certresolver: myresolver
   
   app:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.6}
-    command: yarn pnpm m run start --filter admin-client
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.7}
+    command: yarn pnpm --filter admin-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     healthcheck:
@@ -35,8 +35,8 @@ services:
       traefik.http.routers.app.tls.certresolver: myresolver
 
   admin-canary:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.6}
-    command: yarn pnpm m run start --filter canary-client
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.7}
+    command: yarn pnpm --filter canary-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     healthcheck:
@@ -52,8 +52,8 @@ services:
       traefik.http.routers.admin-canary.tls.certresolver: myresolver
 
   redes:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.6}
-    command: yarn pnpm m run start --filter redes-client
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.7}
+    command: yarn pnpm --filter redes-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     healthcheck:
@@ -69,8 +69,8 @@ services:
       traefik.http.routers.redes.tls.certresolver: myresolver
 
   public:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.6}
-    command: yarn pnpm m run start --filter webpage-client
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.0.7}
+    command: yarn pnpm --filter webpage-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     environment:

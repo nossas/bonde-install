@@ -1,7 +1,7 @@
 services:
 
   api-payments:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.0.6}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.0.8}
     environment:
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
       HASURA_SECRET: ${HASURA_SECRET}
@@ -11,11 +11,9 @@ services:
       PORT: '3000'
     command:
       - pnpm
-      - m
-      - run
-      - start
       - --filter
       - payments-api
+      - start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     labels:
@@ -31,7 +29,7 @@ services:
     #   retries: 3
 
   api-domains:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.0.6}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.0.8}
     environment:
       AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
       AWS_ROUTE53_REGION: ${AWS_ROUTE53_REGION}
@@ -39,17 +37,15 @@ services:
       AWS_SECRET_KEY: ${AWS_SECRET_KEY}
       HASURA_SECRET: ${HASURA_SECRET}
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
-      REDIS_URL: ${REDIS_URL:-redis://localhost:6379}
+      ETCD_URL: ${ETCD_URL:-http://etcd:2379}
       HOST: 0.0.0.0
       JWT_SECRET: ${JWT_SECRET:-segredo123}
       PORT: '3000'
     command:
       - pnpm
-      - m
-      - run
-      - start
       - --filter
       - domains-api
+      - start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     labels:
@@ -65,7 +61,7 @@ services:
     #   retries: 3
 
   api-activists:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.0.6}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.0.8}
     environment:
       ACTION_SECRET_KEY: ${ACTION_SECRET_KEY}
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
@@ -74,11 +70,9 @@ services:
       PORT: '3000'
     command:
       - pnpm
-      - m
-      - run
-      - start
       - --filter
       - activists-api
+      - start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     labels:
@@ -94,7 +88,7 @@ services:
     #   retries: 3
 
   api-redes:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.0.6}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.0.8}
     environment:
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
       HASURA_SECRET: ${HASURA_SECRET}
@@ -107,11 +101,9 @@ services:
       ZENDESK_ORGANIZATIONS: ${ZENDESK_ORGANIZATIONS}
     command:
       - pnpm
-      - m
-      - run
-      - start
       - --filter
       - redes-api
+      - start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     labels:
@@ -127,7 +119,7 @@ services:
     #   retries: 3
 
   api-accounts:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.0.6}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.0.8}
     environment:
       ACCOUNTS_REGISTER_URL: https://accounts.${DEFAULT_DOMAIN_RULE}/register
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
@@ -139,11 +131,9 @@ services:
       PORT: '4001'
     command:
       - pnpm
-      - m
-      - run
-      - start
       - --filter
       - accounts-api
+      - start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     labels:
@@ -159,7 +149,7 @@ services:
     #   retries: 3
 
   api-accounts-local:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.0.6}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.0.8}
     environment:
       ACCOUNTS_REGISTER_URL: https://accounts.${DEFAULT_DOMAIN_RULE}/register
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
@@ -171,11 +161,9 @@ services:
       NODE_ENV: 'development'
     command:
       - pnpm
-      - m
-      - run
-      - start
       - --filter
       - accounts-api
+      - start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     labels:
@@ -191,7 +179,7 @@ services:
     #   retries: 3
 
   api-notifications:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.0.6}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.0.8}
     environment:
       ELASTICSEARCH_CLOUD_ID: ${ELASTICSEARCH_CLOUD_ID}
       ELASTICSEARCH_PASSWORD: ${ELASTICSEARCH_PASSWORD}
@@ -204,11 +192,9 @@ services:
       SENDGRID_WEBHOOK_KEY: ${SENDGRID_WEBHOOK_KEY}
     command:
       - pnpm
-      - m
-      - run
-      - start
       - --filter
       - notifications
+      - start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     labels:

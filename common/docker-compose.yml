@@ -1,3 +1,11 @@
+
+x-variables:
+    flag_initial_cluster_token: &flag_initial_cluster_token '--initial-cluster-token=mys3cr3ttok3n'
+    common_settings: &common_settings
+        image: quay.io/coreos/etcd:v3.5.2
+        entrypoint: /usr/local/bin/etcd
+        ports:
+            - 2379
 # This script is meant for quick & easy install via:
 #   $ curl -fsSL https://get.docker.com -o get-docker.sh
 #   $ sh get-docker.sh
@@ -6,7 +14,7 @@ services:
   traefik:
     image: "traefik:v2.6"
     depends_on:
-      - etcd
+      - etcd-1
     command:
       - "--accesslog.filepath=/logs/access.log"
       - "--accesslog.format=json"
@@ -26,7 +34,7 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.defaultRule=Host(`{{ index .Labels \"com.docker.compose.service\"}}.${DEFAULT_DOMAIN_RULE:-bonde.devel}`)"
       - "--providers.etcd=true"
-      - "--providers.etcd.endpoints=etcd:2379"
+      - "--providers.etcd.endpoints=etcd-1:2379"
       - "--providers.etcd.rootkey=traefik"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
@@ -63,32 +71,70 @@ services:
       - traefik.enable=true
 
       # global redirection: https (www.) to https
-      - "traefik.http.routers.wwwsecure-catchall.rule=HostRegexp(`{host:(www\\.).+}`)"
-      - "traefik.http.routers.wwwsecure-catchall.entrypoints=websecure"
-      - "traefik.http.routers.wwwsecure-catchall.tls=true"
-      - "traefik.http.routers.wwwsecure-catchall.middlewares=wwwtohttps"
+      - traefik.http.routers.wwwsecure-catchall.rule=HostRegexp(`{host:(www\\.).+}`)
+      - traefik.http.routers.wwwsecure-catchall.entrypoints=websecure
+      - traefik.http.routers.wwwsecure-catchall.tls=true
+      - traefik.http.routers.wwwsecure-catchall.middlewares=wwwtohttps
 
       # middleware: http(s)://(www.) to  https://
-      - "traefik.http.middlewares.wwwtohttps.redirectregex.regex=^https?://(?:www\\.)?(.+)"
-      - "traefik.http.middlewares.wwwtohttps.redirectregex.replacement=https://$${1}"
-      - "traefik.http.middlewares.wwwtohttps.redirectregex.permanent=true"
+      - traefik.http.middlewares.wwwtohttps.redirectregex.regex=^https?://(?:www\\.)?(.+)
+      - traefik.http.middlewares.wwwtohttps.redirectregex.replacement=https://$${1}
+      - traefik.http.middlewares.wwwtohttps.redirectregex.permanent=true
 
       # export traefik dashboard
       - traefik.http.services.traefik.loadbalancer.server.port=8080
       - traefik.http.routers.traefik.tls=true
       - traefik.http.routers.traefik.tls.certresolver=myresolver
-      # - "traefik.http.routers.wwwsecure-catchall.middlewares=wwwtohttps"
+      - traefik.http.routers.traefik.middlewares=test-auth
       - traefik.http.middlewares.test-auth.basicauth.users=${DEFAULT_TRAEFIK_USER:-test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/,test2:$$apr1$$d9hr9HBB$$4HxwgUir3HP4EsggP/QNo0}"
-      
 
-  etcd:
-    image: 'bitnami/etcd:latest'
-    environment:
-      - ALLOW_NONE_AUTHENTICATION=yes
-      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
-    ports:
-      - 2379:2379
-      - 2380:2380
+  etcd-1:
+    <<: *common_settings
+    command:
+      - '--name=etcd-1'
+      - '--initial-advertise-peer-urls=http://etcd-1:2380'
+      - '--listen-peer-urls=http://0.0.0.0:2380'
+      - '--listen-client-urls=http://0.0.0.0:2379'
+      - '--advertise-client-urls=http://etcd-1:2379'
+      - '--heartbeat-interval=250'
+      - '--election-timeout=1250'
+      - '--initial-cluster=etcd-1=http://etcd-1:2380,etcd-2=http://etcd-2:2380,etcd-3=http://etcd-3:2380'
+      - '--initial-cluster-state=new'
+      - *flag_initial_cluster_token
+    volumes:
+      - etcd1:/etcd_data
+
+  etcd-2:
+    <<: *common_settings
+    command:
+      - '--name=etcd-2'
+      - '--initial-advertise-peer-urls=http://etcd-2:2380'
+      - '--listen-peer-urls=http://0.0.0.0:2380'
+      - '--listen-client-urls=http://0.0.0.0:2379'
+      - '--advertise-client-urls=http://etcd-2:2379'
+      - '--heartbeat-interval=250'
+      - '--election-timeout=1250'
+      - '--initial-cluster=etcd-1=http://etcd-1:2380,etcd-2=http://etcd-2:2380,etcd-3=http://etcd-3:2380'
+      - '--initial-cluster-state=new'
+      - *flag_initial_cluster_token
+    volumes:
+      - etcd2:/etcd_data
+
+  etcd-3:
+    <<: *common_settings
+    command:
+      - '--name=etcd-3'
+      - '--initial-advertise-peer-urls=http://etcd-3:2380'
+      - '--listen-peer-urls=http://0.0.0.0:2380'
+      - '--listen-client-urls=http://0.0.0.0:2379'
+      - '--advertise-client-urls=http://etcd-3:2379'
+      - '--heartbeat-interval=250'
+      - '--election-timeout=1250'
+      - '--initial-cluster=etcd-1=http://etcd-1:2380,etcd-2=http://etcd-2:2380,etcd-3=http://etcd-3:2380'
+      - '--initial-cluster-state=new'
+      - *flag_initial_cluster_token
+    volumes:
+      - etcd3:/etcd_data
 
   n8n:
     image: n8nio/n8n
@@ -145,7 +191,12 @@ volumes:
     driver: local
   letsencrypt:
     driver: local
-
+  etcd1:
+    driver: local
+  etcd2:
+    driver: local
+  etcd3:
+    driver: local
 networks:
   default:
     name: bonde

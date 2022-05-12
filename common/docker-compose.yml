@@ -78,7 +78,7 @@ services:
       - traefik.http.routers.traefik.tls=true
       - traefik.http.routers.traefik.tls.certresolver=myresolver
       - traefik.http.routers.traefik.middlewares=test-auth
-      - traefik.http.middlewares.test-auth.basicauth.users=${DEFAULT_TRAEFIK_USER:-test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/,test2:$$apr1$$d9hr9HBB$$4HxwgUir3HP4EsggP/QNo0}"
+      - "traefik.http.middlewares.test-auth.basicauth.users=${DEFAULT_TRAEFIK_USER:-cobrador:$$apr1$$4YfBuKHl$$jyPbiBJLOH7C5CzHFE4G10}"
 
   etcd:
     image: 'bitnami/etcd:latest'

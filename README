@@ -33,3 +33,9 @@ docker compose up
 ```
 
 Now, all apis used into bonde ecosystem are configured to answer proxied by traefik and hasura.
+
+## Requirement's Production
+
+- Install Docker on Ubuntu 18.04 with log configurations;
+
+- [Cloud Init](https://cloudinit.readthedocs.io/en/latest/index.html) file config

@@ -1,6 +1,6 @@
 services:
   nossas-org:
-    image: nossas/nossas-org:hotfix-adjustments
+    image: ${DOCKER_IMAGE:-nossas/nossas-org:0.14.2}
     environment:
       - ELASTIC_APM_ACTIVE=${ELASTIC_APM_ACTIVE:-false}
       - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-'1111'}
@@ -25,6 +25,7 @@ services:
       - traefik.http.services.nossas-org.loadbalancer.server.port=3003
       - traefik.http.routers.nossas-org.tls=true
       - traefik.http.routers.nossas-org.tls.certresolver=myresolver
+      - traefik.http.routers.nossas-org.priority=100
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3003}"
       interval: "60s"

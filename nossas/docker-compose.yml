@@ -1,6 +1,6 @@
 services:
   nossas-org:
-    image: nossas/nossas-org:hotfix-adjustments
+    image: ${DOCKER_IMAGE:-nossas/nossas-org:0.14.2}
     environment:
       - ELASTIC_APM_ACTIVE=${ELASTIC_APM_ACTIVE:-false}
       - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-'1111'}
@@ -16,6 +16,8 @@ services:
       - NEXT_PUBLIC_NEWSLETTER_EN_WIDGET_ID=${NEXT_PUBLIC_NEWSLETTER_EN_WIDGET_ID:-'11111'}
       - NEXT_PUBLIC_NEWSLETTER_WIDGET_ID=${NEXT_PUBLIC_NEWSLETTER_WIDGET_ID:-'11111'}
       - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:-pk_test_}
+      - CONTENT_API_GRAPHQL_URL=${CONTENT_API_GRAPHQL_URL}
+      - CONTENT_API_GRAPHQL_TOKEN=${CONTENT_API_GRAPHQL_TOKEN}
       - PORT=${PORT:-3003}
     labels:
       - traefik.enable=true
@@ -23,6 +25,7 @@ services:
       - traefik.http.services.nossas-org.loadbalancer.server.port=3003
       - traefik.http.routers.nossas-org.tls=true
       - traefik.http.routers.nossas-org.tls.certresolver=myresolver
+      - traefik.http.routers.nossas-org.priority=100
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3003}"
       interval: "60s"
@@ -36,18 +39,20 @@ services:
     volumes:
       - nocodb-data:/usr/app/data
     environment:
-      - NC_DB=pg://postgres:5432?u=${DATABASE_USER}&p=${DATABASE_PW}&d=${DATABASE_NAME}
+      - NC_DB=pg://postgres-nocodb:5432?u=${DATABASE_USER}&p=${DATABASE_PW}&d=${DATABASE_NAME}
       - NC_PUBLIC_URL=https://nocodb.${DEFAULT_DOMAIN_RULE}
       - NC_DISABLE_TELE=true
+      - DB_QUERY_LIMIT_MAX=10000
+      - DB_QUERY_LIMIT_DEFAULT=100
     labels:
       - traefik.enable=true
       - traefik.http.services.nocodb.loadbalancer.server.port=8080
       - traefik.http.routers.nocodb.tls=true
       - traefik.http.routers.nocodb.tls.certresolver=myresolver
     depends_on:
-      - postgres
+      - postgres-nocodb
 
-  postgres:
+  postgres-nocodb:
     image: postgres:12.1-alpine
     restart: always
     environment:
@@ -55,14 +60,20 @@ services:
         POSTGRES_PASSWORD: ${DATABASE_PW}
         POSTGRES_DB: ${DATABASE_NAME}
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}
       interval: 10s
       timeout: 2s
       retries: 10
 
+volumes:
+  nocodb-data:
+    driver: local
+  postgres-data:
+    driver: local
+
 networks:
   default:
     external:
-      name: nossas
+      name: bonde

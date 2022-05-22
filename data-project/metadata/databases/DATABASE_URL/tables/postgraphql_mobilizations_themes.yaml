@@ -1,0 +1,3 @@
+table:
+  schema: postgraphql
+  name: mobilizations_themes

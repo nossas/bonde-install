@@ -1,0 +1,2 @@
+- "!include postgraphql_mobilizations_themes.yaml"
+- "!include public_mobilizations.yaml"

@@ -1,1 +1,8 @@
-[]
+- name: DATABASE_URL
+  kind: postgres
+  configuration:
+    connection_info:
+      use_prepared_statements: false
+      database_url: postgres://cobrador:93RF6naJnp9pKjxDe248x5jym3GVPrLh9UAxDf3JnqUAQVdJup8dhpqUQSCGxGFu@bonde-22-pentest.cxf7uxtaatjj.us-east-1.rds.amazonaws.com:5432/pentest
+      isolation_level: read-committed
+  tables: "!include DATABASE_URL/tables/tables.yaml"

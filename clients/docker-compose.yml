@@ -1,7 +1,7 @@
 services:
   accounts:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.2.0}
-    command: yarn pnpm --filter accounts-client start
+    command: pnpm --filter accounts-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     healthcheck:
@@ -18,7 +18,7 @@ services:
 
   app:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.2.0}
-    command: yarn pnpm --filter admin-client start
+    command: pnpm --filter admin-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     healthcheck:
@@ -36,7 +36,7 @@ services:
 
   admin-canary:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.2.0}
-    command: yarn pnpm --filter canary-client start
+    command: pnpm --filter canary-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     healthcheck:
@@ -53,7 +53,7 @@ services:
 
   redes:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.2.0}
-    command: yarn pnpm --filter redes-client start
+    command: pnpm --filter redes-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     healthcheck:
@@ -70,7 +70,7 @@ services:
 
   public:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.2.0}
-    command: yarn pnpm --filter webpage-client start
+    command: pnpm --filter webpage-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     environment:

@@ -148,6 +148,27 @@ services:
       - FLEET_ENROLL=${FLEET_ENROLL:-1}
       - FLEET_URL=${FLEET_URL}
 
+  imaginary:
+    image: h2non/imaginary:latest
+    volumes:
+      - imaginary_data:/mnt/data
+    environment:
+       PORT: 9000
+    command:
+      -mount /mnt/data
+      -enable-url-source
+      -cors
+      -gzip
+      -allowed-origins ${IMAGINARY_ALLOWED_ORIGINS:-https://s3.amazonaws.com/hub-central/uploads/}
+      -http-cache-ttl 31556926
+      -enable-placeholder
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.imaginary.loadbalancer.server.port=9000
+      - traefik.http.routers.imaginary.tls=true
+      - traefik.http.routers.imaginary.tls.certresolver=myresolver
+
 volumes:
   local-n8n:
     driver: local
@@ -155,7 +176,8 @@ volumes:
     driver: local
   etcd_data:
     driver: local
-
+  imaginary_data:
+    driver: local
 networks:
   default:
     name: bonde

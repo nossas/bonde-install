@@ -29,6 +29,17 @@ services:
       traefik.http.routers.minio.tls: true
       traefik.http.routers.minio.tls.certresolver: myresolver
 
+  minio-console:
+    <<: *minio-common
+    hostname: minio
+    volumes:
+      - data1-1:/data1
+      - data1-2:/data2
+    labels:
+      traefik.http.services.minio.loadbalancer.server.port: '9001'
+      traefik.enable: 'true'
+      traefik.http.routers.minio.tls: true
+      traefik.http.routers.minio.tls.certresolver: myresolver
 
   api-payments:
     image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.0}
@@ -94,9 +105,9 @@ services:
     image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.0}
     environment:
       AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
-      AWS_ROUTE53_REGION: ${AWS_ROUTE53_REGION}
-      AWS_ROUTE_IP: ${AWS_ROUTE_IP}
+      AWS_ENDPOINT: ${AWS_ENDPOINT}
       AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+      AWS_BUCKET: ${AWS_BUCKET}
       ACTION_SECRET_KEY: ${ACTION_SECRET_KEY}
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
       HASURA_SECRET: ${HASURA_SECRET}

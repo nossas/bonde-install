@@ -5,10 +5,10 @@ x-api-rest: &api-rest
     - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-111111}
     - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-https://1111.apm.us-east-1.aws.cloud.es.io:443}
     - ELASTIC_APM_SERVICE_NAME=${ELASTIC_APM_SERVICE_NAME:-workers-rest-mailchimp}
+    - ELASTIC_APM_ACTIVE=${ELASTIC_APM_ACTIVE:-true}
     - REDIS_URL=${REDIS_URL:-redis://redis:6379}
     - AWS_ID=${AWS_ID:-a111111}
     - AWS_SECRET=${AWS_SECRET:-a11111}
-    - ELASTIC_APM_ACTIVE=${ELASTIC_APM_ACTIVE:-false}
     - PORT=${PORT:-3000}
     - RAILS_ENV=${RAILS_ENV:-production}
     - SMTP_HOST=${SMTP_HOST:-smtp}
@@ -22,6 +22,8 @@ x-api-rest: &api-rest
     - WEB_MEMORY=${WEB_MEMORY:-256}
     - ORG_RECIPIENT_ID=${ORG_RECIPIENT_ID:-a1111}
     - PAGARME_API_KEY=${PAGARME_API_KEY:-a1111}
+    - JWT_SECRET=${JWT_SECRET:-segredo123}
+    - LOG_LEVEL=${LOG_LEVEL:-info}
 
 x-payments: &payments
   image: nossas/bonde-payments:develop
@@ -173,9 +175,28 @@ services:
 
   # https://github.com/rancher/container-crontab
   container-crontab:
-   image: rancher/container-crontab:v0.5.0
-   volumes:
+    image: rancher/container-crontab:v0.5.0
+    volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+
+  donations-notifications:
+    image: nossas/bonde-notifications:develop
+    # build: ../notification-service/
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgres://user:pass@postgres:5432/bonde}
+      - SMTP_DOMAIN=${SMTP_HOST:-smtp}
+      - SMTP_ADDRESS=${SMTP_HOST:-smtp}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-SG.fdsafdsafdsafdsa}
+      - SMTP_PORT=${SMTP_PORT:-'587'}
+      - SMTP_USER_NAME=${SMTP_USERNAME:-apikey}
+      - DEFAULT_FROM=${DEFAULT_NOTIFICATION_FROM:-contato@bonde.devel}
+      - DB_CHANNEL=notifications_channel
+      - JWT_SECRET=${JWT_SECRET:-segredo123}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - WORKERS=1
+      - WEB_CONCURRENCY=${WEB_CONCURRENCY:-1}
+      - WEB_MEMORY=${WEB_MEMORY:-256}
 
 networks:
   default:

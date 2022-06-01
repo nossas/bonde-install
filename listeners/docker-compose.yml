@@ -24,7 +24,7 @@ services:
   #   - listener-mob-generator
 
   match:
-    image: nossas/mapa-do-acolhimento:1.7.1
+    image: nossas/mapa-do-acolhimento:1.7.3
     environment:
       - COMMUNITY_ID=${COMMUNITY_ID:-1111}
       - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-a1111}
@@ -87,7 +87,7 @@ services:
     - listener-redes
 
   solidarity:
-    image: nossas/mapa-do-acolhimento:1.7.1
+    image: nossas/mapa-do-acolhimento:1.7.3
     environment:
       - COMMUNITY_ID=${COMMUNITY_ID:-1111}
       - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-a1111}

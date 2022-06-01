@@ -1,7 +1,7 @@
 services:
   accounts:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.3.0}
-    command: yarn pnpm --filter accounts-client start
+    command: pnpm --filter accounts-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     healthcheck:
@@ -18,7 +18,7 @@ services:
 
   app:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.3.0}
-    command: yarn pnpm --filter admin-client start
+    command: pnpm --filter admin-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     healthcheck:
@@ -36,7 +36,7 @@ services:
 
   admin-canary:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.3.0}
-    command: yarn pnpm --filter canary-client start
+    command: pnpm --filter canary-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     healthcheck:
@@ -53,7 +53,7 @@ services:
 
   redes:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.3.0}
-    command: yarn pnpm --filter redes-client start
+    command: pnpm --filter redes-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     healthcheck:
@@ -70,7 +70,7 @@ services:
 
   public:
     image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.3.0}
-    command: yarn pnpm --filter webpage-client start
+    command: pnpm --filter webpage-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     environment:
@@ -83,8 +83,9 @@ services:
       - REACT_APP_DOMAIN_API_GRAPHQL=${PUBLIC_HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
       - REACT_APP_DOMAIN_API_REST=${PUBLIC_REST_API:-http://api-rest.bonde.devel}
       - REACT_APP_DOMAIN_PUBLIC=${DEFAULT_DOMAIN_RULE:-bonde.devel}
+      - REACT_APP_DOMAIN_IMAGINARY=${PUBLIC_IMAGINARY:-http://imaginary.bonde.devel}
     healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000}"
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000/api/ping}"
       interval: "60s"
       timeout: "3s"
       start_period: "50s"

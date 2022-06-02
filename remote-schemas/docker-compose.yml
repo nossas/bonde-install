@@ -30,7 +30,7 @@ services:
       traefik.http.routers.minio.tls.certresolver: myresolver
 
   api-payments:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.1}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.2}
     environment:
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
       HASURA_SECRET: ${HASURA_SECRET}
@@ -58,7 +58,7 @@ services:
     #   retries: 3
 
   api-domains:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.1}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.2}
     environment:
       AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
       AWS_ROUTE53_REGION: ${AWS_ROUTE53_REGION}
@@ -90,7 +90,7 @@ services:
     #   retries: 3
 
   api-activists:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.1}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.2}
     environment:
       AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
       AWS_ENDPOINT: ${AWS_ENDPOINT}
@@ -121,7 +121,7 @@ services:
     #   retries: 3
 
   api-redes:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.1}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.2}
     environment:
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
       HASURA_SECRET: ${HASURA_SECRET}
@@ -152,7 +152,7 @@ services:
     #   retries: 3
 
   api-accounts:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.1}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.2}
     environment:
       ACCOUNTS_REGISTER_URL: https://accounts.${DEFAULT_DOMAIN_RULE}/register
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
@@ -182,7 +182,7 @@ services:
     #   retries: 3
 
   api-accounts-local:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.1}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.2}
     environment:
       ACCOUNTS_REGISTER_URL: https://accounts.${DEFAULT_DOMAIN_RULE}/register
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
@@ -213,7 +213,7 @@ services:
     #   retries: 3
 
   api-notifications:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.1}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.2}
     environment:
       ELASTICSEARCH_CLOUD_ID: ${ELASTICSEARCH_CLOUD_ID}
       ELASTICSEARCH_PASSWORD: ${ELASTICSEARCH_PASSWORD}

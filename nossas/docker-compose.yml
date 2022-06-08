@@ -1,6 +1,6 @@
 services:
   nossas-org:
-    image: ${DOCKER_IMAGE:-nossas/nossas-org:0.15.0}
+    image: ${DOCKER_IMAGE:-nossas/nossas-org:0.15.1}
     environment:
       - ELASTIC_APM_ACTIVE=${ELASTIC_APM_ACTIVE:-false}
       - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-'1111'}
@@ -56,9 +56,9 @@ services:
     image: postgres:12.1-alpine
     restart: always
     environment:
-        POSTGRES_USER: ${DATABASE_USER}
-        POSTGRES_PASSWORD: ${DATABASE_PW}
-        POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PW}
+      POSTGRES_DB: ${DATABASE_NAME}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:

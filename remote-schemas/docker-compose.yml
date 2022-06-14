@@ -1,6 +1,7 @@
 # Settings and configurations that are common for all containers
 # https://raw.githubusercontent.com/minio/minio/master/docs/orchestration/docker-compose/docker-compose.yaml
-x-minio-common: &minio-common
+x-minio-common:
+  &minio-common
   image: quay.io/minio/minio:RELEASE.2022-05-23T18-45-11Z
   command: server --address ":9000" --console-address ":9001" /minio/data1
 
@@ -11,7 +12,13 @@ x-minio-common: &minio-common
     MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
     MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
   healthcheck:
-    test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+    test:
+      [
+        "CMD",
+        "curl",
+        "-f",
+        "http://localhost:9000/minio/health/live"
+      ]
     interval: 30s
     timeout: 20s
     retries: 3
@@ -30,7 +37,7 @@ services:
       traefik.http.routers.minio.tls.certresolver: myresolver
 
   api-payments:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.2}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.3}
     environment:
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
       HASURA_SECRET: ${HASURA_SECRET}
@@ -58,7 +65,7 @@ services:
     #   retries: 3
 
   api-domains:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.2}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.3}
     environment:
       AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
       AWS_ROUTE53_REGION: ${AWS_ROUTE53_REGION}
@@ -90,7 +97,7 @@ services:
     #   retries: 3
 
   api-activists:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.2}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.3}
     environment:
       AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
       AWS_ENDPOINT: ${AWS_ENDPOINT}
@@ -121,7 +128,7 @@ services:
     #   retries: 3
 
   api-redes:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.2}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.3}
     environment:
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
       HASURA_SECRET: ${HASURA_SECRET}
@@ -152,7 +159,7 @@ services:
     #   retries: 3
 
   api-accounts:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.2}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.3}
     environment:
       ACCOUNTS_REGISTER_URL: https://accounts.${DEFAULT_DOMAIN_RULE}/register
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
@@ -182,7 +189,7 @@ services:
     #   retries: 3
 
   api-accounts-local:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.2}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.3}
     environment:
       ACCOUNTS_REGISTER_URL: https://accounts.${DEFAULT_DOMAIN_RULE}/register
       GRAPHQL_HTTP_URL: ${HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
@@ -213,7 +220,7 @@ services:
     #   retries: 3
 
   api-notifications:
-    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.2}
+    image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.2.3}
     environment:
       ELASTICSEARCH_CLOUD_ID: ${ELASTICSEARCH_CLOUD_ID}
       ELASTICSEARCH_PASSWORD: ${ELASTICSEARCH_PASSWORD}
@@ -246,6 +253,7 @@ services:
 volumes:
   data1-1:
   data1-2:
+
 
 networks:
   default:

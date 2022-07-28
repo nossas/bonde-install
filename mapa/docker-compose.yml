@@ -4,12 +4,19 @@ services:
     image: percona/percona-server:5.7
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-mysecret}
+    ports:
+      - 3306:3306
     volumes:
-    - mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     command:
-    - --character-set-server=utf8mb4
-    - --collation-server=utf8mb4_general_ci
-  
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.mautic-nossasdb.loadbalancer.server.port=3306
+      - traefik.http.routers.mautic-nossasdb.tls=true
+      - traefik.http.routers.mautic-nossasdb.tls.certresolver=myresolver
+
   mautic-nossas:
     image: mautic/mautic:v4
     environment:

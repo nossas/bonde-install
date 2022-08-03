@@ -1,0 +1,56 @@
+services:
+  #banco para staging    
+  mautic-nossasdb:
+    image: percona/percona-server:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-mysecret}
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.mautic-nossasdb.loadbalancer.server.port=3306
+      - traefik.http.routers.mautic-nossasdb.tls=true
+      - traefik.http.routers.mautic-nossasdb.tls.certresolver=myresolver
+
+  mautic-nossas:
+    image: mautic/mautic:v4
+    environment:
+      - MAUTIC_DB_HOST=${MAUTIC_DB_HOST:-mautic-nossasdb}
+      - MAUTIC_DB_NAME=${MAUTIC_DB_NAME:-mautic}
+      - MAUTIC_DB_PASSWORD=${MAUTIC_DB_PASSWORD:-mysecret}
+      - MAUTIC_DB_USER=${MAUTIC_DB_USER:-root}
+      - MAUTIC_RUN_CRON_JOBS=${MAUTIC_RUN_CRON_JOBS:-true}
+      - MYSQL_PORT_3306_TCP=${MYSQL_PORT_3306_TCP:-3306}
+      - MAUTIC_TRUSTED_PROXIES=["0.0.0.0\\/0"]
+    depends_on:
+      - mautic-nossasdb
+    volumes:
+    - mautic-nossas_data:/var/www/html
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
+    labels:
+      - traefik.http.services.mautic-nossas.loadbalancer.server.port=80
+      - traefik.enable=true
+      - traefik.http.routers.mautic-nossas.rule=Host(`${MAUTIC_URL}`)
+      - traefik.http.routers.mautic-nossas.tls=true
+      - traefik.http.routers.mautic-nossas.tls.certresolver=myresolver
+
+volumes:
+  mautic-nossas_data:
+    driver: local
+  mysql_data:
+    driver: local 
+
+networks:
+  default:
+    external:
+      name: bonde

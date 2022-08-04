@@ -76,6 +76,7 @@ services:
     labels:
       cron.restart_timeout: '86400'
       cron.schedule: 0 0 0 * * *
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
 
   cli-zendesk-user:
     <<: *cli-zendesk
@@ -88,6 +89,7 @@ services:
     labels:
       cron.restart_timeout: '86400'
       cron.schedule: 0 0 0 * * *
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
 
   listener-solidarity:
     image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:1.7.3}
@@ -118,6 +120,7 @@ services:
     - listener-solidarity
     - run
     - start
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
 
   listener-match:
     image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:1.7.3}
@@ -143,6 +146,7 @@ services:
     - listener-match
     - run
     - start
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
 
   solidarity-count:
     image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:1.7.3}
@@ -176,6 +180,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.events-solidarity-count.tls=true
       - traefik.http.routers.events-solidarity-count.tls.certresolver=myresolver
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
 
   mautic-zendesk:
     image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:1.7.3}
@@ -215,6 +220,7 @@ services:
       timeout: "3s"
       start_period: "5s"
       retries: 3
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
 
 volumes:
   mautic-nossas_data:

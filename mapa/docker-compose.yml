@@ -1,5 +1,5 @@
 x-cli-zendesk: &cli-zendesk
-  image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:1.7.3}
+  image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:v1.7.4}
   environment:
     - COMMUNITY_ID=${COMMUNITY_ID:-1111}
     - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-a1111}
@@ -92,7 +92,7 @@ services:
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
 
   listener-solidarity:
-    image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:1.7.3}
+    image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:v1.7.4}
     environment:
       - COMMUNITY_ID=${COMMUNITY_ID:-1111}
       - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-a1111}
@@ -123,7 +123,7 @@ services:
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
 
   listener-match:
-    image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:1.7.3}
+    image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:v1.7.4}
     environment:
       - COMMUNITY_ID=${COMMUNITY_ID:-1111}
       - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-a1111}
@@ -149,7 +149,7 @@ services:
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
 
   solidarity-count:
-    image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:1.7.3}
+    image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:v1.7.4}
     environment:
       - COMMUNITY_ID=${COMMUNITY_ID:-1}
       - DEBUG=${DEBUG:-events-solidarity-count*}
@@ -183,7 +183,7 @@ services:
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
 
   mautic-zendesk:
-    image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:1.7.3}
+    image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:v1.7.4}
     environment:
       - COMMUNITY_ID=${COMMUNITY_ID:-1}
       - DEBUG=${DEBUG:-events-mautic-zendesk*}

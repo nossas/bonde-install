@@ -81,7 +81,7 @@ services:
       retries: 3
 
   solidarity-count:
-    image: nossas/mapa-do-acolhimento:1.7.3
+    image: nossas/mapa-do-acolhimento:1.7.5
     environment:
       - COMMUNITY_ID=${COMMUNITY_ID:-1}
       - DEBUG=${DEBUG:-events-solidarity-count*}
@@ -115,7 +115,7 @@ services:
       - traefik.http.routers.solidarity-count.tls.certresolver=myresolver
 
   mautic-zendesk:
-    image: nossas/mapa-do-acolhimento:1.7.3
+    image: nossas/mapa-do-acolhimento:1.7.5
     environment:
       - COMMUNITY_ID=${COMMUNITY_ID:-1}
       - DEBUG=${DEBUG:-events-mautic-zendesk*}

@@ -45,12 +45,7 @@ x-api-rest-common: &api-rest-common
 services:
   api-rest:
     <<: *api-rest-common
-    command:
-    - bundle
-    - exec
-    - puma
-    - -C
-    - config/puma.rb
+    command: bundle exec puma -C config/puma.rb
     labels:
       - traefik.http.services.api-rest.loadbalancer.server.port=3000
       - traefik.enable=true
@@ -65,13 +60,7 @@ services:
 
   api-rest-mailer:
     <<: *api-rest-common
-    command:
-    - bundle
-    - exec
-    - sidekiq
-    - -q default
-    - -q mailers
-    - -c 5
+    command: bundle exec sidekiq -q default -q mailers -c 5
 
   api-graphql:
     image: hasura/graphql-engine:v2.7.0

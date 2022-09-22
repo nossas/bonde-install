@@ -64,6 +64,22 @@ services:
     #   start_period: "5s"
     #   retries: 3
 
+  api-data:
+    image: nossas/bonde-an-webhook:feature-an-webhook
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    command:
+      - python
+      - an-webhook/main.py
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
+    labels:
+      traefik.http.services.api-data.loadbalancer.server.port: '8000'
+      traefik.enable: 'true'
+      traefik.http.routers.api-data.tls: true
+      traefik.http.routers.api-data.tls.certresolver: myresolver
+    
+
   api-domains:
     image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.3.0}
     environment:

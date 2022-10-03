@@ -113,7 +113,7 @@ services:
       - traefik.http.routers.redisinsight.tls.certresolver=myresolver
  
   n8n:
-    image: n8nio/n8n
+    image: n8nio/n8n:latest
     depends_on:
       - postgres
     environment:

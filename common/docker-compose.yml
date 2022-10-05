@@ -4,7 +4,7 @@
 # /etc/hosts 127.0.0.1 api-graphql.bonde.devel traefik.bonde.devel bonde.devel
 services:
   traefik:
-    image: "traefik:v2.6"
+    image: "traefik:v2.9"
     depends_on:
       - etcd
     command:

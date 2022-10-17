@@ -63,7 +63,7 @@ services:
       retries: 3
 
   redirect:
-    image: nossas/bonde-redirect:0.4.7
+    image: nossas/bonde-redirect:main
     environment:
       - GIN_MODE=${GIN_MODE:-debug}
       - PORT=${PORT:-3007}

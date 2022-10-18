@@ -65,7 +65,7 @@ services:
     #   retries: 3
 
   api-data:
-    image: ${DOCKER_IMAGE_PYTHON:-nossas/bonde-an-web-fastapi:feature-webhook-an}
+    image: ${DOCKER_IMAGE_PYTHON:-nossas/bonde-an-web-fastapi:v1.3.5}
     environment:
       DATABASE_URL: ${DATABASE_URL}
     command:

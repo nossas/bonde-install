@@ -1,5 +1,5 @@
 x-api-rest-common: &api-rest-common
-    image: nossas/bonde-server:0.10.9
+    image: ghcr.io/nossas/bonde-server:latest
     environment:
       - API_HOST=${API_HOST:-api-rest.bonde.devel}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-AAAAA}

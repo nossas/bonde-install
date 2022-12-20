@@ -1,6 +1,6 @@
 services:
   accounts:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.5.5}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.5.6}
     command: pnpm --filter accounts-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
@@ -17,7 +17,7 @@ services:
       traefik.http.routers.accounts.tls.certresolver: myresolver
 
   app:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.5.5}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.5.6}
     command: pnpm --filter admin-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
@@ -35,7 +35,7 @@ services:
       traefik.http.routers.app.tls.certresolver: myresolver
 
   admin-canary:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.5.5}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.5.6}
     command: pnpm --filter canary-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
@@ -52,7 +52,7 @@ services:
       traefik.http.routers.admin-canary.tls.certresolver: myresolver
 
   redes:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.5.5}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.5.6}
     command: pnpm --filter redes-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
@@ -69,7 +69,7 @@ services:
       traefik.http.routers.redes.tls.certresolver: myresolver
 
   public:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.5.5}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.5.6}
     command: pnpm --filter webpage-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
@@ -83,8 +83,7 @@ services:
       - REACT_APP_DOMAIN_API_GRAPHQL=${PUBLIC_HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
       - REACT_APP_DOMAIN_API_REST=${PUBLIC_REST_API:-http://api-rest.bonde.devel}
       - REACT_APP_DOMAIN_PUBLIC=${DEFAULT_DOMAIN_RULE:-bonde.devel}
-      - REACT_APP_ACTIVE_API_CACHE=${ACTIVE_API_CACHE:-false}
-        #      - REACT_APP_DOMAIN_IMAGINARY=${PUBLIC_IMAGINARY:-http://imaginary.bonde.devel}
+      - REACT_APP_ACTIVE_API_CACHE=${ACTIVE_API_CACHE:-false} #      - REACT_APP_DOMAIN_IMAGINARY=${PUBLIC_IMAGINARY:-http://imaginary.bonde.devel}
     healthcheck:
       test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000/api/ping}"
       interval: "60s"

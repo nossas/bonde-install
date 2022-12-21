@@ -1,0 +1,56 @@
+services:
+  # ================================= Bot =====================================
+  # Generic Rasa bot, used to run console for example.
+  bot:
+    image: ${DOCKER_IMAGE:-ghcr.io/nossas/whatsapp-chatbot:latest}
+    command: make shell
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:5005}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
+    labels:
+      traefik.http.services.whatsapp-bot.loadbalancer.server.port: '5005'
+      traefik.enable: 'true'
+      traefik.http.routers.whatsapp-bot.tls: true
+      traefik.http.routers.whatsapp-bot.tls.certresolver: myresolver
+
+  # ================================= Actions =================================
+  # Rasa middleware used to connect with external APIs.
+  actions:
+    image: ${DOCKER_IMAGE:-ghcr.io/nossas/whatsapp-chatbot-actions:latest}
+    command: sh -c "python -m rasa_sdk --actions actions"
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:5055}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
+    labels:
+      traefik.http.services.whatsapp-bot-actions.loadbalancer.server.port: '5055'
+      traefik.enable: 'true'
+      traefik.http.routers.whatsapp-bot-actions.tls: true
+      traefik.http.routers.whatsapp-bot-actions.tls.certresolver: myresolver
+
+  # ============================ Webchat Page  =================================
+  # A container to run webchat html page
+  webchat:
+    image: ${DOCKER_IMAGE:-ghcr.io/nossas/whatsapp-chatbot-webchat:latest}
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:5000}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
+    labels:
+      traefik.http.services.whatsapp-bot-webchat.loadbalancer.server.port: '5000'
+      traefik.enable: 'true'
+      traefik.http.routers.whatsapp-bot-webchat.tls: true
+      traefik.http.routers.whatsapp-bot-webchat.tls.certresolver: myresolver

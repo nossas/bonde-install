@@ -2,6 +2,9 @@ services:
   # ================================= Bot =====================================
   # Generic Rasa bot, used to run console for example.
   bot:
+    # build:
+    #   context: ../../whatsapp-chatbot
+    #   dockerfile: ./docker/bot.Dockerfile
     image: ${DOCKER_IMAGE:-ghcr.io/nossas/whatsapp-chatbot:latest}
     command: make shell
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
@@ -21,6 +24,9 @@ services:
   # ================================= Actions =================================
   # Rasa middleware used to connect with external APIs.
   actions:
+    # build:
+    #   context: ../../whatsapp-chatbot
+    #   dockerfile: ./docker/actions.Dockerfile
     image: ${DOCKER_IMAGE:-ghcr.io/nossas/whatsapp-chatbot-actions:latest}
     command: sh -c "python -m rasa_sdk --actions actions"
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
@@ -40,6 +46,9 @@ services:
   # ============================ Webchat Page  =================================
   # A container to run webchat html page
   webchat:
+    # build:
+    #   context: ../../whatsapp-chatbot
+    #   dockerfile: ./docker/webchat.Dockerfile
     image: ${DOCKER_IMAGE:-ghcr.io/nossas/whatsapp-chatbot-webchat:latest}
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always

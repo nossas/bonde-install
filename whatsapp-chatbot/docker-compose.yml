@@ -1,0 +1,44 @@
+services:
+  botpress:
+    image: botpress/server
+    container_name: botpress-server
+    ports:
+      - 3000:3000
+    environment:
+      - DATABASE_URL=postgres://postgres:secretpw@postgres:5435/botpress_db
+      - BP_MODULE_NLU_DUCKLINGURL=http://botpress_lang:8000
+      - BP_MODULE_NLU_LANGUAGESOURCES=[{"endpoint":"http://botpress_lang:3100"}]
+      - EXTERNAL_URL=http://localhost:3000
+    depends_on:
+      - botpress_lang
+      - postgres
+    volumes:
+      - botpress-data:/botpress/data
+
+  botpress_lang:
+    image: botpress/server
+    container_name: botpress-lang
+    command: bash -c "./duckling -p 8000 & ./bp lang --langDir /botpress/lang --port 3100"
+    expose:
+      - 3100
+      - 8000
+    volumes:
+      - botpress-lang:/botpress/lang
+
+  postgres:
+    image: postgres:11.2-alpine
+    expose:
+      - 5435
+    container_name: postgres
+    environment:
+      PGPORT: 5435
+      POSTGRES_DB: botpress_db
+      POSTGRES_PASSWORD: secretpw
+      POSTGRES_USER: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+  botpress-data:
+  botpress-lang:

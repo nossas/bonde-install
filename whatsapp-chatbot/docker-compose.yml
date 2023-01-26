@@ -28,7 +28,7 @@ services:
       
   botpress_studio:
     image: botpress/server
-    container_name: botpress-server
+    container_name: botpress-studio
     environment:
       - DATABASE_URL=postgres://postgres:secretpw@postgres:5435/botpress_db
       - BP_MODULE_NLU_DUCKLINGURL=http://botpress_lang:8000

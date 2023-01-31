@@ -1,7 +1,6 @@
 services:
   botpress:
     image: botpress/server
-    container_name: botpress-server
     environment:
       - DATABASE_URL=postgres://postgres:secretpw@postgres:5435/botpress_db
       - BP_MODULE_NLU_DUCKLINGURL=http://botpress_lang:8000
@@ -28,7 +27,6 @@ services:
       
   botpress_studio:
     image: botpress/server
-    container_name: botpress-studio
     environment:
       - DATABASE_URL=postgres://postgres:secretpw@postgres:5435/botpress_db
       - BP_MODULE_NLU_DUCKLINGURL=http://botpress_lang:8000
@@ -55,7 +53,6 @@ services:
 
   botpress_lang:
     image: botpress/server
-    container_name: botpress-lang
     command: bash -c "./duckling -p 8000 & ./bp lang --langDir /botpress/lang --port 3100"
     expose:
       - 3100
@@ -88,3 +85,7 @@ volumes:
   pgdata:
   botpress-data:
   botpress-lang:
+
+networks:
+  default:
+    name: bonde

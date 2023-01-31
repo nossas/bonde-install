@@ -2,10 +2,10 @@ services:
   botpress:
     image: botpress/server
     environment:
-      - DATABASE_URL=postgres://postgres:secretpw@postgres:5435/botpress_db
+      - DATABASE_URL=postgres://postgres:secretpw@postgres:5432/botpress_db
       - BP_MODULE_NLU_DUCKLINGURL=http://botpress_lang:8000
       - BP_MODULE_NLU_LANGUAGESOURCES=[{"endpoint":"http://botpress_lang:3100"}]
-      - EXTERNAL_URL=http://botpress:3000
+      - EXTERNAL_URL=https://botpress.staging.bonde.org
     depends_on:
       - botpress_lang
       - postgres
@@ -28,7 +28,8 @@ services:
   botpress_studio:
     image: botpress/server
     environment:
-      - DATABASE_URL=postgres://postgres:secretpw@postgres:5435/botpress_db
+      - DATABASE_URL=postgres://postgres:secretpw@postgres:
+      /botpress_db
       - BP_MODULE_NLU_DUCKLINGURL=http://botpress_lang:8000
       - BP_MODULE_NLU_LANGUAGESOURCES=[{"endpoint":"http://botpress_lang:3100"}]
       - EXTERNAL_URL=http://botpress:3000
@@ -70,11 +71,7 @@ services:
 
   postgres:
     image: postgres:11.2-alpine
-    expose:
-      - 5435
-    container_name: postgres
     environment:
-      PGPORT: 5435
       POSTGRES_DB: botpress_db
       POSTGRES_PASSWORD: secretpw
       POSTGRES_USER: postgres

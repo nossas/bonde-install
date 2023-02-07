@@ -1,40 +1,40 @@
 # Settings and configurations that are common for all containers
 # https://raw.githubusercontent.com/minio/minio/master/docs/orchestration/docker-compose/docker-compose.yaml
-x-minio-common:
-  &minio-common
-  image: quay.io/minio/minio:RELEASE.2022-05-23T18-45-11Z
-  command: server --address ":9000" --console-address ":9001" /minio/data1
-
-  expose:
-    - "9000"
-    - "9001"
-  environment:
-    MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
-    MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
-  healthcheck:
-    test:
-      [
-        "CMD",
-        "curl",
-        "-f",
-        "http://localhost:9000/minio/health/live"
-      ]
-    interval: 30s
-    timeout: 20s
-    retries: 3
+# x-minio-common:
+#   &minio-common
+#   image: quay.io/minio/minio:RELEASE.2022-05-23T18-45-11Z
+#   command: server --address ":9000" --console-address ":9001" /minio/data1
+# 
+#   expose:
+#     - "9000"
+#     - "9001"
+#   environment:
+#     MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+#     MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+#   healthcheck:
+#     test:
+#       [
+#         "CMD",
+#         "curl",
+#         "-f",
+#         "http://localhost:9000/minio/health/live"
+#       ]
+#     interval: 30s
+#     timeout: 20s
+#     retries: 3
 
 services:
-  minio:
-    <<: *minio-common
-    hostname: minio
-    volumes:
-      - data1-1:/data1
-      - data1-2:/data2
-    labels:
-      traefik.http.services.minio.loadbalancer.server.port: '9000'
-      traefik.enable: 'true'
-      traefik.http.routers.minio.tls: true
-      traefik.http.routers.minio.tls.certresolver: myresolver
+  # minio:
+  #   <<: *minio-common
+  #   hostname: minio
+  #   volumes:
+  #     - data1-1:/data1
+  #     - data1-2:/data2
+  #   labels:
+  #     traefik.http.services.minio.loadbalancer.server.port: '9000'
+  #     traefik.enable: 'true'
+  #     traefik.http.routers.minio.tls: true
+  #     traefik.http.routers.minio.tls.certresolver: myresolver
 
   api-payments:
     image: ${DOCKER_IMAGE:-nossas/bonde-apis:v1.3.9}
@@ -269,9 +269,9 @@ services:
     #   start_period: "5s"
     #   retries: 3
 
-volumes:
-  data1-1:
-  data1-2:
+# volumes:
+#   data1-1:
+#   data1-2:
 
 
 networks:

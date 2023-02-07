@@ -144,7 +144,7 @@ services:
   
   # Database used only staging environment to N8N
   postgres:
-    image: postgres:12.1-alpine
+    image: postgres:12-bullseye
     restart: always
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-n8ndb}

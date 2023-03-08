@@ -68,30 +68,51 @@ services:
       traefik.http.routers.redes.tls: true
       traefik.http.routers.redes.tls.certresolver: myresolver
 
+  # public:
+  #   image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.5.9}
+  #   command: pnpm --filter webpage-client start
+  #   restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+  #   pull_policy: always
+  #   environment:
+  #     - PORT=3000
+  #     - NODE_ENV=${PUBLIC_NODE_ENV:-development}
+  #     - ACTION_SECRET_KEY=${PUBLIC_ACTION_SECRET_KEY}
+  #     - REACT_APP_API_GRAPHQL_SECRET=${PUBLIC_HASURA_SECRET}
+  #     - REACT_APP_PAGARME_KEY=${PUBLIC_PAGARME_KEY}
+  #     - REACT_APP_DOMAIN_API_ACTIVISTS=${PUBLIC_HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
+  #     - REACT_APP_DOMAIN_API_GRAPHQL=${PUBLIC_HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
+  #     - REACT_APP_DOMAIN_API_REST=${PUBLIC_REST_API:-http://api-rest.bonde.devel}
+  #     - REACT_APP_DOMAIN_PUBLIC=${DEFAULT_DOMAIN_RULE:-bonde.devel}
+  #     - REACT_APP_ACTIVE_API_CACHE=${ACTIVE_API_CACHE:-false} #      - REACT_APP_DOMAIN_IMAGINARY=${PUBLIC_IMAGINARY:-http://imaginary.bonde.devel}
+  #   healthcheck:
+  #     test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000/api/ping}"
+  #     interval: "60s"
+  #     timeout: "3s"
+  #     start_period: "50s"
+  #     retries: 3
+  #   labels:
+  #     - traefik.http.services.public.loadbalancer.server.port=3000
+  #     - traefik.enable=true
+  #     - traefik.http.routers.public.priority=-1
+  #     - traefik.http.routers.public.tls=true
+  #     - traefik.http.routers.public.tls.certresolver=myresolver
+  #     - traefik.http.routers.public.rule=HostRegexp(`{host:.+}`)
+  #     - traefik.http.routers.public.tls.domains[0].main=${DEFAULT_DOMAIN_RULE:-bonde.devel}
+  #     - traefik.http.routers.public.tls.domains[0].sans=*.${DEFAULT_DOMAIN_RULE:-bonde.devel}
+
   public:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.5.9}
-    command: pnpm --filter webpage-client start
+    image: ${DOCKER_IMAGE_CMS:-nossas/bonde-cms:latest}
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     environment:
-      - PORT=3000
-      - NODE_ENV=${PUBLIC_NODE_ENV:-development}
-      - ACTION_SECRET_KEY=${PUBLIC_ACTION_SECRET_KEY}
-      - REACT_APP_API_GRAPHQL_SECRET=${PUBLIC_HASURA_SECRET}
-      - REACT_APP_PAGARME_KEY=${PUBLIC_PAGARME_KEY}
-      - REACT_APP_DOMAIN_API_ACTIVISTS=${PUBLIC_HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
-      - REACT_APP_DOMAIN_API_GRAPHQL=${PUBLIC_HASURA_API:-http://api-graphql.bonde.devel/v1/graphql}
-      - REACT_APP_DOMAIN_API_REST=${PUBLIC_REST_API:-http://api-rest.bonde.devel}
-      - REACT_APP_DOMAIN_PUBLIC=${DEFAULT_DOMAIN_RULE:-bonde.devel}
-      - REACT_APP_ACTIVE_API_CACHE=${ACTIVE_API_CACHE:-false} #      - REACT_APP_DOMAIN_IMAGINARY=${PUBLIC_IMAGINARY:-http://imaginary.bonde.devel}
-    healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3000/api/ping}"
-      interval: "60s"
-      timeout: "3s"
-      start_period: "50s"
-      retries: 3
+      - DATABASE_URL=${DATABASE_URL:-postgres://postgres:password@database_default:5432/db}
+      - DEFAULT_STORAGE_DSN=${DEFAULT_STORAGE_DSN:-file:///data/media/?url=%2Fmedia%2F}
+      - DEBUG=${DEBUG:-True}
+      - DOMAIN_ALIASES=${DOMAIN_ALIASES:-"localhost, 127.0.0.1"}
+      - SECURE_SSL_REDIRECT=${SECURE_SSL_REDIRECT:-False}
+    command: python manage.py runserver 0.0.0.0:80
     labels:
-      - traefik.http.services.public.loadbalancer.server.port=3000
+      - traefik.http.services.public.loadbalancer.server.port=80
       - traefik.enable=true
       - traefik.http.routers.public.priority=-1
       - traefik.http.routers.public.tls=true

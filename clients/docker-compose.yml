@@ -101,7 +101,7 @@ services:
   #     - traefik.http.routers.public.tls.domains[0].sans=*.${DEFAULT_DOMAIN_RULE:-bonde.devel}
 
   public:
-    image: ${DOCKER_IMAGE_CMS:-nossas/bonde-cms:latest}
+    image: ${DOCKER_IMAGE_CMS:-nossas/bonde-cms:feature-multisite}
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     environment:

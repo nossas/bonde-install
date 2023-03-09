@@ -122,6 +122,8 @@ services:
 
   botpress_alpine:
     image: alpine
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
     volumes:
       - botpress-data:/botpress/data
 

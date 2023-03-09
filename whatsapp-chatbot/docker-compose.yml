@@ -2,7 +2,7 @@ services:
   botpress:
     image: botpress/server
     environment:
-      - DATABASE_URL=postgres://postgres:secretpw@postgres:5435/botpress_db
+      - DATABASE_URL=postgres://postgres:secretpw@botpress_postgres:5435/botpress_db
       - BP_MODULE_NLU_DUCKLINGURL=http://botpress_lang:8000
       - BP_MODULE_NLU_LANGUAGESOURCES=[{"endpoint":"http://botpress_lang:3100"}]
       - EXTERNAL_URL=http://botpress:3000
@@ -50,17 +50,17 @@ services:
       dockerfile: Dockerfile
     image: botpress/server
     container_name: botpress-nlu
-    command: ./bp nlu --port 3200 --dbURL postgres://postgres:secretpw@postgres:5435/botpress_db --languageURL http://botpress_lang:3100 --ducklingURL http://botpress_lang:8000
+    command: ./bp nlu --port 3200 --dbURL postgres://postgres:secretpw@botpress_postgres:5435/botpress_db --languageURL http://botpress_lang:3100 --ducklingURL http://botpress_lang:8000
     expose:
       - 3200
     depends_on:
       - botpress_lang
 
-  postgres:
+  botpress_postgres:
     image: postgres:11.2-alpine
     expose:
       - 5435
-    container_name: postgres
+    container_name: botpress_postgres
     environment:
       PGPORT: 5435
       POSTGRES_DB: botpress_db

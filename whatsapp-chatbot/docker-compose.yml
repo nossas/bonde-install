@@ -31,8 +31,8 @@ services:
     command: bash -c "./duckling -p 8000"
     ports:
       - 8000
-    volumes:
-      - botpress-lang:/botpress/lang
+#     volumes:
+#       - botpress-lang:/botpress/lang
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     healthcheck:
@@ -47,8 +47,8 @@ services:
     command: bash -c "./bp lang --langDir /botpress/lang --port 3100"
     ports:
       - 3100
-    volumes:
-      - botpress-lang:/botpress/lang
+#     volumes:
+#       - botpress-lang:/botpress/lang
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     healthcheck:

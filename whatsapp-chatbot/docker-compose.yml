@@ -56,6 +56,32 @@ services:
     depends_on:
       - botpress_lang
 
+  botpress_studio:
+    image: botpress/server
+    environment:
+      - DATABASE_URL=postgres://postgres:secretpw@botpress_postgres:5435/botpress_db
+      - BP_MODULE_NLU_DUCKLINGURL=http://botpress_lang:8000
+      - BP_MODULE_NLU_LANGUAGESOURCES=[{"endpoint":"http://botpress_lang:3100"}]
+      - EXTERNAL_URL=http://botpress:3000
+    depends_on:
+      - botpress_lang
+      - postgres
+    volumes:
+      - botpress-data:/botpress/data
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
+    healthcheck:
+      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:4000}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
+    labels:
+      traefik.http.services.botpress_studio.loadbalancer.server.port: '4000'
+      traefik.enable: 'true'
+      traefik.http.routers.botpress_studio.tls: true
+      traefik.http.routers.botpress_studio.tls.certresolver: myresolver
+
   botpress_postgres:
     image: postgres:11.2-alpine
     expose:

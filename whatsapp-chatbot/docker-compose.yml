@@ -120,6 +120,11 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  botpress_alpine:
+    image: alpine
+    volumes:
+      - botpress-data:/botpress/data
+
 volumes:
   pgdata:
   botpress-data:

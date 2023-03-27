@@ -250,6 +250,10 @@ services:
       PORT: '3000'
       SENDGRID_API_KEY: ${SENDGRID_API_KEY}
       SENDGRID_WEBHOOK_KEY: ${SENDGRID_WEBHOOK_KEY}
+      SMTP_HOST: ${SMTP_HOST:-fake-smtp}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USER: ${SMTP_USER:-user}
+      SMTP_PASS: ${SMTP_PASS:-pass}
     command:
       - pnpm
       - --filter

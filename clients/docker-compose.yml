@@ -104,8 +104,6 @@ services:
     image: ${DOCKER_IMAGE_CMS:-nossas/bonde-cms:v0.0.1}
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
-    ports:
-      - "8000:80"
     environment:
       - DATABASE_URL=${DATABASE_URL:-postgres://postgres:password@database_default:5432/db}
       - DEFAULT_STORAGE_DSN=${DEFAULT_STORAGE_DSN:-file:///data/media/?url=%2Fmedia%2F}
@@ -113,7 +111,7 @@ services:
       - DOMAIN_ALIASES=${DOMAIN_ALIASES:-"localhost, 127.0.0.1"}
       - SECURE_SSL_REDIRECT=${SECURE_SSL_REDIRECT:-False}
     labels:
-      - traefik.http.services.public.loadbalancer.server.port=8000
+      - traefik.http.services.public.loadbalancer.server.port=80
       - traefik.enable=true
       - traefik.http.routers.public.priority=-1
       - traefik.http.routers.public.tls=true

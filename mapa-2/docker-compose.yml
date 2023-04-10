@@ -123,8 +123,8 @@ services:
       - ZENDESK_API_TOKEN=${ZENDESK_API_TOKEN:-aaaa1}
       - ZENDESK_API_URL=${ZENDESK_API_URL:-https://aaaa1.zendesk.com/api/v2/}
       - ZENDESK_API_USER=${ZENDESK_API_USER_WITH_TOKEN:-email@host/token}
-      - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS_SOLIDARITY_COUNT}
-      - WIDGET_IDS=${WIDGET_IDS_SOLIDARITY_COUNT:-aaaa1}
+      - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS}
+      - WIDGET_IDS=${WIDGET_IDS:-aaaa1}
     command:
       - pnpm
       - --filter

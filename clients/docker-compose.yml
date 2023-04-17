@@ -1,6 +1,6 @@
 services:
   accounts:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.6.3}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.6.4}
     command: pnpm --filter accounts-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
@@ -17,7 +17,7 @@ services:
       traefik.http.routers.accounts.tls.certresolver: myresolver
 
   app:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.6.3}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.6.4}
     command: pnpm --filter admin-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
@@ -35,7 +35,7 @@ services:
       traefik.http.routers.app.tls.certresolver: myresolver
 
   admin-canary:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.6.3}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.6.4}
     command: pnpm --filter canary-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
@@ -52,7 +52,7 @@ services:
       traefik.http.routers.admin-canary.tls.certresolver: myresolver
 
   redes:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.6.3}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.6.4}
     command: pnpm --filter redes-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
@@ -69,7 +69,7 @@ services:
       traefik.http.routers.redes.tls.certresolver: myresolver
 
   public:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.6.3}
+    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.6.4}
     command: pnpm --filter webpage-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always

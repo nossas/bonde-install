@@ -7,7 +7,7 @@ services:
       - DATABASE_URL=postgres://postgres:secretpw@botpress_postgres:5435/botpress_db
       - BP_MODULE_NLU_DUCKLINGURL=http://botpress_lang:8000
       - BP_MODULE_NLU_LANGUAGESOURCES=[{"endpoint":"http://botpress_lang:3100"}]
-      - EXTERNAL_URL=https://botpress.staging.bonde.org
+      - EXTERNAL_URL="${BOTPRESS_EXTERNAL_URL:-https://botpress.staging.bonde.org}"
     depends_on:
       - botpress_nlu
     volumes:

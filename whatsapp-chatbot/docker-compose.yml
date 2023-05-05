@@ -1,16 +1,23 @@
+version: '3'
+
 services:
   botpress:
     image: botpress/server
-    ports:
+    command: /botpress/bp
+    expose:
       - 3000
     environment:
-      - DATABASE_URL=postgres://postgres:secretpw@botpress_postgres:5435/botpress_db
-      - BP_HOST=0.0.0.0
+      - DATABASE_URL=postgres://postgres:secretpw@postgres:5435/botpress_db
+      - REDIS_URL=redis://redis:6379?password=redisPassword
       - BP_MODULE_NLU_DUCKLINGURL=http://botpress_lang:8000
       - BP_MODULE_NLU_LANGUAGESOURCES=[{"endpoint":"http://botpress_lang:3100"}]
-      - EXTERNAL_URL="${BOTPRESS_EXTERNAL_URL:-https://botpress.staging.bonde.org}"
+      - CLUSTER_ENABLED=true
+      - BP_PRODUCTION=true
+      - BPFS_STORAGE=database
     depends_on:
-      - botpress_nlu
+      - botpress_lang
+      - postgres
+      - redis
     volumes:
       - botpress-data:/botpress/data
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
@@ -27,101 +34,40 @@ services:
       traefik.http.routers.botpress.tls: true
       traefik.http.routers.botpress.tls.certresolver: myresolver
 
-  botpress_duckling:
-    image: botpress/server
-    command: bash -c "./duckling -p 8000"
-    ports:
-      - 8000
-#     volumes:
-#       - botpress-lang:/botpress/lang
-    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
-    pull_policy: always
-    healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:8000}"
-      interval: "60s"
-      timeout: "3s"
-      start_period: "5s"
-      retries: 3
-
   botpress_lang:
     image: botpress/server
-    command: bash -c "./bp lang --langDir /botpress/lang --port 3100"
-    ports:
+    command: bash -c "./duckling -p 8000 & ./bp lang --langDir /botpress/lang --port 3100"
+    expose:
       - 3100
-#     volumes:
-#       - botpress-lang:/botpress/lang
+      - 8000
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
-    healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3100}"
-      interval: "60s"
-      timeout: "3s"
-      start_period: "5s"
-      retries: 3
-
-  # Each instance of botpress must have its own NLU server
-  # connections between multiple botpress instances and NLU server cannot be load balanced
-  botpress_nlu:
-    build:
-      context: ./botpress
-      dockerfile: Dockerfile
-    image: botpress/server
-    container_name: botpress-nlu
-    command: ./bp nlu --port 3200 --dbURL postgres://postgres:secretpw@botpress_postgres:5435/botpress_db --languageURL http://botpress_lang:3100 --ducklingURL http://botpress_duckling:8000
-    ports:
-      - 3200
-    depends_on:
-      - botpress_lang
-      - botpress_duckling
-      - botpress_postgres
-    healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:3200}"
-      interval: "60s"
-      timeout: "3s"
-      start_period: "5s"
-      retries: 3
-      
-  botpress_studio:
-    image: botpress/server
-    ports:
-      - 4000
-    environment:
-      - DATABASE_URL=postgres://postgres:secretpw@botpress_postgres:5435/botpress_db
-      - BP_MODULE_NLU_DUCKLINGURL=http://botpress_duckling:8000
-      - BP_MODULE_NLU_LANGUAGESOURCES=[{"endpoint":"http://botpress_lang:3100"}]
-      - EXTERNAL_URL=http://botpress:3000
-    depends_on:
-      - botpress_nlu
     volumes:
-      - botpress-data:/botpress/data
-    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
-    pull_policy: always
-    healthcheck:
-      test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:4000}"
-      interval: "60s"
-      timeout: "3s"
-      start_period: "5s"
-      retries: 3
-#     labels:
-#       traefik.http.services.botpress_studio.loadbalancer.server.port: '4000'
-#       traefik.enable: 'true'
-#       traefik.http.routers.botpress_studio.tls: true
-#       traefik.http.routers.botpress_studio.tls.certresolver: myresolver
+      - botpress-lang:/botpress/lang
 
-  botpress_postgres:
+  postgres:
     image: postgres:11.2-alpine
-    ports:
+    expose:
       - 5435
-    container_name: botpress_postgres
     environment:
       PGPORT: 5435
       POSTGRES_DB: botpress_db
       POSTGRES_PASSWORD: secretpw
       POSTGRES_USER: postgres
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  botpress_alpine:
+  redis:
+    image: redis:5.0.5-alpine
+    expose:
+      - 6379
+    command: redis-server --requirepass redisPassword
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    volumes:
+      - redisdata:/data
+
+  alpine:
     image: alpine
     stdin_open: true # docker run -i
     tty: true        # docker run -t
@@ -130,6 +76,7 @@ services:
 
 volumes:
   pgdata:
+  redisdata:
   botpress-data:
   botpress-lang:
 

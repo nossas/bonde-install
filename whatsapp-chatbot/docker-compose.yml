@@ -7,17 +7,17 @@ services:
     expose:
       - 3000
     environment:
-      - DATABASE_URL=postgres://postgres:secretpw@postgres:5435/botpress_db
-      - REDIS_URL=redis://redis:6379?password=redisPassword
+      - DATABASE_URL=postgres://postgres:secretpw@botpress_postgres:5435/botpress_db
+      - REDIS_URL=redis://botpress_redis:6379?password=redisPassword
       - BP_MODULE_NLU_DUCKLINGURL=http://botpress_lang:8000
       - BP_MODULE_NLU_LANGUAGESOURCES=[{"endpoint":"http://botpress_lang:3100"}]
-      - CLUSTER_ENABLED=true
+      - CLUSTER_ENABLED=false
       - BP_PRODUCTION=true
       - BPFS_STORAGE=database
     depends_on:
       - botpress_lang
-      - postgres
-      - redis
+      - botpress_postgres
+      - botpress_redis
     volumes:
       - botpress-data:/botpress/data
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
@@ -45,7 +45,7 @@ services:
     volumes:
       - botpress-lang:/botpress/lang
 
-  postgres:
+  botpress_postgres:
     image: postgres:11.2-alpine
     expose:
       - 5435
@@ -58,7 +58,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  redis:
+  botpress_redis:
     image: redis:5.0.5-alpine
     expose:
       - 6379
@@ -67,7 +67,7 @@ services:
     volumes:
       - redisdata:/data
 
-  alpine:
+  botpress_alpine:
     image: alpine
     stdin_open: true # docker run -i
     tty: true        # docker run -t

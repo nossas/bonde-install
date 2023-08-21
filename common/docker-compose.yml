@@ -62,6 +62,10 @@ services:
     labels:
       - traefik.enable=true
 
+      - traefik.http.middlewares.redirection.redirectregex.regex=^https?://www\\.aeleicaodoano\\.org/(.*)
+      - traefik.http.middlewares.redirection.redirectregex.replacement=https://aeleicaodoano.org/$${2}
+      - traefik.http.middlewares.redirection.redirectregex.permanent=false
+
       # global redirection: https (www.) to https
       - traefik.http.routers.wwwsecure-catchall.rule=HostRegexp(`{host:(www\\.).+}`)
       - traefik.http.routers.wwwsecure-catchall.entrypoints=websecure
@@ -77,6 +81,7 @@ services:
       - traefik.http.services.traefik.loadbalancer.server.port=8080
       - traefik.http.routers.traefik.tls=true
       - traefik.http.routers.traefik.tls.certresolver=myresolver
+
       # - traefik.http.routers.traefik.middlewares=test-auth
       # - "traefik.http.middlewares.test-auth.basicauth.users=${DEFAULT_TRAEFIK_USER:-cobrador:$$apr1$$4YfBuKHl$$jyPbiBJLOH7C5CzHFE4G10}"
 

@@ -2,6 +2,7 @@
 #   $ curl -fsSL https://get.docker.com -o get-docker.sh
 #   $ sh get-docker.sh
 # /etc/hosts 127.0.0.1 api-graphql.bonde.devel traefik.bonde.devel bonde.devel
+version: '2'
 services:
   traefik:
     image: "traefik:v2.9"

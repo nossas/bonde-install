@@ -126,6 +126,7 @@ services:
       - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE:-true}
       - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD:-1234}
       - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER:-user}
+      - N8N_USER_MANAGEMENT_DISABLED=${N8N_USER_MANAGEMENT_DISABLED:-true}
       - WEBHOOK_URL=${WEBHOOK_URL:-http://n8n.bonde.devel}
     volumes:
     - local-n8n:/home/node/.n8n

@@ -96,6 +96,10 @@ services:
       - traefik.http.routers.api-graphql.tls.certresolver=myresolver
     restart: always
     pull_policy: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5120m"
     # disabled due a non-existence of wget or curl inside docker image
     # healthcheck:
     #   test: "${DOCKER_WEB_HEALTHCHECK_TEST:-wget -qO- localhost:8080/healthz}"

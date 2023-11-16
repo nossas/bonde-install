@@ -113,7 +113,7 @@ services:
       - traefik.http.routers.redisinsight.tls.certresolver=myresolver
  
   n8n:
-    image: n8nio/n8n:1.16.0
+    image: n8nio/n8n:0.202.1
     depends_on:
       - postgres
     environment:
@@ -133,8 +133,9 @@ services:
     # ports:
     # - 5678:5678/tcp
     command:
-    - /bin/sh -c "n8n start --tunnel"
-    
+    - /bin/sh
+    - -c
+    - sleep 5; n8n start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     labels:
       - traefik.enable=true

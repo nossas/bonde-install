@@ -90,6 +90,11 @@ services:
     ports:
       - 2379
       - 2380
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.etcd.loadbalancer.server.port=2379
+      - traefik.http.routers.etcd.tls=true
+      - traefik.http.routers.etcd.tls.certresolver=myresolver
 
   redis:
     image: redislabs/redismod

@@ -3,95 +3,95 @@
 #   $ sh get-docker.sh
 # /etc/hosts 127.0.0.1 api-graphql.bonde.devel traefik.bonde.devel bonde.devel
 services:
-  traefik:
-    image: "traefik:v2.9"
-    depends_on:
-      - etcd
-    command:
-      - "--accesslog.filepath=/logs/access.log"
-      - "--accesslog.format=json"
-      - "--log.filepath=/logs/traefik.log"
-      - "--log.format=json"
-      - "--log.level=${TRAEFIK_LOG_LEVEL:-ERROR}"
-      - "--metrics.prometheus"
-      # - "--entrypoints.websecure.http.middlewares=compress@file${TRAEFIK_PLUGINS:-}"
-      # - "--experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban"
-      # - "--experimental.plugins.fail2ban.version=v0.6.0"
-      - "--global.checknewversion=${TRAEFIK_CHECK_NEW_VERSION:-false}"
-      - "--global.sendanonymoususage=${TRAEFIK_SEND_ANONYMOUS_USAGE:-false}"
-      - "--pilot.token=${TRAEFIK_PILOT_TOKEN:-}"
-      - "--ping"
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.defaultRule=Host(`{{ index .Labels \"com.docker.compose.service\"}}.${DEFAULT_DOMAIN_RULE:-bonde.devel}`)"
-      - "--providers.etcd=true"
-      - "--providers.etcd.endpoints=etcd:2379"
-      - "--providers.etcd.rootkey=traefik"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
-      - "--entrypoints.websecure.address=:443"
-      # - "--entrypoints.websecure.http.tls=true"
-      # - "--entrypoints.websecure.http.tls.options=default@etcd"
-      - "--entrypoints.websecure.http.middlewares=securityHeader@etcd"
+  # traefik:
+  #   image: "traefik:v2.9"
+  #   depends_on:
+  #     - etcd
+  #   command:
+  #     - "--accesslog.filepath=/logs/access.log"
+  #     - "--accesslog.format=json"
+  #     - "--log.filepath=/logs/traefik.log"
+  #     - "--log.format=json"
+  #     - "--log.level=${TRAEFIK_LOG_LEVEL:-ERROR}"
+  #     - "--metrics.prometheus"
+  #     # - "--entrypoints.websecure.http.middlewares=compress@file${TRAEFIK_PLUGINS:-}"
+  #     # - "--experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban"
+  #     # - "--experimental.plugins.fail2ban.version=v0.6.0"
+  #     - "--global.checknewversion=${TRAEFIK_CHECK_NEW_VERSION:-false}"
+  #     - "--global.sendanonymoususage=${TRAEFIK_SEND_ANONYMOUS_USAGE:-false}"
+  #     - "--pilot.token=${TRAEFIK_PILOT_TOKEN:-}"
+  #     - "--ping"
+  #     - "--api.insecure=true"
+  #     - "--providers.docker=true"
+  #     - "--providers.docker.exposedbydefault=false"
+  #     - "--providers.docker.defaultRule=Host(`{{ index .Labels \"com.docker.compose.service\"}}.${DEFAULT_DOMAIN_RULE:-bonde.devel}`)"
+  #     - "--providers.etcd=true"
+  #     - "--providers.etcd.endpoints=etcd:2379"
+  #     - "--providers.etcd.rootkey=traefik"
+  #     - "--entrypoints.web.address=:80"
+  #     - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+  #     - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+  #     - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+  #     - "--entrypoints.websecure.address=:443"
+  #     # - "--entrypoints.websecure.http.tls=true"
+  #     # - "--entrypoints.websecure.http.tls.options=default@etcd"
+  #     - "--entrypoints.websecure.http.middlewares=securityHeader@etcd"
 
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.myresolver.acme.email=${DEFAULT_EMAIL_ACME:-tech@bonde.devel}"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=route53"
-    restart: always
-    healthcheck:
-      test: ['CMD', 'traefik', 'healthcheck', '--ping']
-      interval: 10s
-      timeout: 10s
-      retries: 5
-    ports:
-      - "80:80"
-      - "443:443"
-      # - "8080:8080"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "letsencrypt:/letsencrypt"
-    environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-xxxxxxx}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-xxxxxx}
-      AWS_REGION: ${AWS_REGION:-us-east-1}
-    labels:
-      - traefik.enable=true
+  #     - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+  #     #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+  #     - "--certificatesresolvers.myresolver.acme.email=${DEFAULT_EMAIL_ACME:-tech@bonde.devel}"
+  #     - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+  #     - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=route53"
+  #   restart: always
+  #   healthcheck:
+  #     test: ['CMD', 'traefik', 'healthcheck', '--ping']
+  #     interval: 10s
+  #     timeout: 10s
+  #     retries: 5
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #     # - "8080:8080"
+  #   volumes:
+  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  #     - "letsencrypt:/letsencrypt"
+  #   environment:
+  #     AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-xxxxxxx}
+  #     AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-xxxxxx}
+  #     AWS_REGION: ${AWS_REGION:-us-east-1}
+  #   labels:
+  #     - traefik.enable=true
 
-      # global redirection: https (www.) to https
-      - traefik.http.routers.wwwsecure-catchall.rule=HostRegexp(`{host:(www\\.).+}`)
-      - traefik.http.routers.wwwsecure-catchall.entrypoints=websecure
-      - traefik.http.routers.wwwsecure-catchall.tls=true
-      - traefik.http.routers.wwwsecure-catchall.middlewares=wwwtohttps
+  #     # global redirection: https (www.) to https
+  #     - traefik.http.routers.wwwsecure-catchall.rule=HostRegexp(`{host:(www\\.).+}`)
+  #     - traefik.http.routers.wwwsecure-catchall.entrypoints=websecure
+  #     - traefik.http.routers.wwwsecure-catchall.tls=true
+  #     - traefik.http.routers.wwwsecure-catchall.middlewares=wwwtohttps
 
-      # middleware: http(s)://(www.) to  https://
-      - traefik.http.middlewares.wwwtohttps.redirectregex.regex=^https?://(?:www\\.)?(.+)
-      - traefik.http.middlewares.wwwtohttps.redirectregex.replacement=https://$${1}
-      - traefik.http.middlewares.wwwtohttps.redirectregex.permanent=true
+  #     # middleware: http(s)://(www.) to  https://
+  #     - traefik.http.middlewares.wwwtohttps.redirectregex.regex=^https?://(?:www\\.)?(.+)
+  #     - traefik.http.middlewares.wwwtohttps.redirectregex.replacement=https://$${1}
+  #     - traefik.http.middlewares.wwwtohttps.redirectregex.permanent=true
 
-      # export traefik dashboard
-      - traefik.http.services.traefik.loadbalancer.server.port=8080
-      - traefik.http.routers.traefik.tls=true
-      - traefik.http.routers.traefik.tls.certresolver=myresolver
-      # - traefik.http.routers.traefik.middlewares=test-auth
-      # - "traefik.http.middlewares.test-auth.basicauth.users=${DEFAULT_TRAEFIK_USER:-cobrador:$$apr1$$4YfBuKHl$$jyPbiBJLOH7C5CzHFE4G10}"
+  #     # export traefik dashboard
+  #     - traefik.http.services.traefik.loadbalancer.server.port=8080
+  #     - traefik.http.routers.traefik.tls=true
+  #     - traefik.http.routers.traefik.tls.certresolver=myresolver
+  #     # - traefik.http.routers.traefik.middlewares=test-auth
+  #     # - "traefik.http.middlewares.test-auth.basicauth.users=${DEFAULT_TRAEFIK_USER:-cobrador:$$apr1$$4YfBuKHl$$jyPbiBJLOH7C5CzHFE4G10}"
 
-  etcd:
-    image: 'bitnami/etcd:latest'
-    environment:
-      - ALLOW_NONE_AUTHENTICATION=yes
-      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
-      - ETCD_ENABLE_V2=true
-      - ETCDCTL_API=3
-    volumes:
-      - etcd_data:/bitnami/etcd
-    ports:
-      - 2379:2379
-      - 2380:2380
+  # etcd:
+  #   image: 'bitnami/etcd:latest'
+  #   environment:
+  #     - ALLOW_NONE_AUTHENTICATION=yes
+  #     - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+  #     - ETCD_ENABLE_V2=true
+  #     - ETCDCTL_API=3
+  #   volumes:
+  #     - etcd_data:/bitnami/etcd
+  #   ports:
+  #     - 2379:2379
+  #     - 2380:2380
 
   redis:
     image: redislabs/redismod
@@ -191,10 +191,10 @@ services:
 volumes:
   local-n8n:
     driver: local
-  letsencrypt:
-    driver: local
-  etcd_data:
-    driver: local
+  # letsencrypt:
+  #   driver: local
+  # etcd_data:
+  #   driver: local
   imaginary_data:
     driver: local
   redisinsight_data:

@@ -70,6 +70,9 @@ services:
       - BRASIL_API_KEY=${BRASIL_API_KEY:-a11111}
       - GEOCODING_API_KEY=${GEOCODING_API_KEY:-a11111}
       - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY-a11111}
+      - NEW_MATCH_LAMBDA_URL=${NEW_MATCH_LAMBDA_URL}
+      - JWT_SECRET=${JWT_SECRET}
+
     command:
     - pnpm
     - --filter

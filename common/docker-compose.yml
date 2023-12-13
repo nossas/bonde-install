@@ -85,6 +85,8 @@ services:
     environment:
       - ALLOW_NONE_AUTHENTICATION=yes
       - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      - ETCD_ENABLE_V2=true
+      - ETCDCTL_API=3
     volumes:
       - etcd_data:/bitnami/etcd
     ports:

@@ -23,37 +23,37 @@ services:
   #   - --filter
   #   - listener-mob-generator
 
-  redes:
-    image: nossas/bonde-redes:3.0.0
-    environment:
-      - COMMUNITY_ID=${COMMUNITY_ID:-1111}
-      - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-a1111}
-      - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-https://1111111.apm.us-east-1.aws.found.io}
-      - ELASTIC_APM_SERVICE_NAME=${ELASTIC_APM_SERVICE_NAME:-listeners-redes}
-      - GEOCODING_API_KEY=${GEOCODING_API_KEY:-a1111}
-      - GRAPHQL_URL=${GRAPHQL_URL:-http://api-graphql.bonde.devel/v1/graphql}
-      - HASURA_SECRET=${HASURA_SECRET:-a11111}
-      - LAWYER_WIDGET_IDS=${LAWYER_WIDGET_IDS:-a1111}
-      - MAUTIC_API_URL=${MAUTIC_API_URL:-http://mautic.bonde.devel/api}
-      - MAUTIC_PASSWORD=${MAUTIC_PASSWORD:-a1111}
-      - MAUTIC_USERNAME=${MAUTIC_USERNAME:-email@host}
-      - NODE_ENV=${NODE_ENV:-production}
-      - THERAPIST_WIDGET_IDS=${THERAPIST_WIDGET_IDS:-a1111}
-      - WS_GRAPHQL_URL=${WS_GRAPHQL_URL:-ws://api-graphql.bonde.devel/v1/graphql}
-      - ZENDESK_API_TOKEN=${ZENDESK_API_TOKEN:-a1111}
-      - ZENDESK_API_URL=${ZENDESK_API_URL:-https://aaa.zendesk.com/api/v2/}
-      - ZENDESK_API_USER=${ZENDESK_API_USER:-email@host}
-      - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS}
-      - BRASIL_API_KEY=${BRASIL_API_KEY:-a11111}
-      - GEOCODING_API_KEY=${GEOCODING_API_KEY:-a11111}
-      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY-a11111}
-    command:
-    - pnpm
-    - m
-    - run
-    - start
-    - --filter
-    - listener-redes
+  # redes:
+  #   image: nossas/bonde-redes:3.0.0
+  #   environment:
+  #     - COMMUNITY_ID=${COMMUNITY_ID:-1111}
+  #     - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-a1111}
+  #     - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-https://1111111.apm.us-east-1.aws.found.io}
+  #     - ELASTIC_APM_SERVICE_NAME=${ELASTIC_APM_SERVICE_NAME:-listeners-redes}
+  #     - GEOCODING_API_KEY=${GEOCODING_API_KEY:-a1111}
+  #     - GRAPHQL_URL=${GRAPHQL_URL:-http://api-graphql.bonde.devel/v1/graphql}
+  #     - HASURA_SECRET=${HASURA_SECRET:-a11111}
+  #     - LAWYER_WIDGET_IDS=${LAWYER_WIDGET_IDS:-a1111}
+  #     - MAUTIC_API_URL=${MAUTIC_API_URL:-http://mautic.bonde.devel/api}
+  #     - MAUTIC_PASSWORD=${MAUTIC_PASSWORD:-a1111}
+  #     - MAUTIC_USERNAME=${MAUTIC_USERNAME:-email@host}
+  #     - NODE_ENV=${NODE_ENV:-production}
+  #     - THERAPIST_WIDGET_IDS=${THERAPIST_WIDGET_IDS:-a1111}
+  #     - WS_GRAPHQL_URL=${WS_GRAPHQL_URL:-ws://api-graphql.bonde.devel/v1/graphql}
+  #     - ZENDESK_API_TOKEN=${ZENDESK_API_TOKEN:-a1111}
+  #     - ZENDESK_API_URL=${ZENDESK_API_URL:-https://aaa.zendesk.com/api/v2/}
+  #     - ZENDESK_API_USER=${ZENDESK_API_USER:-email@host}
+  #     - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS}
+  #     - BRASIL_API_KEY=${BRASIL_API_KEY:-a11111}
+  #     - GEOCODING_API_KEY=${GEOCODING_API_KEY:-a11111}
+  #     - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY-a11111}
+  #   command:
+  #   - pnpm
+  #   - m
+  #   - run
+  #   - start
+  #   - --filter
+  #   - listener-redes
 
   solidarity:
     image: ${DOCKER_IMAGE:-nossas/mapa-do-acolhimento:v1.7.5}
@@ -86,37 +86,37 @@ services:
     - run
     - start
 
-  redes-geolocation:
-    image: nossas/bonde-redes:3.0.0
-    environment:
-      - COMMUNITY_ID=${COMMUNITY_ID:-1111}
-      - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-a1111}
-      - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-https://1111111.apm.us-east-1.aws.found.io}
-      - ELASTIC_APM_SERVICE_NAME=${ELASTIC_APM_SERVICE_NAME:-listeners-redes-geolocation}
-      - GEOCODING_API_KEY=${GEOCODING_API_KEY:-a1111}
-      - GRAPHQL_URL=${GRAPHQL_URL:-http://api-graphql.bonde.devel/v1/graphql}
-      - HASURA_SECRET=${HASURA_SECRET:-a11111}
-      - LAWYER_WIDGET_IDS=${LAWYER_WIDGET_IDS:-a1111}
-      - MAUTIC_API_URL=${MAUTIC_API_URL:-http://mautic.bonde.devel/api}
-      - MAUTIC_PASSWORD=${MAUTIC_PASSWORD:-a1111}
-      - MAUTIC_USERNAME=${MAUTIC_USERNAME:-email@host}
-      - NODE_ENV=${NODE_ENV:-production}
-      - THERAPIST_WIDGET_IDS=${THERAPIST_WIDGET_IDS:-a1111}
-      - WS_GRAPHQL_URL=${WS_GRAPHQL_URL:-ws://api-graphql.bonde.devel/v1/graphql}
-      - ZENDESK_API_TOKEN=${ZENDESK_API_TOKEN:-a1111}
-      - ZENDESK_API_URL=${ZENDESK_API_URL:-https://aaa.zendesk.com/api/v2/}
-      - ZENDESK_API_USER=${ZENDESK_API_USER:-email@host}
-      - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS}
-      - BRASIL_API_KEY=${BRASIL_API_KEY:-a11111}
-      - GEOCODING_API_KEY=${GEOCODING_API_KEY:-a11111}
-      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY-a11111}
-    command:
-    - pnpm
-    - m
-    - run
-    - start
-    - --filter
-    - listener-redes-geolocation
+  # redes-geolocation:
+  #   image: nossas/bonde-redes:3.0.0
+  #   environment:
+  #     - COMMUNITY_ID=${COMMUNITY_ID:-1111}
+  #     - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN:-a1111}
+  #     - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL:-https://1111111.apm.us-east-1.aws.found.io}
+  #     - ELASTIC_APM_SERVICE_NAME=${ELASTIC_APM_SERVICE_NAME:-listeners-redes-geolocation}
+  #     - GEOCODING_API_KEY=${GEOCODING_API_KEY:-a1111}
+  #     - GRAPHQL_URL=${GRAPHQL_URL:-http://api-graphql.bonde.devel/v1/graphql}
+  #     - HASURA_SECRET=${HASURA_SECRET:-a11111}
+  #     - LAWYER_WIDGET_IDS=${LAWYER_WIDGET_IDS:-a1111}
+  #     - MAUTIC_API_URL=${MAUTIC_API_URL:-http://mautic.bonde.devel/api}
+  #     - MAUTIC_PASSWORD=${MAUTIC_PASSWORD:-a1111}
+  #     - MAUTIC_USERNAME=${MAUTIC_USERNAME:-email@host}
+  #     - NODE_ENV=${NODE_ENV:-production}
+  #     - THERAPIST_WIDGET_IDS=${THERAPIST_WIDGET_IDS:-a1111}
+  #     - WS_GRAPHQL_URL=${WS_GRAPHQL_URL:-ws://api-graphql.bonde.devel/v1/graphql}
+  #     - ZENDESK_API_TOKEN=${ZENDESK_API_TOKEN:-a1111}
+  #     - ZENDESK_API_URL=${ZENDESK_API_URL:-https://aaa.zendesk.com/api/v2/}
+  #     - ZENDESK_API_USER=${ZENDESK_API_USER:-email@host}
+  #     - ZENDESK_ORGANIZATIONS=${ZENDESK_ORGANIZATIONS}
+  #     - BRASIL_API_KEY=${BRASIL_API_KEY:-a11111}
+  #     - GEOCODING_API_KEY=${GEOCODING_API_KEY:-a11111}
+  #     - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY-a11111}
+  #   command:
+  #   - pnpm
+  #   - m
+  #   - run
+  #   - start
+  #   - --filter
+  #   - listener-redes-geolocation
 
 networks:
   default:

@@ -1,0 +1,40 @@
+version: '2'
+
+services:
+    # prometheus:
+    #   image: nossas/prometheus
+    #   restart: 'no'
+    #   user: root
+    #   volumes:
+    #     - prometheus_data:/prometheus
+    #   labels:
+    #     - traefik.enable=true
+    #     - traefik.http.services.prometheus.loadbalancer.server.port=9090
+    #     - traefik.http.routers.prometheus.tls=true
+    #     - traefik.http.routers.prometheus.tls.certresolver=myresolver
+    
+    grafana:
+      image: grafana/grafana
+      user: root
+      environment:
+        GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-simple-json-datasource"
+      restart: 'no'
+      volumes:
+        - grafana_data:/var/lib/grafana
+      depends_on:
+        - prometheus
+      labels:
+        - traefik.enable=true
+        - traefik.http.services.grafana.loadbalancer.server.port=3000
+        - traefik.http.routers.grafana.tls=true
+        - traefik.http.routers.grafana.tls.certresolver=myresolver
+
+networks:
+  default:
+    name: bonde
+
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local

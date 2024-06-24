@@ -69,7 +69,7 @@ services:
       traefik.http.routers.redes.tls.certresolver: myresolver
 
   public:
-    image: ${DOCKER_IMAGE:-nossas/bonde-clients:v7.6.5}
+    image: ${DOCKER_WEBPAGE_IMAGE:-nossas/bonde-clients:v7.6.5}
     command: pnpm --filter webpage-client start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always

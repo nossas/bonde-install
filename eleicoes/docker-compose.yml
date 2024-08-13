@@ -13,6 +13,7 @@ services:
       - "--log.maxsize=1024"  # Tamanho máximo do arquivo de log de acesso (em MB)
       - "--log.maxbackups=2"  # Número máximo de backups de arquivos de log
       - "--log.maxage=7"  # Dias para manter os arquivos de log de acesso
+      - "--accesslog=true" # Habilitando access log
       - "--accessLog.filepath=/var/log/access.log"  # Caminho do arquivo de log de acesso
       - "--accessLog.bufferingsize=100000"  # Tamanho do buffer de logs de acesso (em linhas)
       - "--metrics.influxdb2=true"  # Habilitando as metricas com Influx

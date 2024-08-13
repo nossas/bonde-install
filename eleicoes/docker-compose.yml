@@ -25,7 +25,7 @@ services:
       - "--ping"  # Habilitando o healthcheck
       - "--providers.docker=true"  # Habilitando as configurações pelo próprio docker
       - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.defaultRule=Host(`{{ index .Labels \"com.docker.compose.service\"}}.${DEFAULT_DOMAIN_RULE:-bonde.devel}`)"
+      - "--providers.docker.defaultRule=Host(`{{ index .Labels \"custom.servicename\"}}.${DEFAULT_DOMAIN_RULE:-bonde.devel}`)"
       - "--entrypoints.web.address=:80"  # Habilitando o acesso web
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"  # Redirecionamento para schema de segurança
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"  # Definição do schema de segurança https
@@ -66,6 +66,7 @@ services:
       - traefik.http.services.traefik.loadbalancer.server.port=8080
       - traefik.http.routers.traefik.tls=true
       - traefik.http.routers.traefik.tls.certresolver=myresolver
+      - custom.servicename=traefik
   
   votepeloclima:
     image: ${DOCKER_IMAGE:-nossas/eleicoes-cms:latest}
@@ -94,6 +95,7 @@ services:
       - traefik.http.services.votepeloclima.loadbalancer.server.port=8000
       - traefik.http.routers.votepeloclima.tls=true
       - traefik.http.routers.votepeloclima.tls.certresolver=myresolver
+      - custom.servicename=votepeloclima
       # - traefik.http.routers.votepeloclima.rule=${VOTEPELOCLIMA_TRAEFIK_ROUTERS_RULE:-HostRegexp(`votepeloclima.staging.bonde.org`,`www.votepeloclima.staging.bonde.org`)}
 
 volumes:

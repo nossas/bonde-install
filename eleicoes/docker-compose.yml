@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   traefik:
     image: "traefik"
@@ -67,7 +69,6 @@ services:
   votepeloclima:
     image: ${DOCKER_IMAGE:-nossas/eleicoes-cms:latest}
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
-    pull_policy: always
     environment:
       - DJANGO_SETTINGS_MODULE=org_eleicoes.votepeloclima.settings.production
       - DEBUG=${DEBUG:-True}
@@ -93,3 +94,9 @@ services:
       - traefik.http.routers.votepeloclima.tls=true
       - traefik.http.routers.votepeloclima.tls.certresolver=myresolver
       # - traefik.http.routers.votepeloclima.rule=${VOTEPELOCLIMA_TRAEFIK_ROUTERS_RULE:-HostRegexp(`votepeloclima.staging.bonde.org`,`www.votepeloclima.staging.bonde.org`)}
+
+volumes:
+  letsencrypt:
+    driver: local
+  logs:
+    driver: local

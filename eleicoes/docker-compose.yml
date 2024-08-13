@@ -1,0 +1,95 @@
+services:
+  traefik:
+    image: "traefik"
+    command:
+      - "--api.insecure=true"  # Habilita o painel da API do Traefik
+      - "--providers.docker=true"  # Habilita o provedor Docker
+      - "--entrypoints.web.address=:80"  # Configura a porta 80 para entrada HTTP
+      - "--log.filePath=/var/log/traefik.log"  # Define o caminho do arquivo de log
+      - "--log.level=${TRAEFIK_LOG_LEVEL:-INFO}"  # Nível do log (DEBUG, INFO, WARN, ERROR)
+      - "--log.format=json"  # Formato do log (json, common, etc.)
+      - "--accessLog.filePath=/var/log/access.log"  # Caminho do arquivo de log de acesso
+      - "--accessLog.bufferingSize=100"  # Tamanho do buffer de logs de acesso (em linhas)
+      - "--accessLog.maxSize=10"  # Tamanho máximo do arquivo de log de acesso (em MB)
+      - "--accessLog.maxBackups=3"  # Número máximo de backups de arquivos de log
+      - "--accessLog.maxAge=7"  # Dias para manter os arquivos de log de acesso
+      - "--metrics.influxdb2=true"  # Habilitando as metricas com Influx
+      - "--metrics.influxdb2.address=${TRAEFIK_INFLUX_HOST:-http://localhost:8086}"
+      - "--metrics.influxdb2.token=${TRAEFIK_INFLUX_SECRET:-secret}"
+      - "--metrics.influxdb2.org=NOSSAS"
+      - "--metrics.influxdb2.bucket=metrics"
+      - "--metrics.influxdb2.additionallabels.host=${TRAEFIK_INFLUX_HOSTNAME:-example.com}"
+      - "--ping"  # Habilitando o healthcheck
+      - "--providers.docker=true"  # Habilitando as configurações pelo próprio docker
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.defaultRule=Host(`{{ index .Labels \"com.docker.compose.service\"}}.${DEFAULT_DOMAIN_RULE:-bonde.devel}`)"
+      - "--entrypoints.web.address=:80"  # Habilitando o acesso web
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"  # Redirecionamento para schema de segurança
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"  # Definição do schema de segurança https
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"  # Habilitando redirecionamento permanente
+      - "--entrypoints.websecure.address=:443"  # Porta 443 para o https
+      # Certificados HTTPS
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${DEFAULT_EMAIL_ACME:-tech@bonde.devel}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=route53"
+    ports:
+      - "80:80"  # Porta 80 para o serviço HTTP
+      - "443:443"  # Porta 443 para o serviço HTTPS
+      - "8080:8080"  # Porta 8080 para o painel da API
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-xxxxxxx}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-xxxxxx}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"  # Necessário para o Traefik interagir com o Docker
+      - "logs:/var/log"
+      - "letsencrypt:/letsencrypt"
+    labels:
+      - traefik.enable=true
+
+      # global redirection: https (www.) to https
+      - traefik.http.routers.wwwsecure-catchall.rule=HostRegexp(`{host:(www\\.).+}`)
+      - traefik.http.routers.wwwsecure-catchall.entrypoints=websecure
+      - traefik.http.routers.wwwsecure-catchall.tls=true
+      - traefik.http.routers.wwwsecure-catchall.middlewares=wwwtohttps
+
+      # middleware: http(s)://(www.) to  https://
+      - traefik.http.middlewares.wwwtohttps.redirectregex.regex=^https?://(?:www\\.)?(.+)
+      - traefik.http.middlewares.wwwtohttps.redirectregex.replacement=https://$${1}
+      - traefik.http.middlewares.wwwtohttps.redirectregex.permanent=true
+
+      # export traefik dashboard
+      - traefik.http.services.traefik.loadbalancer.server.port=8080
+      - traefik.http.routers.traefik.tls=true
+      - traefik.http.routers.traefik.tls.certresolver=myresolver
+  
+  votepeloclima:
+    image: ${DOCKER_IMAGE:-nossas/eleicoes-cms:latest}
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=org_eleicoes.votepeloclima.settings.production
+      - DEBUG=${DEBUG:-True}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-"votepeloclima.localhost"}
+      - CMS_DATABASE_URL=${CMS_DATABASE_URL}
+      - BONDE_DATABASE_URL=${BONDE_DATABASE_URL}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_REGION_NAME=${AWS_S3_REGION_NAME:-"us-east-1"}
+      - AWS_STORAGE_BUCKET_NAME=${AWS_STORAGE_BUCKET_NAME}
+      - RECAPTCHA_PUBLIC_KEY=${RECAPTCHA_PUBLIC_KEY}
+      - RECAPTCHA_PRIVATE_KEY=${RECAPTCHA_PRIVATE_KEY}
+      - BONDE_ACTION_API_URL=${BONDE_ACTION_API_URL}
+      - BONDE_ACTION_SECRET_KEY=${BONDE_ACTION_SECRET_KEY}
+      - SMTP_HOST=${SMTP_HOST:-fake-smtp}
+      - SMTP_PORT=${SMTP_PORT:-1025}
+      - SMTP_USER=${SMTP_USER:-user}
+      - SMTP_PASS=${SMTP_PASS:-pass}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.votepeloclima.priority=10
+      - traefik.http.services.votepeloclima.loadbalancer.server.port=8000
+      - traefik.http.routers.votepeloclima.tls=true
+      - traefik.http.routers.votepeloclima.tls.certresolver=myresolver
+      # - traefik.http.routers.votepeloclima.rule=${VOTEPELOCLIMA_TRAEFIK_ROUTERS_RULE:-HostRegexp(`votepeloclima.staging.bonde.org`,`www.votepeloclima.staging.bonde.org`)}

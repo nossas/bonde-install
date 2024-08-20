@@ -5,7 +5,7 @@ services:
     environment:
       JAVA_TIMEZONE: America/Sao_Paulo
       MB_DB_TYPE: postgres
-      MB_DB_DBNAME: ${MB_DB_DBNAME} 
+      MB_DB_DBNAME: ${MB_DB_DBNAME}
       MB_DB_PORT: ${MB_DB_PORT:-5432}
       MB_DB_USER: ${MB_DB_USER}
       MB_DB_PASS: ${MB_DB_PASS}
@@ -13,14 +13,32 @@ services:
       JAVA_TOOL_OPTIONS: -Xmx2g
 
     ports:
-    - 3000/tcp
+      - 3000:3000
 
     labels:
       - traefik.enable=true
       - traefik.http.services.metabase.loadbalancer.server.port=3000
       - traefik.http.routers.metabase.tls=true
       - traefik.http.routers.metabase.tls.certresolver=myresolver
+
+    networks:
+      - default
+
+  migrate:
+    image: metabase/metabase
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: ${MB_DB_DBNAME}
+      MB_DB_PORT: ${MB_DB_PORT:-5432}
+      MB_DB_USER: ${MB_DB_USER}
+      MB_DB_PASS: ${MB_DB_PASS}
+      MB_DB_HOST: ${MB_DB_HOST}
+    command: "migrate down"
+    networks:
+      - default
+
 networks:
   default:
     external:
-      name: bonde      
+      name: bonde
+

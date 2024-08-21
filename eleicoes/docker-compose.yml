@@ -96,7 +96,7 @@ services:
       - traefik.http.routers.votepeloclima.tls=true
       - traefik.http.routers.votepeloclima.tls.certresolver=myresolver
       - custom.servicename=votepeloclima
-      # - traefik.http.routers.votepeloclima.rule=${VOTEPELOCLIMA_TRAEFIK_ROUTERS_RULE:-HostRegexp(`votepeloclima.staging.bonde.org`,`www.votepeloclima.staging.bonde.org`)}
+      - traefik.http.routers.votepeloclima.rule=${CMS_TRAEFIK_ROUTERS_RULE:-HostRegexp(`votepeloclima.staging.bonde.org`,`www.votepeloclima.staging.bonde.org`)}
 
 volumes:
   letsencrypt:

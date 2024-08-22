@@ -75,6 +75,7 @@ services:
       - DJANGO_SETTINGS_MODULE=org_eleicoes.votepeloclima.settings.production
       - DEBUG=${DEBUG:-True}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-"votepeloclima.localhost"}
+      - SECRET_KEY=${SECRET_KEY}
       - CMS_DATABASE_URL=${CMS_DATABASE_URL}
       - BONDE_DATABASE_URL=${BONDE_DATABASE_URL}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}

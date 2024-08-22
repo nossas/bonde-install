@@ -91,6 +91,7 @@ services:
       - SMTP_PASS=${SMTP_PASS:-pass}
       - REDIRECT_MIDDLEWARE_ROOT_DOMAIN=${REDIRECT_MIDDLEWARE_ROOT_DOMAIN:-"votepeloclima.localhost"}
       - REDIRECT_MIDDLEWARE_LIST_DOMAIN=${REDIRECT_MIDDLEWARE_LIST_DOMAIN:-"votepeloclima.localhost.devel"}
+      - ADMINS=${ADMINS:-"('Admin', 'admin@localhost'),"}
     labels:
       - traefik.enable=true
       - traefik.http.routers.votepeloclima.priority=10

@@ -138,13 +138,13 @@ services:
       - N8N_USER_MANAGEMENT_DISABLED=${N8N_USER_MANAGEMENT_DISABLED:-true}
       - WEBHOOK_URL=${WEBHOOK_URL:-http://n8n.bonde.devel}
     volumes:
-    - local-n8n:/home/node/.n8n
-    # ports:
-    # - 5678:5678/tcp
+      - local-n8n:/home/node/.n8n
+    ports:
+      - 5678:5678/tcp
     command:
-    - /bin/sh
-    - -c
-    - sleep 5; n8n start
+      - /bin/sh
+      - -c
+      - sleep 5; n8n start
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     labels:
       - traefik.enable=true

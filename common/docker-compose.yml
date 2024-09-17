@@ -26,7 +26,7 @@ services:
       # - "--experimental.plugins.fail2ban.version=v0.6.0"
       - "--global.checknewversion=${TRAEFIK_CHECK_NEW_VERSION:-false}"
       - "--global.sendanonymoususage=${TRAEFIK_SEND_ANONYMOUS_USAGE:-false}"
-      - "--pilot.token=${TRAEFIK_PILOT_TOKEN:-}"
+      # - "--pilot.token=${TRAEFIK_PILOT_TOKEN:-}"
       - "--ping"
       - "--api.insecure=true"
       - "--providers.docker=true"

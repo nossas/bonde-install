@@ -34,9 +34,11 @@ services:
       - "--providers.etcd=true"
       - "--providers.etcd.endpoints=etcd:2379"
       - "--providers.etcd.rootkey=traefik"
-      - "--entryPoints.http.transport.forwardingTimeouts.dialTimeout=90s" 
-      - "--entryPoints.http.transport.forwardingTimeouts.responseHeaderTimeout=90s" 
-      - "--entryPoints.http.transport.forwardingTimeouts.idleTimeout=180s"
+      # Timeouts
+      - "--entryPoints.web.transport.respondingTimeouts.readTimeout=90s"
+      - "--entryPoints.web.transport.respondingTimeouts.writeTimeout=90s"
+      - "--entryPoints.web.transport.respondingTimeouts.idleTimeout=240s"
+      #
       - "--entrypoints.web.address=:80"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"

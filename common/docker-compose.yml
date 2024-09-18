@@ -36,9 +36,9 @@ services:
       - "--providers.etcd.endpoints=etcd:2379"
       - "--providers.etcd.rootkey=traefik"
       # Timeouts
-      - "--entryPoints.web.transport.respondingTimeouts.readTimeout=90s"
-      - "--entryPoints.web.transport.respondingTimeouts.writeTimeout=90s"
-      - "--entryPoints.web.transport.respondingTimeouts.idleTimeout=240s"
+      # - "--entryPoints.web.transport.respondingTimeouts.readTimeout=90s"
+      # - "--entryPoints.web.transport.respondingTimeouts.writeTimeout=90s"
+      # - "--entryPoints.web.transport.respondingTimeouts.idleTimeout=240s"
       #
       - "--entrypoints.web.address=:80"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"

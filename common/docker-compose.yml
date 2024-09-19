@@ -105,6 +105,11 @@ services:
       - 2379
       - 2380
 
+  python-shell:
+    image: 'python:3.12'
+    depends_on:
+      - etcd
+
   redis:
     image: redislabs/redismod
     restart: always

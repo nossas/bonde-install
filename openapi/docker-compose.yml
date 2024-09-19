@@ -19,3 +19,6 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.openapi.tls: true
       traefik.http.routers.openapi.tls.certresolver: myresolver
+  
+  depends_on:
+    - etcd

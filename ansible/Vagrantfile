@@ -1,0 +1,8 @@
+Vagrant.configure("2") do |config|
+  config.vm.provision "shell", path: "script.sh"
+  config.vm.box = "ubuntu/bionic64"
+  config.vm.cloud_init :user_data do |cloud_init|
+    cloud_init.content_type = "text/cloud-config"
+    cloud_init.path = "cloud-init.yaml"
+  end
+end

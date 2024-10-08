@@ -63,7 +63,7 @@ services:
     command: bundle exec sidekiq -q default -q mailers -c 5
 
   api-graphql:
-    image: hasura/graphql-engine:v2.7.0
+    image: hasura/graphql-engine:v2.44.0
     environment:
       - HASURA_GRAPHQL_DATABASE_URL=${HASURA_GRAPHQL_DATABASE_URL:-postgres://user:pass@postgres:5432/bonde}
       - HASURA_GRAPHQL_ENABLE_CONSOLE=${HASURA_GRAPHQL_ENABLE_CONSOLE:-'false'}

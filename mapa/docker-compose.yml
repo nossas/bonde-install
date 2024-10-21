@@ -40,6 +40,7 @@ services:
     labels:
       - traefik.http.services.mautic-nossas.loadbalancer.server.port=80
       - traefik.enable=true
+      - traefik.http.routers.mautic-nossas.priority=10000
       - traefik.http.routers.mautic-nossas.rule=Host(`${MAUTIC_URL}`)
       - traefik.http.routers.mautic-nossas.tls=true
       - traefik.http.routers.mautic-nossas.tls.certresolver=myresolver

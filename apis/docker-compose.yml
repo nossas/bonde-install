@@ -63,7 +63,7 @@ services:
     command: bundle exec sidekiq -q default -q mailers -c 5
 
   api-graphql:
-    image: hasura/graphql-engine:v2.7.0
+    image: hasura/graphql-engine:v2.44.0
     environment:
       - HASURA_GRAPHQL_DATABASE_URL=${HASURA_GRAPHQL_DATABASE_URL:-postgres://user:pass@postgres:5432/bonde}
       - HASURA_GRAPHQL_VOTEPELOCLIMA_DATABASE_URL=${HASURA_GRAPHQL_VOTEPELOCLIMA_DATABASE_URL:-postgres://user:pass@postgres:5432/votepeloclima}
@@ -72,6 +72,8 @@ services:
       - HASURA_GRAPHQL_JWT_SECRET=${HASURA_GRAPHQL_JWT_SECRET}
       - HASURA_GRAPHQL_UNAUTHORIZED_ROLE=${HASURA_GRAPHQL_UNAUTHORIZED_ROLE:-anonymous}
       - HASURA_GRAPHQL_ENABLED_LOG_TYPES=${HASURA_GRAPHQL_ENABLED_LOG_TYPES:-startup, query-log, http-log, webhook-log, websocket-log}
+      - HASURA_GRAPHQL_LOG_LEVEL=${HASURA_GRAPHQL_LOG_LEVEL:-debug}
+      - HASURA_GRAPHQL_CORS_DOMAIN=${HASURA_GRAPHQL_CORS_DOMAIN:-*}
       - HASURA_GRAPHQL_INFER_FUNCTION_PERMISSIONS=false
       - API_ACCOUNTS_URL=${API_ACCOUNTS_URL:-http://api-accounts.bonde.devel}
       - API_ACTIVISTS_URL=${API_ACTIVISTS_URL:-http://activists.bonde.devel}

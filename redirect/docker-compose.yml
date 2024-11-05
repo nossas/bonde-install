@@ -3,13 +3,15 @@ services:
     image: nossas/bonde-redirect:0.4.7
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
+    environment:
+      - PORT=3007
     labels:
       - traefik.enable=true
       - traefik.http.routers.adp-redirect.priority=1
       - traefik.http.services.adp-redirect.loadbalancer.server.port=3007
       - traefik.http.routers.adp-redirect.tls=true
       - traefik.http.routers.adp-redirect.tls.certresolver=myresolver
-      - traefik.http.routers.adp-redirect.rule=${ADP_REDIRECT_RUL}
+      - traefik.http.routers.adp-redirect.rule=${ADP_REDIRECT_RULE}
 
 
 

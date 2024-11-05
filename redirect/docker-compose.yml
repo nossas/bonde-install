@@ -12,3 +12,8 @@ services:
       - traefik.http.routers.adp-redirect.tls=true
       - traefik.http.routers.adp-redirect.tls.certresolver=myresolver
       - traefik.http.routers.adp-redirect.rule=${ADP_REDIRECT_RULE}
+
+
+networks:
+  default:
+    name: bonde

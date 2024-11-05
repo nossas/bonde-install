@@ -105,11 +105,6 @@ services:
       - 2379
       - 2380
 
-  python-shell:
-    image: 'python:3.12'
-    depends_on:
-      - etcd
-
   redis:
     image: redislabs/redismod
     restart: always
@@ -119,17 +114,17 @@ services:
     # volumes:
     #   - 'redis-data:/bitnami/redis/data'
   
-  redisinsight:
-    image: redislabs/redisinsight:latest
-    ports:
-      - 8001
-    volumes:
-      - redisinsight_data:/db 
-    labels:
-      - traefik.enable=true
-      - traefik.http.services.redisinsight.loadbalancer.server.port=8001
-      - traefik.http.routers.redisinsight.tls=true
-      - traefik.http.routers.redisinsight.tls.certresolver=myresolver
+  # redisinsight:
+  #   image: redislabs/redisinsight:latest
+  #   ports:
+  #     - 8001
+  #   volumes:
+  #     - redisinsight_data:/db 
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.services.redisinsight.loadbalancer.server.port=8001
+  #     - traefik.http.routers.redisinsight.tls=true
+  #     - traefik.http.routers.redisinsight.tls.certresolver=myresolver
  
   n8n:
     image: n8nio/n8n:0.202.1
@@ -214,8 +209,8 @@ volumes:
     driver: local
   imaginary_data:
     driver: local
-  redisinsight_data:
-    driver: local
+  # redisinsight_data:
+  #   driver: local
 
 networks:
   default:

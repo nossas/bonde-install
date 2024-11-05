@@ -4,10 +4,11 @@
 # /etc/hosts 127.0.0.1 api-graphql.bonde.devel traefik.bonde.devel bonde.devel
 services:
   traefik:
-    image: "traefik:v2.9"
+    image: "traefik:v3.1"
     depends_on:
       - etcd
     command:
+      # - "--global.defaultRuleSyntax=v2"
       - "--accesslog.filepath=/logs/access.log"
       - "--accesslog.format=json"
       - "--log.filepath=/logs/traefik.log"
@@ -25,7 +26,7 @@ services:
       # - "--experimental.plugins.fail2ban.version=v0.6.0"
       - "--global.checknewversion=${TRAEFIK_CHECK_NEW_VERSION:-false}"
       - "--global.sendanonymoususage=${TRAEFIK_SEND_ANONYMOUS_USAGE:-false}"
-      - "--pilot.token=${TRAEFIK_PILOT_TOKEN:-}"
+      # - "--pilot.token=${TRAEFIK_PILOT_TOKEN:-}"
       - "--ping"
       - "--api.insecure=true"
       - "--providers.docker=true"
@@ -34,6 +35,11 @@ services:
       - "--providers.etcd=true"
       - "--providers.etcd.endpoints=etcd:2379"
       - "--providers.etcd.rootkey=traefik"
+      # Timeouts
+      # - "--entryPoints.web.transport.respondingTimeouts.readTimeout=90s"
+      # - "--entryPoints.web.transport.respondingTimeouts.writeTimeout=90s"
+      # - "--entryPoints.web.transport.respondingTimeouts.idleTimeout=240s"
+      #
       - "--entrypoints.web.address=:80"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
@@ -98,6 +104,11 @@ services:
     ports:
       - 2379
       - 2380
+
+  python-shell:
+    image: 'python:3.12'
+    depends_on:
+      - etcd
 
   redis:
     image: redislabs/redismod

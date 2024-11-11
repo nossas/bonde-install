@@ -69,4 +69,7 @@ services:
       - traefik.http.routers.ofpnd-cms.tls=true
       - traefik.http.routers.ofpnd-cms.tls.certresolver=myresolver
       - traefik.http.routers.ofpnd-cms.rule=${CMS_TRAEFIK_ROUTERS_RULE:-Host(`ofpnd.devel`) || Host(`www.ofpnd.devel`)}
-      
+
+networks:
+  default:
+    name: bonde

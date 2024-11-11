@@ -1,0 +1,72 @@
+services:
+  ofpnd-backend:
+    image: ${BACKEND_DOCKER_IMAGE:-nossas/ofpnd-backend:main}
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
+    environment:
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_HOST: ${DB_HOST:-postgres_db}
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-ofpnd_dev}
+      STAGE: ''
+    ports:
+      - "8000:8000"
+    labels:
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ofpnd-backend.priority=999
+      - traefik.http.services.ofpnd-backend.loadbalancer.server.port=8000
+      - traefik.http.routers.ofpnd-backend.tls=true
+      - traefik.http.routers.ofpnd-backend.tls.certresolver=myresolver
+      - traefik.http.routers.ofpnd-backend.rule=${BACKEND_TRAEFIK_ROUTERS_RULE:-Host(`api.ofpnd.devel`)}
+
+  ofpnd-mapa:
+    image: ${MAPA_DOCKER_IMAGE:-nossas/ofpnd-frontend:main}
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
+    environment:
+      - MY_APP_URL_AJUDA=${MAPA_URL_AJUDA}
+      - MY_APP_URL_COMO_AGIR=${MAPA_URL_COMO_AGIR}
+      - MY_APP_URL_INFO_DATA=${BACKEND_URL}/info-data
+      - MY_APP_URL_MAP_DATA=${BACKEND_URL}/map-data
+      - MY_APP_URL_MVT=${BACKEND_URL}/mvt/fpnd/{z}/{x}/{y}.pbf
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ofpnd-mapa.priority=999
+      - traefik.http.services.ofpnd-mapa.loadbalancer.server.port=80
+      - traefik.http.routers.ofpnd-mapa.tls=true
+      - traefik.http.routers.ofpnd-mapa.tls.certresolver=myresolver
+      - traefik.http.routers.ofpnd-mapa.rule=${MAPA_TRAEFIK_ROUTERS_RULE:-Host(`mapa.ofpnd.devel`)}
+
+  ofpnd-cms:
+    image: ${CMS_DOCKER_IMAGE:-nossas/cms:V0.2.5}
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    pull_policy: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=adp.settings.production
+      - DEBUG=${CMS_DEBUG:-True}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-"docker.localhost"}
+      - CMS_DATABASE_URL=${CMS_DATABASE_URL}
+      - BONDE_DATABASE_URL=${BONDE_DATABASE_URL}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_STORAGE_BUCKET_NAME=openactiontool-cms
+      - DISABLE_RECAPTCHA=${DISABLE_RECAPTCHA}
+      - BONDE_ACTION_API_URL=${BONDE_ACTION_API_URL}
+      - BONDE_ACTION_SECRET_KEY=${BONDE_ACTION_SECRET_KEY}
+      - ETCD_HOST=${ETCD_HOST:-"etcd"}
+      - ETCD_PORT=${ETCD_PORT:-2379}
+      - ADMINS=${ADMINS:-"('Admin', 'admin@localhost'),"}
+      - SMTP_HOST=${SMTP_HOST:-fake-smtp}
+      - SMTP_PORT=${SMTP_PORT:-1025}
+      - SMTP_USER=${SMTP_USER:-user}
+      - SMTP_PASS=${SMTP_PASS:-pass}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ofpnd-cms.priority=999
+      - traefik.http.services.ofpnd-cms.loadbalancer.server.port=8000
+      - traefik.http.routers.ofpnd-cms.tls=true
+      - traefik.http.routers.ofpnd-cms.tls.certresolver=myresolver
+      - traefik.http.routers.ofpnd-cms.rule=${CMS_TRAEFIK_ROUTERS_RULE:-Host(`ofpnd.devel`) || Host(`www.ofpnd.devel`)}
+      

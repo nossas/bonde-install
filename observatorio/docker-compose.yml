@@ -40,7 +40,7 @@ services:
       - traefik.http.routers.ofpnd-mapa.rule=${MAPA_TRAEFIK_ROUTERS_RULE:-Host(`mapa.ofpnd.devel`)}
 
   ofpnd-cms:
-    image: ${CMS_DOCKER_IMAGE:-nossas/cms:V0.2.5}
+    image: ${CMS_DOCKER_IMAGE:-nossas/cms:v0.2.5}
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     pull_policy: always
     environment:

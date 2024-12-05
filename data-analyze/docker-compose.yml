@@ -1,7 +1,7 @@
 version: '2'
 services:
   metabase:
-    image: metabase/metabase
+    image: metabase/metabase:latest
     environment:
       JAVA_TIMEZONE: America/Sao_Paulo
       MB_DB_TYPE: postgres

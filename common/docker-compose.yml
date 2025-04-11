@@ -212,4 +212,5 @@ volumes:
 
 networks:
   default:
-    name: bonde
+    external:
+      name: bonde

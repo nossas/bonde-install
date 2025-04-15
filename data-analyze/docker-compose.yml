@@ -11,9 +11,11 @@ services:
       MB_DB_PASS: ${MB_DB_PASS}
       MB_DB_HOST: ${MB_DB_HOST}
       JAVA_TOOL_OPTIONS: -Xmx2g
+      MB_PROMETHEUS_SERVER_PORT: ${MB_PROMETHEUS_SERVER_PORT:-9191}
 
     ports:
     - 3000/tcp
+    - 9191:9191
 
     labels:
       - traefik.enable=true
